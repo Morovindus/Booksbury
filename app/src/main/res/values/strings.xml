@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">Booksbury</string>
+
+    <string name="button_buy">Buy</string>
+    <string name="Main_title_books">Books</string>
+    <string name="Main_title_bury">bury</string>
+    <string name="Main_description">Food in the Ancient World from A to Z</string>
+    <string name="popular_books">Popular Books</string>
+
+    <string name="button_trending">Trending</string>
+    <string name="button_romance">Romance</string>
+    <string name="button_children">Children</string>
+    <string name="button_horror">Horror</string>
+
+    <string name="explore_title">Explore Market</string>
+
+    <string name="book_title_1">The Republic</string>
+    <string name="book_title_2">Ancient World</string>
+    <string name="book_title_3">Allegory of Cave</string>
+    <string name="book_title_4">Homeric Hymns</string>
+    <string name="book_title_5">Ancient Classics</string>
+    <string name="book_title_6">Greek Mythology</string>
+
+    <string name="author_1">By Plato</string>
+    <string name="author_2">By Susan Wise Bauer</string>
+    <string name="author_3">By Plato</string>
+    <string name="author_4">By Michael Crudden</string>
+    <string name="author_5">By Luciano</string>
+    <string name="author_6">By Mariso Christou</string>
+
+    <string name="price_1">285\u20BD</string>
+    <string name="price_2">2,598\u20BD</string>
+    <string name="price_3">549\u20BD</string>
+    <string name="price_4">757\u20BD</string>
+    <string name="price_5">199\u20BD</string>
+    <string name="price_6">642\u20BD</string>
+
+    <string name="title_book_info">Book Info</string>
+    <string name="text_released">Released</string>
+    <string name="date_4_book">2021</string>
+    <string name="text_part">Part</string>
+    <string name="part_4_book">16</string>
+    <string name="text_page">Page</string>
+    <string name="page_4_book">340</string>
+    <string name="tabs_synopsis">Synopsis</string>
+    <string name="tabs_details">Details</string>
+    <string name="tabs_author">Author</string>
+    <string name="tabs_review">Review</string>
+    <string name="synopsis_4_book">\'With fair-tressed Demeter, the sacred goddess, my song begins, With herself and her slim-ankled daughter, whom Aidoneus once Abducted...\' Most people are familiar, at least by repute, with the two great epics of Homer, the Iliad and the Odyssey, but few are aware that other poems survive that were attributed to Homer in ancient times. The Homeric Hymns are now known to be the work of various poets working in the same tradition, probably during the seventh and sixth centuries BC. They honour the Greek gods, and recount some of the most attractive of the Greek myths. Four of them (Hymns 2-5) stand out by reason of their length and quality. The Hymn to Demeter tells what happened when Hades, lord of the dead, abducted Persephone, Demeter\'s daughter.</string>
+    <string name="Listen">15h Listen</string>
+    <string name="name_author">Andrew Dalby</string>
+    <string name="start_reading">Start Reading</string>
+    <string name="play_audio">Play Audio</string>
+
+</resources>

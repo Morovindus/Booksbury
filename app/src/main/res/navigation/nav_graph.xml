@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/HomeFragment">
+
+
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="com.example.booksbury.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/home_fragment">
+        <action
+            android:id="@+id/action_HomeFragment_to_ExploreFragment"
+            app:destination="@id/ExploreFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_BookInfoFragment"
+            app:destination="@id/BookInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ExploreFragment"
+        android:name="com.example.booksbury.ExploreFragment"
+        android:label="SecondFragment"
+        tools:layout="@layout/explore_fragment">
+        <action
+            android:id="@+id/action_ExploreFragment_to_HomeFragment"
+            app:destination="@id/HomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/BookInfoFragment"
+        android:name="com.example.booksbury.BookInfoFragment"
+        android:label="BookInfoFragment"
+        tools:layout="@layout/book_info_fragment">
+        <action
+            android:id="@+id/action_ExploreFragment_to_HomeFragment"
+            app:destination="@id/HomeFragment" />
+    </fragment>
+
+</navigation>
