@@ -62,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
         android:layout_above="@+id/cardView">
 
         <RelativeLayout
@@ -77,7 +77,7 @@
                 android:scrollbars="none">
 
             <LinearLayout
-                android:layout_width="505dp"
+                android:layout_width="wrap_content"
                 android:layout_height="38dp"
                 android:orientation="horizontal">
 
@@ -102,6 +102,7 @@
                     android:textSize="14sp"
                     android:textAllCaps="false"
                     android:text="@string/button_romance" />
+
 
                 <Button
                     android:id="@+id/button_children"
@@ -129,510 +130,546 @@
 
             </HorizontalScrollView>
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:layout_below="@id/buttonsContainer">
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_below="@id/buttonsContainer"
+                android:orientation="vertical">
 
-                <FrameLayout
-                    android:id="@+id/book_1"
-                    android:layout_width="177dp"
-                    android:layout_height="282dp"
-                    android:layout_marginStart="20dp">
-
-                    <ImageView
-                        android:id="@+id/background_rectangle_1"
-                        android:layout_width="177dp"
-                        android:layout_height="282dp"
-                        android:layout_toEndOf="@id/book_1"
-                        android:src="@drawable/background_rectangle"
-                        android:scaleType="fitXY" />
-
-                    <ImageView
-                        android:id="@+id/image_first"
-                        android:src="@drawable/book_1"
-                        android:layout_width="153dp"
-                        android:layout_height="176dp"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="12dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
                     <RelativeLayout
-                        android:layout_width="150dp"
-                        android:layout_height="44dp"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="191dp">
+                        android:id="@+id/book_1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="20dp">
 
-                        <TextView
-                            android:id="@+id/book_title_1"
-                            android:layout_width="150dp"
-                            android:layout_height="25dp"
-                            android:text="@string/book_title_1"
-                            android:fontFamily="@font/dms_erifdisplay_regular"
-                            android:textColor="@color/black"
-                            android:textSize="18sp"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
+                        <ImageView
+                            android:id="@+id/background_rectangle_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/background_rectangle"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitCenter" />
 
-                        <TextView
-                            android:layout_width="150dp"
-                            android:layout_height="21dp"
-                            android:text="@string/author_1"
-                            android:textColor="@color/grey"
-                            android:textSize="12sp"
-                            android:layout_below="@id/book_title_1"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
-                    </RelativeLayout>
+                        <ImageView
+                            android:id="@+id/image_first"
+                            android:src="@drawable/book_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="12dp"
+                            android:scaleType="fitCenter"
+                            android:adjustViewBounds="true"
+                            android:layout_marginTop="12dp" />
 
-                    <RelativeLayout
-                        android:layout_width="152dp"
-                        android:layout_height="28dp"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="242dp">
+                        <RelativeLayout
+                            android:id="@+id/textTitleAuthor_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/image_first"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginTop="4dp">
 
-                        <TextView
-                            android:layout_width="70dp"
-                            android:layout_height="25dp"
-                            android:text="@string/price_1"
-                            android:fontFamily="@font/dms_erifdisplay_regular"
-                            android:textColor="@color/black"
-                            android:textSize="18sp"
-                            android:layout_marginTop="1.5dp"
-                            android:layout_marginStart="0dp"/>
+                            <TextView
+                                android:id="@+id/book_title_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/book_title_1"
+                                android:fontFamily="@font/dms_erifdisplay_regular"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"/>
 
-                        <Button
-                            android:layout_width="74dp"
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/author_1"
+                                android:textColor="@color/grey"
+                                android:textSize="12sp"
+                                android:layout_below="@id/book_title_1"/>
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="28dp"
-                            android:text="@string/button_buy"
-                            android:background="@drawable/button_buy"
-                            android:textColor="@color/white"
-                            android:textSize="14sp"
-                            android:textAllCaps="false"
-                            android:layout_marginStart="78dp"
-                            android:layout_marginTop="0dp"/>
-                    </RelativeLayout>
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="13dp"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginTop="7dp"
+                            android:layout_below="@id/textTitleAuthor_1">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/price_1"
+                                android:fontFamily="@font/dms_erifdisplay_regular"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"
+                                android:layout_marginTop="1.5dp"
+                                android:layout_marginBottom="1.5dp"/>
+
+                            <Button
+                                android:layout_width="74dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/button_buy"
+                                android:background="@drawable/button_buy"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
+                                android:textAllCaps="false"
+                                android:layout_alignParentEnd="true"/>
+                        </RelativeLayout>
 
 
-                </FrameLayout>
-
-                <FrameLayout
-                    android:id="@+id/book_2"
-                    android:layout_toEndOf="@id/book_1"
-                    android:layout_width="177dp"
-                    android:layout_height="282dp"
-                    android:layout_marginStart="20dp">
-
-                    <ImageView
-                        android:id="@+id/background_rectangle"
-                        android:layout_width="177dp"
-                        android:layout_height="282dp"
-                        android:layout_toEndOf="@id/book_2"
-                        android:src="@drawable/background_rectangle"
-                        android:scaleType="fitXY" />
-
-                    <ImageView
-                        android:id="@+id/image_second"
-                        android:src="@drawable/book_2"
-                        android:layout_width="153dp"
-                        android:layout_height="176dp"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="12dp" />
-
-                    <RelativeLayout
-                        android:layout_width="150dp"
-                        android:layout_height="44dp"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="191dp">
-
-                        <TextView
-                            android:id="@+id/book_title_2"
-                            android:layout_width="150dp"
-                            android:layout_height="25dp"
-                            android:text="@string/book_title_2"
-                            android:fontFamily="@font/dms_erifdisplay_regular"
-                            android:textColor="@color/black"
-                            android:textSize="18sp"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
-
-                        <TextView
-                            android:layout_width="150dp"
-                            android:layout_height="21dp"
-                            android:text="@string/author_2"
-                            android:textColor="@color/grey"
-                            android:textSize="12sp"
-                            android:layout_below="@id/book_title_2"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:layout_width="152dp"
-                        android:layout_height="28dp"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="242dp">
+                        android:id="@+id/book_2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
 
-                        <TextView
-                            android:layout_width="70dp"
-                            android:layout_height="25dp"
-                            android:text="@string/price_2"
-                            android:fontFamily="@font/dms_erifdisplay_regular"
-                            android:textColor="@color/black"
-                            android:textSize="18sp"
-                            android:layout_marginTop="1.5dp"
-                            android:layout_marginStart="0dp"/>
+                        <ImageView
+                            android:id="@+id/background_rectangle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/background_rectangle"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitCenter" />
 
-                        <Button
-                            android:layout_width="74dp"
+                        <ImageView
+                            android:id="@+id/image_second"
+                            android:src="@drawable/book_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:scaleType="fitCenter"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="12dp"
+                            android:layout_marginTop="12dp"
+                            android:adjustViewBounds="true"/>
+
+                        <RelativeLayout
+                            android:id="@+id/textTitleAuthor_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/image_second"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginTop="4dp">
+
+                            <TextView
+                                android:id="@+id/book_title_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/book_title_2"
+                                android:fontFamily="@font/dms_erifdisplay_regular"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/author_2"
+                                android:textColor="@color/grey"
+                                android:textSize="12sp"
+                                android:layout_below="@id/book_title_2"/>
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="28dp"
-                            android:text="@string/button_buy"
-                            android:background="@drawable/button_buy"
-                            android:textColor="@color/white"
-                            android:textSize="14sp"
-                            android:textAllCaps="false"
-                            android:layout_marginStart="78dp"
-                            android:layout_marginTop="0dp"/>
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="13dp"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginTop="7dp"
+                            android:layout_below="@id/textTitleAuthor_2">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/price_2"
+                                android:fontFamily="@font/dms_erifdisplay_regular"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"
+                                android:layout_marginTop="1.5dp"
+                                android:layout_marginBottom="1.5dp"
+                                android:layout_marginStart="0dp"/>
+
+                            <Button
+                                android:layout_width="74dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/button_buy"
+                                android:background="@drawable/button_buy"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
+                                android:textAllCaps="false"
+                                android:layout_alignParentEnd="true"/>
+                        </RelativeLayout>
+
+
                     </RelativeLayout>
 
+                </LinearLayout>
 
-                </FrameLayout>
-
-                <FrameLayout
-                    android:id="@+id/book_3"
-                    android:layout_width="177dp"
-                    android:layout_height="282dp"
-                    android:layout_below="@id/book_1"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="20dp"
-                    android:layout_marginStart="20dp">
+                    android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/book_3"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp">
 
                     <ImageView
                         android:id="@+id/background_rectangle_3"
-                        android:layout_width="177dp"
-                        android:layout_height="282dp"
-                        android:layout_toEndOf="@id/book_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:src="@drawable/background_rectangle"
-                        android:scaleType="fitXY" />
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter" />
 
                     <ImageView
                         android:id="@+id/image_third"
                         android:src="@drawable/book_3"
-                        android:layout_width="153dp"
-                        android:layout_height="176dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:layout_marginEnd="12dp"
                         android:layout_marginStart="12dp"
                         android:layout_marginTop="12dp" />
 
                     <RelativeLayout
-                        android:layout_width="150dp"
-                        android:layout_height="44dp"
+                        android:id="@+id/textTitleAuthor_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/image_third"
                         android:layout_marginStart="12dp"
-                        android:layout_marginTop="191dp">
+                        android:layout_marginTop="4dp">
 
                         <TextView
                             android:id="@+id/book_title_3"
-                            android:layout_width="150dp"
-                            android:layout_height="25dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/book_title_3"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:textColor="@color/black"
-                            android:textSize="18sp"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
+                            android:textSize="18sp"/>
 
                         <TextView
-                            android:layout_width="150dp"
-                            android:layout_height="21dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/author_3"
                             android:textColor="@color/grey"
                             android:textSize="12sp"
-                            android:layout_below="@id/book_title_3"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
+                            android:layout_below="@id/book_title_3"/>
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:layout_width="152dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="28dp"
                         android:layout_marginStart="12dp"
-                        android:layout_marginTop="242dp">
+                        android:layout_marginEnd="13dp"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginTop="7dp"
+                        android:layout_below="@id/textTitleAuthor_3">
 
                         <TextView
-                            android:layout_width="70dp"
-                            android:layout_height="25dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/price_3"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:textColor="@color/black"
                             android:textSize="18sp"
                             android:layout_marginTop="1.5dp"
-                            android:layout_marginStart="0dp"/>
+                            android:layout_marginBottom="1.5dp"/>
 
                         <Button
                             android:layout_width="74dp"
-                            android:layout_height="28dp"
+                            android:layout_height="wrap_content"
                             android:text="@string/button_buy"
                             android:background="@drawable/button_buy"
                             android:textColor="@color/white"
                             android:textSize="14sp"
                             android:textAllCaps="false"
-                            android:layout_marginStart="78dp"
-                            android:layout_marginTop="0dp"/>
+                            android:layout_alignParentEnd="true"/>
                     </RelativeLayout>
 
 
-                </FrameLayout>
+                </RelativeLayout>
 
-                <FrameLayout
+                <RelativeLayout
                     android:id="@+id/book_4"
-                    android:layout_toEndOf="@id/book_3"
-                    android:layout_below="@id/book_2"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_width="177dp"
-                    android:layout_height="282dp">
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
 
                     <ImageView
                         android:id="@+id/background_rectangle_4"
-                        android:layout_width="177dp"
-                        android:layout_height="282dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:src="@drawable/background_rectangle"
-                        android:scaleType="fitXY" />
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter" />
 
                     <ImageView
                         android:id="@+id/image_fourth"
                         android:src="@drawable/book_4"
-                        android:layout_width="153dp"
-                        android:layout_height="176dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:layout_marginEnd="12dp"
                         android:layout_marginStart="12dp"
                         android:layout_marginTop="12dp" />
 
                     <RelativeLayout
-                        android:layout_width="150dp"
-                        android:layout_height="44dp"
+                        android:id="@+id/textTitleAuthor_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/image_fourth"
                         android:layout_marginStart="12dp"
-                        android:layout_marginTop="191dp">
+                        android:layout_marginTop="4dp">
 
                         <TextView
                             android:id="@+id/book_title_4"
-                            android:layout_width="150dp"
-                            android:layout_height="25dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/book_title_4"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:textColor="@color/black"
-                            android:textSize="18sp"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
+                            android:textSize="18sp"/>
 
                         <TextView
-                            android:layout_width="150dp"
-                            android:layout_height="21dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/author_4"
                             android:textColor="@color/grey"
                             android:textSize="12sp"
-                            android:layout_below="@id/book_title_4"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
+                            android:layout_below="@id/book_title_4"/>
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:layout_width="152dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="28dp"
                         android:layout_marginStart="12dp"
-                        android:layout_marginTop="242dp">
+                        android:layout_marginEnd="13dp"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginTop="7dp"
+                        android:layout_below="@id/textTitleAuthor_4">
 
                         <TextView
-                            android:layout_width="70dp"
-                            android:layout_height="25dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/price_4"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:textColor="@color/black"
                             android:textSize="18sp"
                             android:layout_marginTop="1.5dp"
-                            android:layout_marginStart="0dp"/>
+                            android:layout_marginBottom="1.5dp"/>
 
                         <Button
                             android:layout_width="74dp"
-                            android:layout_height="28dp"
+                            android:layout_height="wrap_content"
                             android:text="@string/button_buy"
                             android:background="@drawable/button_buy"
                             android:textColor="@color/white"
                             android:textSize="14sp"
                             android:textAllCaps="false"
-                            android:layout_marginStart="78dp"
-                            android:layout_marginTop="0dp"/>
+                            android:layout_alignParentEnd="true"/>
                     </RelativeLayout>
 
 
-                </FrameLayout>
+                </RelativeLayout>
 
-                <FrameLayout
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp">
+
+                <RelativeLayout
                     android:id="@+id/book_5"
-                    android:layout_width="177dp"
-                    android:layout_height="282dp"
-                    android:layout_below="@id/book_3"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginStart="20dp">
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="20dp">
 
                     <ImageView
                         android:id="@+id/background_rectangle_5"
-                        android:layout_width="177dp"
-                        android:layout_height="282dp"
-                        android:layout_toEndOf="@id/book_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:src="@drawable/background_rectangle"
-                        android:scaleType="fitXY" />
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter" />
 
                     <ImageView
                         android:id="@+id/image_fifth"
                         android:src="@drawable/book_5"
-                        android:layout_width="153dp"
-                        android:layout_height="176dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
                         android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
                         android:layout_marginTop="12dp" />
 
                     <RelativeLayout
-                        android:layout_width="150dp"
-                        android:layout_height="44dp"
+                        android:id="@+id/textTitleAuthor_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/image_fifth"
                         android:layout_marginStart="12dp"
-                        android:layout_marginTop="191dp">
+                        android:layout_marginTop="4dp">
 
                         <TextView
                             android:id="@+id/book_title_5"
-                            android:layout_width="150dp"
-                            android:layout_height="25dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/book_title_5"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:textColor="@color/black"
-                            android:textSize="18sp"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
+                            android:textSize="18sp"/>
 
                         <TextView
-                            android:layout_width="150dp"
-                            android:layout_height="21dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/author_5"
                             android:textColor="@color/grey"
                             android:textSize="12sp"
-                            android:layout_below="@id/book_title_5"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
+                            android:layout_below="@id/book_title_5"/>
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:layout_width="152dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="28dp"
                         android:layout_marginStart="12dp"
-                        android:layout_marginTop="242dp">
+                        android:layout_marginEnd="13dp"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginTop="7dp"
+                        android:layout_below="@id/textTitleAuthor_5">
 
                         <TextView
-                            android:layout_width="70dp"
-                            android:layout_height="25dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/price_5"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:textColor="@color/black"
                             android:textSize="18sp"
                             android:layout_marginTop="1.5dp"
-                            android:layout_marginStart="0dp"/>
+                            android:layout_marginBottom="1.5dp"/>
 
                         <Button
                             android:layout_width="74dp"
-                            android:layout_height="28dp"
+                            android:layout_height="wrap_content"
                             android:text="@string/button_buy"
                             android:background="@drawable/button_buy"
                             android:textColor="@color/white"
                             android:textSize="14sp"
                             android:textAllCaps="false"
-                            android:layout_marginStart="78dp"
-                            android:layout_marginTop="0dp"/>
+                            android:layout_alignParentEnd="true"/>
                     </RelativeLayout>
 
 
-                </FrameLayout>
+                </RelativeLayout>
 
-                <FrameLayout
+                <RelativeLayout
                     android:id="@+id/book_6"
-                    android:layout_toEndOf="@id/book_5"
-                    android:layout_below="@id/book_4"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_width="177dp"
-                    android:layout_height="282dp">
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
 
                     <ImageView
                         android:id="@+id/background_rectangle_6"
-                        android:layout_width="177dp"
-                        android:layout_height="282dp"
-                        android:layout_toEndOf="@id/book_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:src="@drawable/background_rectangle"
-                        android:scaleType="fitXY" />
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter" />
 
                     <ImageView
                         android:id="@+id/image_sixth"
                         android:src="@drawable/book_6"
-                        android:layout_width="153dp"
-                        android:layout_height="176dp"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
                         android:layout_marginTop="12dp" />
 
                     <RelativeLayout
-                        android:layout_width="150dp"
-                        android:layout_height="44dp"
+                        android:id="@+id/textTitleAuthor_6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/image_sixth"
                         android:layout_marginStart="12dp"
-                        android:layout_marginTop="191dp">
+                        android:layout_marginTop="4dp">
 
                         <TextView
                             android:id="@+id/book_title_6"
-                            android:layout_width="150dp"
-                            android:layout_height="25dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/book_title_6"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:textColor="@color/black"
-                            android:textSize="18sp"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
+                            android:textSize="18sp"/>
 
                         <TextView
-                            android:layout_width="150dp"
-                            android:layout_height="21dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/author_6"
                             android:textColor="@color/grey"
                             android:textSize="12sp"
-                            android:layout_below="@id/book_title_6"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="0dp"/>
+                            android:layout_below="@id/book_title_6"/>
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:layout_width="152dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="28dp"
                         android:layout_marginStart="12dp"
-                        android:layout_marginTop="242dp">
+                        android:layout_marginEnd="13dp"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginTop="7dp"
+                        android:layout_below="@id/textTitleAuthor_6">
 
                         <TextView
-                            android:layout_width="70dp"
-                            android:layout_height="25dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="@string/price_6"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:textColor="@color/black"
                             android:textSize="18sp"
                             android:layout_marginTop="1.5dp"
-                            android:layout_marginStart="0dp"/>
+                            android:layout_marginBottom="1.5dp"/>
 
                         <Button
                             android:layout_width="74dp"
-                            android:layout_height="28dp"
+                            android:layout_height="wrap_content"
                             android:text="@string/button_buy"
                             android:background="@drawable/button_buy"
                             android:textColor="@color/white"
                             android:textSize="14sp"
                             android:textAllCaps="false"
-                            android:layout_marginStart="78dp"
-                            android:layout_marginTop="0dp"/>
+                            android:layout_alignParentEnd="true"/>
                     </RelativeLayout>
-                </FrameLayout>
-            </RelativeLayout>
+                </RelativeLayout>
+
+                </LinearLayout>
+            </LinearLayout>
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
-
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -641,7 +678,6 @@
         android:id="@+id/cardView"
         android:layout_alignParentBottom="true">
 
-        <!-- Виджет с тенью сверху -->
         <View
             android:layout_width="match_parent"
             android:layout_height="8dp"
@@ -650,11 +686,10 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/blackRectangleBottom"
-            android:layout_width="414dp"
+            android:layout_width="match_parent"
             android:layout_height="93dp"
             android:background="#FFFFFF">
 
-            <!-- Горизонтальная направляющая -->
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline_horizontal"
                 android:layout_width="wrap_content"
@@ -681,6 +716,16 @@
                 app:layout_constraintEnd_toStartOf="@id/imageView13"
                 app:layout_constraintTop_toTopOf="@+id/guideline_horizontal"
                 app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"/>
+
+            <ImageView
+                android:id="@+id/squareImageView"
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:background="@drawable/circle"
+                app:layout_constraintStart_toStartOf="@id/imageView12"
+                app:layout_constraintTop_toBottomOf="@id/guideline_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="9dp"/>
 
             <Button
                 android:id="@+id/imageView13"

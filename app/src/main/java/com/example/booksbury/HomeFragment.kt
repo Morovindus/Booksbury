@@ -6,12 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.booksbury.databinding.HomeFragmentBinding
-
-
 
 class HomeFragment : Fragment() {
 
@@ -36,12 +33,9 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //val button3: Button = requireActivity().findViewById(R.id.personal_button)
+
         val buttonMore: Button = binding.buttonMore;
-        val buttonImage: ImageButton = binding.imageView01;
-        var imageView: ImageView = binding.backgroundRectangle;
-
-
+        val buttonImage: ImageButton = binding.mainImage;
 
         buttonMore.setOnClickListener{
             findNavController().navigate(R.id.action_HomeFragment_to_ExploreFragment)
@@ -51,9 +45,6 @@ class HomeFragment : Fragment() {
         }
 
     }
-
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()

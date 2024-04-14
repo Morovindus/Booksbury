@@ -52,4 +52,21 @@
     <string name="start_reading">Start Reading</string>
     <string name="play_audio">Play Audio</string>
 
+
+    <string name="title_book_first">History of the Ancient World\'s Society</string>
+    <string name="author_first">Dr. Tikendranath Sarkar</string>
+    <string name="ratings_first">50 Ratings</string>
+
+    <string name="title_book_second">Magic in the Ancient Greek World: 4</string>
+    <string name="author_second">Derek Collins </string>
+    <string name="ratings_second">80 Ratings</string>
+
+    <string name="title_book_third">A History of Babylon, 2200 BC - Ad 75</string>
+    <string name="author_third">Paul-Alain Beaulieu</string>
+    <string name="ratings_third">120 Ratings</string>
+
+    <string name="title_book_fourth">The History of the Ancient World</string>
+    <string name="author_fourth">By Susan Wise Bauer</string>
+    <string name="ratings_fourth">55 Ratings</string>
+
 </resources>
