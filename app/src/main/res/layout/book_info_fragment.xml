@@ -4,26 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
     android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="@color/white"
         android:elevation="4dp"
-        app:contentInsetStart="0dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <RelativeLayout
+            style="@style/Margin20dp"
             android:id="@+id/blackRectangle"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="45dp"
-            android:background="@color/white">
+            android:layout_marginTop="45dp">
 
             <Button
                 android:id="@+id/button_back"
@@ -39,14 +34,12 @@
                 android:layout_centerInParent="true"
                 android:fontFamily="@font/dms_erifdisplay_regular"
                 android:text="@string/title_book_info"
-                android:textColor="@color/black"
+                android:textColor="?android:textColor"
                 android:textSize="22sp" />
 
             <Button
+                style="@style/Picture24dp"
                 android:id="@+id/right_button"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/save_2"/>
 
@@ -54,6 +47,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.core.widget.NestedScrollView
+        style="@style/Margin20dp"
         android:id="@+id/nestedScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -65,16 +59,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/imageView02"
-                    android:layout_width="374dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="220dp"
                     android:src="@drawable/book_more" />
 
@@ -90,19 +81,16 @@
                         android:layout_height="30dp"
                         android:text="@string/book_title_4"
                         android:fontFamily="@font/dms_erifdisplay_regular"
-                        android:textColor="@color/black"
+                        android:textColor="?android:textColor"
                         android:textSize="22sp"
                         android:id="@+id/textView1"
-                        android:layout_marginStart="0dp"
-                        android:layout_marginTop="0dp"
-                        android:layout_marginEnd="0dp"
                         android:layout_marginBottom="2dp" />
 
                     <TextView
                         android:layout_width="170dp"
                         android:layout_height="21dp"
                         android:text="@string/author_4"
-                        android:textColor="@color/grey"
+                        android:textColor="?android:textColorSecondary"
                         android:textSize="16sp"
                         android:id="@+id/textView2"
                         android:layout_marginTop="32dp"
@@ -113,7 +101,7 @@
                         android:layout_height="38dp"
                         android:text="@string/price_4"
                         android:fontFamily="@font/dms_erifdisplay_regular"
-                        android:textColor="@color/black"
+                        android:textColor="?android:textColor"
                         android:textSize="28sp"
                         android:id="@+id/textView3"
                         android:layout_alignParentEnd="true"
@@ -148,7 +136,7 @@
                             android:layout_marginTop="12dp"
                             android:layout_centerHorizontal="true"
                             android:text="@string/text_released"
-                            android:textColor="@color/grey"
+                            android:textColor="?android:textColorSecondary"
                             android:textSize="16sp" />
 
                         <TextView
@@ -160,7 +148,7 @@
                             android:layout_centerHorizontal="true"
                             android:text="@string/date_4_book"
                             android:textAlignment="center"
-                            android:textColor="@color/black"
+                            android:textColor="?android:textColor"
                             android:textSize="16sp" />
 
                     </RelativeLayout>
@@ -189,7 +177,7 @@
                             android:layout_centerHorizontal="true"
                             android:text="@string/text_part"
                             android:textAlignment="center"
-                            android:textColor="@color/grey"
+                            android:textColor="?android:textColorSecondary"
                             android:textSize="16sp" />
 
                         <TextView
@@ -201,7 +189,7 @@
                             android:layout_centerHorizontal="true"
                             android:text="@string/part_4_book"
                             android:textAlignment="center"
-                            android:textColor="@color/black"
+                            android:textColor="?android:textColor"
                             android:textSize="16sp" />
 
                     </RelativeLayout>
@@ -227,7 +215,7 @@
                             android:layout_centerHorizontal="true"
                             android:text="@string/text_page"
                             android:textAlignment="center"
-                            android:textColor="@color/grey"
+                            android:textColor="?android:textColorSecondary"
                             android:textSize="16sp" />
 
                         <TextView
@@ -239,7 +227,7 @@
                             android:layout_centerHorizontal="true"
                             android:textAlignment="center"
                             android:text="@string/page_4_book"
-                            android:textColor="@color/black"
+                            android:textColor="?android:textColor"
                             android:textSize="16sp" />
 
                     </RelativeLayout>
@@ -260,6 +248,7 @@
                         android:layout_weight="1"
                         android:text="@string/tabs_synopsis"
                         android:textAllCaps="false"
+                        android:textColor="?android:textColor"
                         android:background="@android:color/transparent"/>
 
                     <Button
@@ -269,7 +258,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/tabs_details"
-                        android:textColor="@color/grey"
+                        android:textColor="?android:textColorSecondary"
                         android:textAllCaps="false"
                         android:background="@android:color/transparent" />
 
@@ -280,7 +269,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/tabs_author"
-                        android:textColor="@color/grey"
+                        android:textColor="?android:textColorSecondary"
                         android:textAllCaps="false"
                         android:background="@android:color/transparent" />
 
@@ -291,7 +280,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/tabs_review"
-                        android:textColor="@color/grey"
+                        android:textColor="?android:textColorSecondary"
                         android:textAllCaps="false"
                         android:background="@android:color/transparent" />
 
@@ -311,39 +300,39 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="1dp"
-                        android:background="@color/black" />
+                        android:background="?android:textColor" />
 
                     <View
                         android:id="@+id/line_2"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="1dp"
-                        android:background="@color/light_grey" />
+                        android:background="?android:textColorSecondary" />
 
                     <View
                         android:id="@+id/line_3"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="1dp"
-                        android:background="@color/light_grey" />
+                        android:background="?android:textColorSecondary" />
 
                     <View
                         android:id="@+id/line_4"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="1dp"
-                        android:background="@color/light_grey" />
+                        android:background="?android:textColorSecondary" />
 
                 </LinearLayout>
 
 
                 <TextView
                     android:layout_below="@id/line"
-                    android:layout_width="374dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="@string/synopsis_4_book"
-                    android:textColor="@color/grey"
+                    android:textColor="?android:textColorSecondary"
                     android:textSize="16sp" />
 
             </RelativeLayout>
@@ -358,7 +347,6 @@
         android:layout_height="100dp"
         android:orientation="vertical"
         android:id="@+id/cardView"
-        android:background="@color/white"
         android:layout_alignParentBottom="true">
 
         <View
@@ -371,8 +359,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="24dp"
-            android:background="@color/white">
+            android:layout_marginTop="24dp">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -384,7 +371,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:src="@drawable/button_buy_book"
-                    android:background="@color/white"
+                    android:background="?android:windowBackground"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/button"
                     android:layout_marginStart="20dp"
@@ -411,7 +398,7 @@
                     android:text="@string/start_reading"
                     android:textSize="14sp"
                     android:layout_marginStart="8dp"
-                    android:textColor="@color/black"
+                    android:textColor="?android:textColor"
                     app:layout_constraintWidth_percent="0.22"
                     android:scaleType="fitCenter"
                     app:layout_constraintStart_toEndOf="@id/imageView0"
@@ -423,7 +410,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:src="@drawable/button_start"
-                    android:background="@color/white"
+                    android:background="?android:windowBackground"
                     android:layout_marginEnd="20dp"
                     app:layout_constraintStart_toEndOf="@id/button0"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -449,7 +436,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/play_audio"
                     android:textSize="14sp"
-                    android:textColor="@color/white"
+                    android:textColor="?android:windowBackground"
                     android:layout_marginStart="8dp"
                     app:layout_constraintWidth_percent="0.18"
                     android:scaleType="fitCenter"

@@ -33,8 +33,13 @@ class ExploreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val buttonMore: Button = binding.buttonHome;
+        val buttonSearch: Button = binding.buttonSearch;
+
         buttonMore.setOnClickListener{
             findNavController().navigate(R.id.action_ExploreFragment_to_HomeFragment)
+        }
+        buttonSearch.setOnClickListener{
+            findNavController().navigate(R.id.action_ExploreFragment_to_SearchFragment)
         }
     }
 

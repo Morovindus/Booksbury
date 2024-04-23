@@ -10,4 +10,14 @@
     <color name="grey">#858585</color>
     <color name="light_grey">#D7D7D7</color>
     <color name="orange">#BFA054</color>
+    <color name="light_grey_2">#B7B7B7</color>
+
+    <color name="textColorLight">@color/black</color>
+    <color name="textColorDark">@color/white</color>
+
+    <color name="textColorSecondaryLight">@color/grey</color>
+    <color name="textColorSecondaryDark">@color/light_grey_2</color>
+
+
+
 </resources>

@@ -4,32 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
     android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="@color/white"
         android:elevation="4dp"
-        app:contentInsetStart="0dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <RelativeLayout
+            style="@style/Margin20dp"
             android:id="@+id/topPanel"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="45dp"
-            android:background="@color/white">
+            android:layout_marginTop="45dp">
 
             <ImageView
+                style="@style/Picture24dp"
                 android:id="@+id/imageBook"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_centerVertical="true"
                 android:layout_marginStart="0dp"
                 android:src="@drawable/book" />
 
@@ -40,7 +33,7 @@
                 android:layout_marginStart="31dp"
                 android:fontFamily="@font/dms_erifdisplay_regular"
                 android:text="@string/Main_title_books"
-                android:textColor="@color/black"
+                android:textColor="?android:textColor"
                 android:textSize="22sp" />
 
             <TextView
@@ -54,21 +47,16 @@
                 android:textSize="22sp" />
 
             <Button
+                style="@style/Picture24dp"
                 android:id="@+id/buttonNotification"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_centerVertical="true"
                 android:layout_marginEnd="20dp"
                 android:layout_toStartOf="@+id/buttonSearch"
                 android:background="@drawable/notification" />
 
             <Button
+                style="@style/Picture24dp"
                 android:id="@+id/buttonSearch"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginTop="0dp"
                 android:background="@drawable/search_normal" />
 
         </RelativeLayout>
@@ -87,18 +75,16 @@
             android:layout_height="match_parent">
 
             <FrameLayout
+                style="@style/Margin20dp"
                 android:id="@+id/Image"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp">
+                android:layout_height="match_parent">
 
-                <!-- Изображение -->
                 <ImageButton
                     android:id="@+id/mainImage"
                     android:layout_width="wrap_content"
                     android:layout_height="342dp"
-                    android:background="@color/white"
+                    android:background="?android:windowBackground"
                     android:scaleType="fitXY"
                     android:src="@drawable/book_main" />
 
@@ -116,9 +102,10 @@
 
                 <ImageView
                     android:id="@+id/backgroundRectangle"
-                    android:layout_width="374dp"
-                    android:layout_height="74dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="bottom|start"
+                    android:scaleType="fitCenter"
                     android:background="@drawable/rectangle_562"
                     android:src="@android:color/transparent" />
 
@@ -132,9 +119,8 @@
                     android:background="@drawable/rectangle_564" />
 
                 <ImageView
+                    style="@style/Picture24dp"
                     android:id="@+id/imageFavourite"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
                     android:layout_gravity="top|end"
                     android:layout_marginTop="23dp"
                     android:layout_marginEnd="23dp"
@@ -216,24 +202,24 @@
 
             <TextView
                 android:id="@+id/textPopularBook"
-                android:layout_width="151dp"
-                android:layout_height="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/Image"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/dms_erifdisplay_regular"
                 android:text="@string/popular_books"
-                android:textColor="@color/black"
+                android:textColor="?android:textColor"
                 android:textSize="22sp">
 
             </TextView>
 
             <RelativeLayout
+                style="@style/Margin20dp"
                 android:id="@+id/containerThird"
                 android:layout_width="347dp"
                 android:layout_height="302dp"
                 android:layout_below="@id/textPopularBook"
-                android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp">
 
                 <FrameLayout
@@ -258,9 +244,9 @@
                             android:id="@+id/textTitle_1"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:text="@string/title_book_first"
-                            android:textColor="@color/black"
+                            android:textColor="?android:textColor"
                             android:textSize="16sp"
-                            android:layout_width="267dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="22dp" />
 
                         <TextView
@@ -268,7 +254,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="18dp"
                             android:text="@string/author_first"
-                            android:textColor="@color/grey"
+                            android:textColor="?android:textColorSecondary"
                             android:textSize="12sp"
                             android:layout_marginTop="24dp" />
 
@@ -332,7 +318,7 @@
                                 android:layout_height="15dp"
                                 android:text="@string/ratings_first"
                                 android:layout_gravity="center|end"
-                                android:textColor="@color/grey"
+                                android:textColor="?android:textColorSecondary"
                                 android:textSize="10sp"
                                 tools:ignore="SmallSp" />
 
@@ -345,7 +331,6 @@
                     android:layout_width="347dp"
                     android:layout_height="60dp"
                     android:layout_below="@+id/containerThird_1"
-                    android:layout_marginStart="0dp"
                     android:layout_marginTop="16dp">
 
                     <ImageView
@@ -365,7 +350,7 @@
                             android:id="@+id/textTitle_2"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:text="@string/title_book_second"
-                            android:textColor="@color/black"
+                            android:textColor="?android:textColor"
                             android:textSize="16sp"
                             android:layout_width="267dp"
                             android:layout_height="22dp" />
@@ -375,7 +360,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="18dp"
                             android:text="@string/author_second"
-                            android:textColor="@color/grey"
+                            android:textColor="?android:textColorSecondary"
                             android:textSize="12sp"
                             android:layout_marginTop="24dp" />
 
@@ -439,7 +424,7 @@
                                 android:layout_height="15dp"
                                 android:text="@string/ratings_second"
                                 android:layout_gravity="center|end"
-                                android:textColor="@color/grey"
+                                android:textColor="?android:textColorSecondary"
                                 android:textSize="10sp"
                                 tools:ignore="SmallSp" />
 
@@ -472,7 +457,7 @@
                             android:id="@+id/textTitle_3"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:text="@string/title_book_third"
-                            android:textColor="@color/black"
+                            android:textColor="?android:textColor"
                             android:textSize="16sp"
                             android:layout_width="267dp"
                             android:layout_height="22dp" />
@@ -482,7 +467,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="18dp"
                             android:text="@string/author_third"
-                            android:textColor="@color/grey"
+                            android:textColor="?android:textColorSecondary"
                             android:textSize="12sp"
                             android:layout_marginTop="24dp" />
 
@@ -546,7 +531,7 @@
                                 android:layout_height="15dp"
                                 android:text="@string/ratings_third"
                                 android:layout_gravity="center|end"
-                                android:textColor="@color/grey"
+                                android:textColor="?android:textColorSecondary"
                                 android:textSize="10sp"
                                 tools:ignore="SmallSp" />
 
@@ -580,7 +565,7 @@
                             android:id="@+id/textTitle_4"
                             android:fontFamily="@font/dms_erifdisplay_regular"
                             android:text="@string/title_book_fourth"
-                            android:textColor="@color/black"
+                            android:textColor="?android:textColor"
                             android:textSize="16sp"
                             android:layout_width="267dp"
                             android:layout_height="22dp" />
@@ -590,7 +575,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="18dp"
                             android:text="@string/author_fourth"
-                            android:textColor="@color/grey"
+                            android:textColor="?android:textColorSecondary"
                             android:textSize="12sp"
                             android:layout_marginTop="24dp" />
 
@@ -654,7 +639,7 @@
                                 android:layout_height="15dp"
                                 android:text="@string/ratings_fourth"
                                 android:layout_gravity="center|end"
-                                android:textColor="@color/grey"
+                                android:textColor="?android:textColorSecondary"
                                 android:textSize="10sp" />
 
                         </FrameLayout>
@@ -682,8 +667,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/blackRectangleBottom"
             android:layout_width="match_parent"
-            android:layout_height="93dp"
-            android:background="@color/white">
+            android:layout_height="93dp">
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline_horizontal"
@@ -693,9 +677,8 @@
                 app:layout_constraintGuide_percent="0.4" />
 
             <Button
+                style="@style/Picture24dp"
                 android:id="@+id/imageView11"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
                 android:background="@drawable/home"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/button_more"
@@ -713,9 +696,8 @@
                 android:layout_marginStart="9dp"/>
 
             <Button
+                style="@style/Picture24dp"
                 android:id="@+id/button_more"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
                 android:background="@drawable/more_2"
                 app:layout_constraintStart_toEndOf="@id/imageView11"
                 app:layout_constraintEnd_toStartOf="@id/imageView13"
@@ -723,9 +705,8 @@
                 app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"/>
 
             <Button
+                style="@style/Picture24dp"
                 android:id="@+id/imageView13"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
                 android:background="@drawable/save_2"
                 app:layout_constraintStart_toEndOf="@id/button_more"
                 app:layout_constraintEnd_toStartOf="@id/imageView14"
@@ -733,9 +714,8 @@
                 app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"/>
 
             <Button
+                style="@style/Picture24dp"
                 android:id="@+id/imageView14"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
                 android:background="@drawable/profile"
                 app:layout_constraintStart_toEndOf="@id/imageView13"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -36,12 +36,16 @@ class HomeFragment : Fragment() {
 
         val buttonMore: Button = binding.buttonMore;
         val buttonImage: ImageButton = binding.mainImage;
+        val buttonSearch: Button = binding.buttonSearch;
 
         buttonMore.setOnClickListener{
             findNavController().navigate(R.id.action_HomeFragment_to_ExploreFragment)
         }
         buttonImage.setOnClickListener{
             findNavController().navigate(R.id.action_HomeFragment_to_BookInfoFragment)
+        }
+        buttonSearch.setOnClickListener{
+            findNavController().navigate(R.id.action_HomeFragment_to_SearchFragment)
         }
 
     }

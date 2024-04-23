@@ -68,5 +68,6 @@
     <string name="title_book_fourth">The History of the Ancient World</string>
     <string name="author_fourth">By Susan Wise Bauer</string>
     <string name="ratings_fourth">55 Ratings</string>
+    <string name="search">Search</string>
 
 </resources>
