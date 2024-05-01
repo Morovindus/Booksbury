@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/name_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/author_reviews_1"
+            android:fontFamily="@font/inter_medium"
+            android:textColor="?android:textColor"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/date_reviews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/date_reviews_1"
+            android:fontFamily="@font/inter_medium"
+            android:textColor="?android:textColor"
+            android:textSize="14sp"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/containerStars_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="top|start"
+        android:layout_marginTop="5dp">
+
+        <ImageView
+            android:id="@+id/starFirst"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:src="@drawable/star_white"
+            android:scaleType="fitCenter" />
+
+        <ImageView
+            android:id="@+id/starSecond"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="2dp"
+            android:src="@drawable/star_white"
+            android:scaleType="fitCenter" />
+
+        <ImageView
+            android:id="@+id/starThird"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="2dp"
+            android:src="@drawable/star_white"
+            android:scaleType="fitCenter" />
+
+        <ImageView
+            android:id="@+id/starFourth"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="2dp"
+            android:src="@drawable/star_white"
+            android:scaleType="fitCenter" />
+
+        <ImageView
+            android:id="@+id/starFifth"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="2dp"
+            android:src="@drawable/star_white"
+            android:scaleType="fitCenter" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_reviews"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/reviews_3"
+        android:textColor="?android:textColorSecondary"
+        android:textSize="16sp" />
+</LinearLayout>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    tools:context=".book_info.BookInfoAuthor">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/profileAuthor"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="?android:windowBackground"
+            android:scaleType="fitXY"
+            android:src="@drawable/profile_author_4" />
+
+        <TextView
+            android:id="@+id/name_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/name_author_4"
+            android:textColor="?android:textColorSecondary"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_author"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/about_author_4"
+        android:textColor="?android:textColorSecondary"
+        android:textSize="16sp" />
+
+</LinearLayout>

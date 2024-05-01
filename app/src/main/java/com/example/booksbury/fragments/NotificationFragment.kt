@@ -1,17 +1,16 @@
-package com.example.booksbury
+package com.example.booksbury.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.booksbury.databinding.BookInfoFragmentBinding
+import com.example.booksbury.databinding.NotificationFragmentBinding
 
-class BookInfoFragment : Fragment() {
+class NotificationFragment : Fragment() {
 
-    private var _binding: BookInfoFragmentBinding? = null
+    private var _binding: NotificationFragmentBinding? = null
 
     private val binding get() = _binding!!
 
@@ -20,21 +19,15 @@ class BookInfoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = BookInfoFragmentBinding.inflate(inflater, container, false)
+        _binding = NotificationFragmentBinding.inflate(inflater, container, false)
         return binding.root
 
     }
 
-    companion object{
-        @JvmStatic
-        fun newInstance() = ExploreFragment()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val buttonBack: Button = binding.buttonBack;
 
-        buttonBack.setOnClickListener {
+        binding.buttonBack.setOnClickListener {
             findNavController().popBackStack()
         }
     }

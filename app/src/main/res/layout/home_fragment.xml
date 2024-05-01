@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <RelativeLayout
-            style="@style/Margin20dp"
+            android:layout_marginHorizontal="20dp"
             android:id="@+id/topPanel"
             android:layout_width="match_parent"
             android:layout_height="30dp"
@@ -75,7 +75,7 @@
             android:layout_height="match_parent">
 
             <FrameLayout
-                style="@style/Margin20dp"
+                android:layout_marginHorizontal="20dp"
                 android:id="@+id/Image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -185,7 +185,6 @@
                         android:layout_marginTop="1dp"
                         android:background="@drawable/ellipse_4" />
 
-
                     <TextView
                         android:id="@+id/textAuthor"
                         android:layout_width="92dp"
@@ -214,438 +213,20 @@
 
             </TextView>
 
-            <RelativeLayout
-                style="@style/Margin20dp"
-                android:id="@+id/containerThird"
-                android:layout_width="347dp"
-                android:layout_height="302dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:nestedScrollingEnabled="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/textPopularBook"
-                android:layout_marginTop="16dp">
-
-                <FrameLayout
-                    android:id="@+id/containerThird_1"
-                    android:layout_width="347dp"
-                    android:layout_height="60dp">
-
-                    <ImageView
-                        android:id="@+id/imageCoverBook_1"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:src="@drawable/covers_book_1"
-                        android:scaleType="fitCenter"/>
-
-                    <FrameLayout
-                        android:id="@+id/containerThird_1_1"
-                        android:layout_width="267dp"
-                        android:layout_height="59dp"
-                        android:layout_gravity="center|right">
-
-                        <TextView
-                            android:id="@+id/textTitle_1"
-                            android:fontFamily="@font/dms_erifdisplay_regular"
-                            android:text="@string/title_book_first"
-                            android:textColor="?android:textColor"
-                            android:textSize="16sp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="22dp" />
-
-                        <TextView
-                            android:id="@+id/textAuthor_1"
-                            android:layout_width="match_parent"
-                            android:layout_height="18dp"
-                            android:text="@string/author_first"
-                            android:textColor="?android:textColorSecondary"
-                            android:textSize="12sp"
-                            android:layout_marginTop="24dp" />
-
-                        <FrameLayout
-                            android:id="@+id/containerThird_1_2"
-                            android:layout_width="133dp"
-                            android:layout_height="15dp"
-                            android:layout_marginTop="44dp">
-
-                            <LinearLayout
-                                android:id="@+id/containerStars_1"
-                                android:layout_width="78dp"
-                                android:layout_height="14dp"
-                                android:orientation="horizontal"
-                                android:layout_gravity="top|start"
-                                android:layout_marginTop="0.5dp">
-
-                                <ImageView
-                                    android:id="@+id/starFirst_1"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starSecond_1"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starThird_1"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starFourth_1"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starFifth_1"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_white"
-                                    android:scaleType="fitCenter" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/textRating_1"
-                                android:layout_width="48dp"
-                                android:layout_height="15dp"
-                                android:text="@string/ratings_first"
-                                android:layout_gravity="center|end"
-                                android:textColor="?android:textColorSecondary"
-                                android:textSize="10sp"
-                                tools:ignore="SmallSp" />
-
-                        </FrameLayout>
-                    </FrameLayout>
-                </FrameLayout>
-
-                <FrameLayout
-                    android:id="@+id/containerThird_2"
-                    android:layout_width="347dp"
-                    android:layout_height="60dp"
-                    android:layout_below="@+id/containerThird_1"
-                    android:layout_marginTop="16dp">
-
-                    <ImageView
-                        android:id="@+id/imageCoverBook_2"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:src="@drawable/covers_book_2"
-                        android:scaleType="fitCenter"/>
-
-                    <FrameLayout
-                        android:id="@+id/containerThird_2_1"
-                        android:layout_width="267dp"
-                        android:layout_height="59dp"
-                        android:layout_gravity="center|right">
-
-                        <TextView
-                            android:id="@+id/textTitle_2"
-                            android:fontFamily="@font/dms_erifdisplay_regular"
-                            android:text="@string/title_book_second"
-                            android:textColor="?android:textColor"
-                            android:textSize="16sp"
-                            android:layout_width="267dp"
-                            android:layout_height="22dp" />
-
-                        <TextView
-                            android:id="@+id/textAuthor_2"
-                            android:layout_width="match_parent"
-                            android:layout_height="18dp"
-                            android:text="@string/author_second"
-                            android:textColor="?android:textColorSecondary"
-                            android:textSize="12sp"
-                            android:layout_marginTop="24dp" />
-
-                        <FrameLayout
-                            android:id="@+id/containerThird_2_2"
-                            android:layout_width="133dp"
-                            android:layout_height="15dp"
-                            android:layout_marginTop="44dp">
-
-                            <LinearLayout
-                                android:id="@+id/containerStars_2"
-                                android:layout_width="78dp"
-                                android:layout_height="14dp"
-                                android:orientation="horizontal"
-                                android:layout_gravity="top|start"
-                                android:layout_marginTop="0.5dp">
-
-                                <ImageView
-                                    android:id="@+id/starFirst_2"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starSecond_2"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starThird_2"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starFourth_2"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_white"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starFifth_2"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_white"
-                                    android:scaleType="fitCenter" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/textRating_2"
-                                android:layout_width="48dp"
-                                android:layout_height="15dp"
-                                android:text="@string/ratings_second"
-                                android:layout_gravity="center|end"
-                                android:textColor="?android:textColorSecondary"
-                                android:textSize="10sp"
-                                tools:ignore="SmallSp" />
-
-                        </FrameLayout>
-                    </FrameLayout>
-                </FrameLayout>
-
-                <FrameLayout
-                    android:id="@+id/containerThird_3"
-                    android:layout_width="347dp"
-                    android:layout_height="60dp"
-                    android:layout_below="@+id/containerThird_2"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="16dp">
-
-                    <ImageView
-                        android:id="@+id/imageCoverBook_3"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:src="@drawable/covers_book_3"
-                        android:scaleType="fitCenter"/>
-
-                    <FrameLayout
-                        android:id="@+id/containerThird_3_1"
-                        android:layout_width="267dp"
-                        android:layout_height="59dp"
-                        android:layout_gravity="center|right">
-
-                        <TextView
-                            android:id="@+id/textTitle_3"
-                            android:fontFamily="@font/dms_erifdisplay_regular"
-                            android:text="@string/title_book_third"
-                            android:textColor="?android:textColor"
-                            android:textSize="16sp"
-                            android:layout_width="267dp"
-                            android:layout_height="22dp" />
-
-                        <TextView
-                            android:id="@+id/textAuthor_3"
-                            android:layout_width="match_parent"
-                            android:layout_height="18dp"
-                            android:text="@string/author_third"
-                            android:textColor="?android:textColorSecondary"
-                            android:textSize="12sp"
-                            android:layout_marginTop="24dp" />
-
-                        <FrameLayout
-                            android:id="@+id/containerThird_3_2"
-                            android:layout_width="140dp"
-                            android:layout_height="15dp"
-                            android:layout_marginTop="44dp">
-
-                            <LinearLayout
-                                android:id="@+id/containerStars_3"
-                                android:layout_width="78dp"
-                                android:layout_height="14dp"
-                                android:orientation="horizontal"
-                                android:layout_gravity="top|start"
-                                android:layout_marginTop="0.5dp">
-
-                                <ImageView
-                                    android:id="@+id/starFirst_3"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starSecond_3"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starThird_3"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starFourth_3"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starFifth_3"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_white"
-                                    android:scaleType="fitCenter" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/textRating_3"
-                                android:layout_width="55dp"
-                                android:layout_height="15dp"
-                                android:text="@string/ratings_third"
-                                android:layout_gravity="center|end"
-                                android:textColor="?android:textColorSecondary"
-                                android:textSize="10sp"
-                                tools:ignore="SmallSp" />
-
-                        </FrameLayout>
-                    </FrameLayout>
-                </FrameLayout>
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="45dp"/>
 
 
-                <FrameLayout
-                    android:id="@+id/containerThird_4"
-                    android:layout_width="347dp"
-                    android:layout_height="60dp"
-                    android:layout_below="@+id/containerThird_3"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="16dp">
-
-                    <ImageView
-                        android:id="@+id/imageCoverBook_4"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:src="@drawable/covers_book_4"
-                        android:scaleType="fitCenter"/>
-
-                    <FrameLayout
-                        android:id="@+id/containerThird_4_1"
-                        android:layout_width="267dp"
-                        android:layout_height="59dp"
-                        android:layout_gravity="center|right">
-
-                        <TextView
-                            android:id="@+id/textTitle_4"
-                            android:fontFamily="@font/dms_erifdisplay_regular"
-                            android:text="@string/title_book_fourth"
-                            android:textColor="?android:textColor"
-                            android:textSize="16sp"
-                            android:layout_width="267dp"
-                            android:layout_height="22dp" />
-
-                        <TextView
-                            android:id="@+id/textAuthor_4"
-                            android:layout_width="match_parent"
-                            android:layout_height="18dp"
-                            android:text="@string/author_fourth"
-                            android:textColor="?android:textColorSecondary"
-                            android:textSize="12sp"
-                            android:layout_marginTop="24dp" />
-
-                        <FrameLayout
-                            android:id="@+id/containerThird_4_2"
-                            android:layout_width="133dp"
-                            android:layout_height="15dp"
-                            android:layout_marginTop="44dp">
-
-                            <LinearLayout
-                                android:id="@+id/containerStars_4"
-                                android:layout_width="78dp"
-                                android:layout_height="14dp"
-                                android:orientation="horizontal"
-                                android:layout_gravity="top|start"
-                                android:layout_marginTop="0.5dp">
-
-                                <ImageView
-                                    android:id="@+id/starFirst_4"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starSecond_4"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starThird_4"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_orange"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starFourth_4"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_white"
-                                    android:scaleType="fitCenter" />
-
-                                <ImageView
-                                    android:id="@+id/starFifth_4"
-                                    android:layout_width="14dp"
-                                    android:layout_height="14dp"
-                                    android:layout_marginStart="2dp"
-                                    android:src="@drawable/star_white"
-                                    android:scaleType="fitCenter" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/textRating_4"
-                                android:layout_width="48dp"
-                                android:layout_height="15dp"
-                                android:text="@string/ratings_fourth"
-                                android:layout_gravity="center|end"
-                                android:textColor="?android:textColorSecondary"
-                                android:textSize="10sp" />
-
-                        </FrameLayout>
-                    </FrameLayout>
-                </FrameLayout>
-            </RelativeLayout>
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -700,24 +281,24 @@
                 android:id="@+id/button_more"
                 android:background="@drawable/more_2"
                 app:layout_constraintStart_toEndOf="@id/imageView11"
-                app:layout_constraintEnd_toStartOf="@id/imageView13"
+                app:layout_constraintEnd_toStartOf="@id/button_favourites"
                 app:layout_constraintTop_toTopOf="@+id/guideline_horizontal"
                 app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"/>
 
             <Button
                 style="@style/Picture24dp"
-                android:id="@+id/imageView13"
+                android:id="@+id/button_favourites"
                 android:background="@drawable/save_2"
                 app:layout_constraintStart_toEndOf="@id/button_more"
-                app:layout_constraintEnd_toStartOf="@id/imageView14"
+                app:layout_constraintEnd_toStartOf="@id/button_profile"
                 app:layout_constraintTop_toTopOf="@+id/guideline_horizontal"
                 app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"/>
 
             <Button
                 style="@style/Picture24dp"
-                android:id="@+id/imageView14"
+                android:id="@+id/button_profile"
                 android:background="@drawable/profile"
-                app:layout_constraintStart_toEndOf="@id/imageView13"
+                app:layout_constraintStart_toEndOf="@id/button_favourites"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/guideline_horizontal"
                 app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"/>

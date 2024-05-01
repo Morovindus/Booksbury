@@ -1,4 +1,4 @@
-package com.example.booksbury
+package com.example.booksbury.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -39,9 +39,8 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val buttonBack: Button = binding.buttonBack;
 
-        buttonBack.setOnClickListener {
+        binding.buttonBack.setOnClickListener {
             findNavController().popBackStack()
         }
 
@@ -81,8 +80,6 @@ class SearchFragment : Fragment() {
             editText.text.clear()
             hideKeyboard(editText)
         }
-
-
     }
 
     // Метод для скрытия клавиатуры

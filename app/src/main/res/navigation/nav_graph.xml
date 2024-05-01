@@ -3,49 +3,157 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/HomeFragment">
+    app:startDestination="@id/SignInFragment">
 
 
     <fragment
         android:id="@+id/HomeFragment"
-        android:name="com.example.booksbury.HomeFragment"
+        android:name="com.example.booksbury.fragments.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/home_fragment">
         <action
             android:id="@+id/action_HomeFragment_to_ExploreFragment"
             app:destination="@id/ExploreFragment" />
         <action
+            android:id="@+id/action_HomeFragment_to_FavouritesFragment"
+            app:destination="@id/FavouritesFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_ProfileFragment"
+            app:destination="@id/ProfileFragment" />
+        <action
             android:id="@+id/action_HomeFragment_to_BookInfoFragment"
             app:destination="@id/BookInfoFragment" />
         <action
             android:id="@+id/action_HomeFragment_to_SearchFragment"
             app:destination="@id/SearchFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_NotificaionFragment"
+            app:destination="@id/NotificationFragment" />
     </fragment>
     <fragment
         android:id="@+id/ExploreFragment"
-        android:name="com.example.booksbury.ExploreFragment"
+        android:name="com.example.booksbury.fragments.ExploreFragment"
         android:label="SecondFragment"
         tools:layout="@layout/explore_fragment">
         <action
             android:id="@+id/action_ExploreFragment_to_HomeFragment"
             app:destination="@id/HomeFragment" />
         <action
+            android:id="@+id/action_ExploreFragment_to_FavouritesFragment"
+            app:destination="@id/FavouritesFragment" />
+        <action
+            android:id="@+id/action_ExploreFragment_to_ProfileFragment"
+            app:destination="@id/ProfileFragment" />
+        <action
             android:id="@+id/action_ExploreFragment_to_SearchFragment"
             app:destination="@id/SearchFragment" />
+        <action
+            android:id="@+id/action_ExploreFragment_to_NotificationFragment"
+            app:destination="@id/NotificationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/FavouritesFragment"
+        android:name="com.example.booksbury.fragments.FavouritesFragment"
+        android:label="FavouritesFragment"
+        tools:layout="@layout/favourites_fragment">
+        <action
+            android:id="@+id/action_FavouritesFragment_to_HomeFragment"
+            app:destination="@id/HomeFragment" />
+        <action
+            android:id="@+id/action_FavouritesFragment_to_ExploreFragment"
+            app:destination="@id/ExploreFragment" />
+        <action
+            android:id="@+id/action_FavouritesFragment_to_ProfileFragment"
+            app:destination="@id/ProfileFragment" />
+        <action
+            android:id="@+id/action_FavouritesFragment_to_BookInfoFragment"
+            app:destination="@id/BookInfoFragment" />
+        <action
+            android:id="@+id/action_FavouritesFragment_to_SearchFragment"
+            app:destination="@id/SearchFragment" />
+        <action
+            android:id="@+id/action_FavouritesFragment_to_NotificaionFragment"
+            app:destination="@id/NotificationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ProfileFragment"
+        android:name="com.example.booksbury.fragments.ProfileFragment"
+        android:label="ProfileFragment"
+        tools:layout="@layout/profile_fragment">
+        <action
+            android:id="@+id/action_ProfileFragment_to_HomeFragment"
+            app:destination="@id/HomeFragment" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_ExploreFragment"
+            app:destination="@id/ExploreFragment" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_FavouritesFragment"
+            app:destination="@id/FavouritesFragment" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_BookInfoFragment"
+            app:destination="@id/BookInfoFragment" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_SearchFragment"
+            app:destination="@id/SearchFragment" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_NotificaionFragment"
+            app:destination="@id/NotificationFragment" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_CartFragment"
+            app:destination="@id/CartFragment" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_BooksFragment"
+            app:destination="@id/BooksFragment" />
     </fragment>
     <fragment
         android:id="@+id/BookInfoFragment"
-        android:name="com.example.booksbury.BookInfoFragment"
+        android:name="com.example.booksbury.book_info.BookInfoFragment"
         android:label="BookInfoFragment"
         tools:layout="@layout/book_info_fragment">
-        <action
-            android:id="@+id/action_ExploreFragment_to_HomeFragment"
-            app:destination="@id/HomeFragment" />
     </fragment>
     <fragment
         android:id="@+id/SearchFragment"
-        android:name="com.example.booksbury.SearchFragment"
+        android:name="com.example.booksbury.fragments.SearchFragment"
         android:label="SearchFragment"
         tools:layout="@layout/search_fragment">
+    </fragment>
+    <fragment
+        android:id="@+id/NotificationFragment"
+        android:name="com.example.booksbury.fragments.NotificationFragment"
+        android:label="NotificationFragment"
+        tools:layout="@layout/notification_fragment">
+    </fragment>
+    <fragment
+        android:id="@+id/CartFragment"
+        android:name="com.example.booksbury.fragments.CartFragment"
+        android:label="CartFragment"
+        tools:layout="@layout/cart_fragment">
+    </fragment>
+    <fragment
+        android:id="@+id/BooksFragment"
+        android:name="com.example.booksbury.fragments.BooksFragment"
+        android:label="BooksFragment"
+        tools:layout="@layout/books_fragment">
+    </fragment>
+    <fragment
+        android:id="@+id/SignInFragment"
+        android:name="com.example.booksbury.fragments.SignInFragment"
+        android:label="SignInFragment"
+        tools:layout="@layout/sign_in_fragment">
+        <action
+            android:id="@+id/action_SignInFragment_to_HomeFragment"
+            app:destination="@id/HomeFragment" />
+        <action
+            android:id="@+id/action_SignInFragment_to_SignUpFragment"
+            app:destination="@id/SignUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/SignUpFragment"
+        android:name="com.example.booksbury.fragments.SignUpFragment"
+        android:label="SignUpFragment"
+        tools:layout="@layout/sign_up_fragment">
+        <action
+            android:id="@+id/action_SignUpFragment_to_SignInFragment"
+            app:destination="@id/SignInFragment" />
     </fragment>
 </navigation>

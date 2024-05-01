@@ -17,7 +17,4 @@
 
     <color name="textColorSecondaryLight">@color/grey</color>
     <color name="textColorSecondaryDark">@color/light_grey_2</color>
-
-
-
 </resources>
