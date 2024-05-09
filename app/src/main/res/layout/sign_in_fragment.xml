@@ -1,73 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/background">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_marginHorizontal="20dp"
+        android:id="@+id/topPanel"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:elevation="4dp"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="30dp"
+        android:layout_marginTop="52dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <RelativeLayout
-            android:layout_marginHorizontal="20dp"
-            android:id="@+id/topPanel"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginTop="45dp">
+        <ImageView
+            style="@style/Picture24dp"
+            android:id="@+id/imageBook"
+            android:src="@drawable/book"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <ImageView
-                style="@style/Picture24dp"
-                android:id="@+id/imageBook"
-                android:layout_marginStart="0dp"
-                android:src="@drawable/book" />
+        <TextView
+            android:id="@+id/titleBook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="7dp"
+            android:fontFamily="@font/dms_erifdisplay_regular"
+            android:text="@string/Main_title_books"
+            android:textColor="?android:textColor"
+            android:textSize="22sp"
+            app:layout_constraintStart_toEndOf="@+id/imageBook"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <TextView
-                android:id="@+id/titleBook"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="31dp"
-                android:fontFamily="@font/dms_erifdisplay_regular"
-                android:text="@string/Main_title_books"
-                android:textColor="?android:textColor"
-                android:textSize="22sp" />
+        <TextView
+            android:id="@+id/titleBury"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/titleBook"
+            android:fontFamily="@font/dms_erifdisplay_regular"
+            android:text="@string/Main_title_bury"
+            android:textColor="@color/orange"
+            android:textSize="22sp"
+            app:layout_constraintStart_toEndOf="@+id/titleBook"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-            <TextView
-                android:id="@+id/titleBury"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/titleBook"
-                android:fontFamily="@font/dms_erifdisplay_regular"
-                android:text="@string/Main_title_bury"
-                android:textColor="@color/orange"
-                android:textSize="22sp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        </RelativeLayout>
-
-    </androidx.appcompat.widget.Toolbar>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
-        android:layout_marginHorizontal="42dp">
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="42dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <!-- Guideline для установки верхнего отступа в 20% -->
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline1"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.15" />
 
             <TextView
                 android:id="@+id/title_text"
@@ -77,10 +75,10 @@
                 android:text="@string/sign_in_your_account"
                 android:textColor="?android:textColor"
                 android:textSize="26sp"
+                android:layout_marginTop="30dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/guideline1"/>
+                app:layout_constraintEnd_toEndOf="parent" />
 
 
             <TextView
@@ -116,16 +114,19 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:id="@+id/editBar_1"
+                    android:id="@+id/editUsername"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
                     android:backgroundTint="@android:color/transparent"
                     android:fontFamily="@font/kantumruy_regular"
                     android:hint="@string/example_name"
+                    android:textColor="?android:textColor"
                     android:textColorHint="?android:textColorSecondary"
                     android:textSize="19sp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
                     app:layout_constraintBottom_toBottomOf="@id/editField_1"
+                    app:layout_constraintEnd_toEndOf="@+id/editField_1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/editField_1" />
 
@@ -164,15 +165,19 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:id="@+id/editBar_2"
+                    android:id="@+id/editPassword"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
                     android:backgroundTint="@android:color/transparent"
                     android:fontFamily="@font/kantumruy_regular"
                     android:hint="@string/example_password"
+                    android:inputType="textPassword"
                     android:textColorHint="?android:textColorSecondary"
                     android:textSize="19sp"
+                    app:layout_constraintTop_toTopOf="@id/editField_2"
+                    app:layout_constraintEnd_toEndOf="@+id/editField_2"
                     app:layout_constraintBottom_toBottomOf="@id/editField_2"
                     app:layout_constraintStart_toStartOf="parent" />
 
@@ -237,10 +242,12 @@
                 android:text="@string/dont_have_an_account_sign_up"
                 android:textColor="?android:textColor"
                 android:textSize="20sp"
-                app:layout_constraintTop_toBottomOf="@id/forgot_password_text"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/forgot_password_text" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

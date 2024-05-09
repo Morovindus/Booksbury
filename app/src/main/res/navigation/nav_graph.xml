@@ -50,6 +50,9 @@
         <action
             android:id="@+id/action_ExploreFragment_to_NotificationFragment"
             app:destination="@id/NotificationFragment" />
+        <action
+            android:id="@+id/action_ExploreFragment_to_BookInfoFragment"
+            app:destination="@id/BookInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/FavouritesFragment"

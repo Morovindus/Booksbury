@@ -1,3 +1,9 @@
 package com.example.booksbury.items
 
-data class Reviews(val nameUser: String, val dateReviews: String, val textReviews: String, val stars: Int)
+data class Reviews(
+    val id: Int,
+    val nameUser: String,
+    val date: String,
+    val textUser: String,
+    val stars: Int
+)

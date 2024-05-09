@@ -6,31 +6,33 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.databinding.BookInfoFragmentBinding
 import com.example.booksbury.items.Reviews
 import com.google.android.material.tabs.TabLayoutMediator
+import com.squareup.picasso.Picasso
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 class BookInfoFragment : Fragment() {
 
     private var _binding: BookInfoFragmentBinding? = null
-
     private val binding get() = _binding!!
-
-    private lateinit var profileAuthor: ImageView
-    private lateinit var nameAuthorInfo: String
-    private lateinit var textAuthor: String
-    private lateinit var synopsis: String
-    private lateinit var details: String
-
-    private lateinit var reviews: ArrayList<Reviews>
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,53 +50,26 @@ class BookInfoFragment : Fragment() {
             findNavController().popBackStack()
         }
 
+        val idBook = arguments?.getInt("id", 0) ?: 0
 
-        profileAuthor = ImageView(requireContext())
-        profileAuthor.setImageResource(R.drawable.profile_author_4)
-
-        synopsis = getString(R.string.synopsis_4_book)
-        details = getString(R.string.details_4_book)
-
-        nameAuthorInfo = getString(R.string.name_author_4)
-        textAuthor = getString(R.string.about_author_4)
-
-
-        binding.mainImage.setImageResource(R.drawable.book_more)
-
-        binding.titleBook.text = resources.getString(R.string.book_title_4)
-        binding.nameAuthor.text = resources.getString(R.string.author_4)
-        binding.price.text = resources.getString(R.string.price_4)
-        binding.dateReleased.text = resources.getString(R.string.date_4_book)
-        binding.part.text = resources.getString(R.string.part_4_book)
-        binding.page.text = resources.getString(R.string.page_4_book)
-
-
-        reviews = arrayListOf(
-            Reviews(resources.getString(R.string.author_reviews_1), resources.getString(R.string.date_reviews_1),
-                resources.getString(R.string.reviews_1), resources.getString(R.string.stars_reviews_1).toInt()),
-            Reviews(resources.getString(R.string.author_reviews_2), resources.getString(R.string.date_reviews_2),
-                resources.getString(R.string.reviews_2), resources.getString(R.string.stars_reviews_2).toInt()),
-            Reviews(resources.getString(R.string.author_reviews_3), resources.getString(R.string.date_reviews_3),
-                resources.getString(R.string.reviews_3), resources.getString(R.string.stars_reviews_3).toInt()),
-        )
+        GlobalScope.launch(Dispatchers.IO) {
+            fetchItemsFromServer(idBook)
+        }
 
         val viewPager = binding.viewPager
         val tabLayout = binding.tabLayout
-        val adapter = ViewPagerAdapter(requireActivity())
+        val adapter = ViewPagerAdapter(requireActivity(), idBook)
         viewPager.adapter = adapter
 
-        val tabTitles = arrayOf(
-            getString(R.string.tabs_synopsis),
-            getString(R.string.tabs_details),
-            getString(R.string.tabs_author),
-            getString(R.string.tabs_review)
-        )
-
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = tabTitles[position]
+            tab.text = when (position) {
+                0 -> getString(R.string.tabs_synopsis)
+                1 -> getString(R.string.tabs_details)
+                2 -> getString(R.string.tabs_author)
+                3 -> getString(R.string.tabs_review)
+                else -> ""
+            }
         }.attach()
-
-
 
         val k = 1
 
@@ -112,28 +87,87 @@ class BookInfoFragment : Fragment() {
             buttonBuy.setOnClickListener {
                 Log.d("MyLogs", "Button Buy clicked")
             }
+        }
+    }
 
+    private inner class ViewPagerAdapter(activity: FragmentActivity, private val idBook: Int) :
+        FragmentStateAdapter(activity) {
+        override fun getItemCount(): Int = 4
+        override fun createFragment(position: Int): Fragment = when (position) {
+            0 -> BookInfoSynopsis(idBook)
+            1 -> BookInfoDetails(idBook)
+            2 -> BookInfoAuthor(idBook)
+            3 -> createReviewFragment()
+            else -> Fragment()
         }
 
+        private fun createReviewFragment() = BookInfoReviews().apply {
+            lifecycleScope.launch {
+                val reviews = fetchReviewsDataFromServer(idBook)
+                setAuthorAbout(reviews)
+            }
+        }
+    }
+
+    suspend fun fetchReviewsDataFromServer(bookId: Int): ArrayList<Reviews> {
+        return withContext(Dispatchers.IO) {
+            val reviews = ArrayList<Reviews>()
+            val ipAddress = (activity as MainActivity).getIpAddress()
+
+            val url = URL("http://$ipAddress:3000/api/books/$bookId/reviews")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+
+            val responseCode = connection.responseCode
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                val inputStream = connection.inputStream
+                val response = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
+
+                val jsonArray = JSONArray(response)
+                for (i in 0 until jsonArray.length()) {
+                    val jsonObject = jsonArray.getJSONObject(i)
+                    val review = Reviews(
+                        jsonObject.getInt("_id"),
+                        jsonObject.getString("nameUser"),
+                        jsonObject.getString("date"),
+                        jsonObject.getString("textUser"),
+                        jsonObject.getInt("stars")
+                    )
+                    reviews.add(review)
+                }
+            } else {
+                println("HTTP Error: $responseCode")
+            }
+
+            connection.disconnect()
+            reviews
+        }
     }
 
 
+    private fun fetchItemsFromServer(id: Int) {
+        val ipAddress = (activity as MainActivity).getIpAddress()
 
-    private inner class ViewPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
+        val url = URL("http://$ipAddress:3000/api/books/more/$id")
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
 
-        override fun getItemCount(): Int {
-            return 4
-        }
+        val inputStream = connection.inputStream
+        val response = inputStream.bufferedReader().use { it.readText() }
 
-        override fun createFragment(position: Int): Fragment {
-            val fragment = when (position) {
-                0 -> BookInfoSynopsis(synopsis)
-                1 -> BookInfoSynopsis(details)
-                2 -> BookInfoAuthor(profileAuthor, nameAuthorInfo, textAuthor)
-                3 -> BookInfoReviews(reviews)
-                else -> Fragment()
-            }
-            return fragment
+        val jsonResponse = JSONObject(response)
+
+
+        requireActivity().runOnUiThread {
+            binding.titleBook.text = jsonResponse.getJSONObject("en").getString("title")
+            binding.nameAuthor.text = "By " + jsonResponse.getJSONObject("en").getString("authorName")
+            binding.price.text = "${jsonResponse.getInt("price")}\u20BD"
+            binding.dateReleased.text = jsonResponse.getInt("released").toString()
+            binding.part.text = jsonResponse.getInt("part").toString()
+            binding.page.text = jsonResponse.getInt("page").toString()
+
+            val middleCover = jsonResponse.getJSONObject("images").getString("middleCover")
+            Picasso.get().load(middleCover).into(binding.mainImage)
         }
     }
 

@@ -4,104 +4,26 @@
     <string name="button_buy">Buy</string>
     <string name="Main_title_books">Books</string>
     <string name="Main_title_bury">bury</string>
-    <string name="Main_description">Food in the Ancient World from A to Z</string>
     <string name="popular_books">Popular Books</string>
 
-    <string name="button_trending">Trending</string>
+    <string name="button_classic">Classic</string>
     <string name="button_romance">Romance</string>
     <string name="button_children">Children</string>
     <string name="button_horror">Horror</string>
 
     <string name="explore_title">Explore Market</string>
-
-    <string name="book_title_1">The Republic</string>
-    <string name="book_title_2">Ancient World</string>
-    <string name="book_title_3">Allegory of Cave</string>
-    <string name="book_title_4">Homeric Hymns</string>
-    <string name="book_title_5">Ancient Classics</string>
-    <string name="book_title_6">Greek Mythology</string>
-
-    <string name="author_1">By Plato</string>
-    <string name="author_2">By Susan Wise Bauer</string>
-    <string name="author_3">By Plato</string>
-    <string name="author_4">By Michael Crudden</string>
-    <string name="author_5">By Luciano</string>
-    <string name="author_6">By Mariso Christou</string>
-
-    <string name="price_1">285</string>
-    <string name="price_2">2598</string>
-    <string name="price_3">549</string>
-    <string name="price_4">757</string>
-    <string name="price_5">199</string>
-    <string name="price_6">642</string>
-
     <string name="total_price">2998</string>
 
     <string name="title_book_info">Book Info</string>
     <string name="text_released">Released</string>
-    <string name="date_4_book">2021</string>
     <string name="text_part">Part</string>
-    <string name="part_4_book">16</string>
     <string name="text_page">Page</string>
-    <string name="page_4_book">340</string>
     <string name="tabs_synopsis">Synopsis</string>
     <string name="tabs_details">Details</string>
     <string name="tabs_author">Author</string>
     <string name="tabs_review">Review</string>
-    <string name="synopsis_4_book">\'With fair-tressed Demeter, the sacred goddess, my song begins, With herself and her slim-ankled daughter, whom Aidoneus once Abducted...\' Most people are familiar, at least by repute, with the two great epics of Homer, the Iliad and the Odyssey, but few are aware that other poems survive that were attributed to Homer in ancient times. The Homeric Hymns are now known to be the work of various poets working in the same tradition, probably during the seventh and sixth centuries BC. They honour the Greek gods, and recount some of the most attractive of the Greek myths. Four of them (Hymns 2-5) stand out by reason of their length and quality. The Hymn to Demeter tells what happened when Hades, lord of the dead, abducted Persephone, Demeter\'s daughter.</string>
-    <string name="Listen">15h Listen</string>
-    <string name="name_author">Andrew Dalby</string>
     <string name="start_reading">Start Reading</string>
     <string name="play_audio">Play Audio</string>
-
-
-    <string name="title_book_first">History of the Ancient World\'s Society</string>
-    <string name="author_first">Dr. Tikendranath Sarkar</string>
-    <string name="ratings_first">50</string>
-    <string name="stars_first">4</string>
-    <string name="price_first">399</string>
-
-    <string name="title_book_second">Magic in the Ancient Greek World: 4</string>
-    <string name="author_second">Derek Collins </string>
-    <string name="ratings_second">80</string>
-    <string name="stars_second">3</string>
-    <string name="price_second">2599</string>
-
-    <string name="title_book_third">A History of Babylon, 2200 BC - Ad 75</string>
-    <string name="author_third">Paul-Alain Beaulieu</string>
-    <string name="ratings_third">120</string>
-    <string name="stars_third">4</string>
-    <string name="price_third">2599</string>
-
-    <string name="title_book_fourth">The History of the Ancient World</string>
-    <string name="author_fourth">By Susan Wise Bauer</string>
-    <string name="ratings_fourth">55</string>
-    <string name="stars_fourth">3</string>
-    <string name="price_fourth">2599</string>
-
-    <string name="title_book_fifth">The Republic</string>
-    <string name="author_fifth">By Plato</string>
-    <string name="ratings_fifth">250</string>
-    <string name="stars_fifth">5</string>
-    <string name="price_fifth">2599</string>
-
-    <string name="title_book_six">Homeric Hymns</string>
-    <string name="author_six">By Michael Crudden</string>
-    <string name="ratings_six">124</string>
-    <string name="stars_six">3</string>
-    <string name="price_six">2599</string>
-
-    <string name="title_book_seven">Greek Mythology</string>
-    <string name="author_seven">By Marios Christou</string>
-    <string name="ratings_seven">48</string>
-    <string name="stars_seven">4</string>
-    <string name="price_seven">2599</string>
-
-    <string name="title_book_eighth">Ancient Classics</string>
-    <string name="author_eighth">By Luciano</string>
-    <string name="ratings_eighth">76</string>
-    <string name="stars_eighth">3</string>
-    <string name="price_eighth">2599</string>
 
 
     <string name="search">Search</string>
@@ -111,20 +33,15 @@
     <string name="profile">Profile</string>
     <string name="favourites">Favourites</string>
 
-    <string name="name_user">Onyia chikamso</string>
-    <string name="email_user">emmanuelchika483@gmail.com</string>
     <string name="book">Book</string>
     <string name="cart">Cart</string>
     <string name="sign_out">Sign Out</string>
 
-    <string name="details_4_book">The Homeric Hymns are a collection of ancient Greek poems attributed to Homer, though they are now believed to have been composed by various poets within the same tradition during the seventh and sixth centuries BC. While Homer\'s more famous epics, the Iliad and the Odyssey, are widely known, the Homeric Hymns are often overlooked. These hymns honor the Greek gods and goddesses and recount some of the most captivating myths of ancient Greece. Among them, the Hymn to Demeter stands out for its length and quality. It tells the story of the abduction of Persephone, daughter of Demeter, by Hades, the lord of the dead. The hymn delves into the sorrow and eventual resolution surrounding this event, offering insight into the ancient Greek understanding of the divine and the natural world.</string>
-    <string name="about_author_4">Very little is definitively known about the authorship of The Homeric Hymns, a collection of ancient Greek poems attributed to Homer. It is widely believed that these hymns were not the work of a single poet but rather were composed by various poets within the same tradition during the seventh and sixth centuries BC.</string>
-    <string name="name_author_4">Unknown</string>
     <string name="confirm_order">Confirm order</string>
     <string name="total">Total</string>
     <string name="books">Books</string>
     <string name="sign_in_your_account">Sign in your account</string>
-    <string name="name">Name</string>
+    <string name="name">Username</string>
     <string name="example_name">Jon Smith</string>
     <string name="password">Password</string>
     <string name="example_password">*********</string>
@@ -136,22 +53,19 @@
     <string name="example_email">jon.smith@email.com</string>
     <string name="confirm_password">Confirm password</string>
     <string name="sign_up">Sign Up</string>
+    <string name="already_registered_sign_in">Already registered? Sign in</string>
 
+    <string name="errorName">Enter name</string>
+    <string name="errorPassword">Enter password</string>
+    <string name="incorrectPassword">Incorrect password</string>
+    <string name="incorrectUsername">User with this name not found"</string>
 
-    <string name="reviews_1">"The Homeric Hymns" is a captivating collection of hymns attributed to Homer, offering readers a fascinating glimpse into the world of ancient Greek mythology. Through eloquent prose and vivid imagery, these hymns explore the lives of gods and goddesses, their powers, struggles, and interactions with mortals.</string>
-    <string name="date_reviews_1">26 Apr 2024</string>
-    <string name="author_reviews_1">Onyia Chikamso</string>
-    <string name="stars_reviews_1">4</string>
-
-    <string name="reviews_2">The Homeric Hymns offer a captivating glimpse into the ancient Greek world, immersing readers in the rich tapestry of Greek mythology through a series of poetic hymns. These hymns, attributed to Homer, celebrate the gods and goddesses of Olympus, weaving together tales of divine power, human interaction, and the interconnectedness of the mortal and immortal realms. Through vivid imagery and lyrical language, they evoke a sense of wonder and reverence for the pantheon of Greek deities, making them a timeless treasure for lovers of mythology and literature alike.</string>
-    <string name="date_reviews_2">19 Mar 2024</string>
-    <string name="author_reviews_2">Emily Johnson</string>
-    <string name="stars_reviews_2">5</string>
-
-    <string name="reviews_3">The Homeric Hymns are a mesmerizing journey through the ancient Greek pantheon, each hymn a lyrical ode to the gods and goddesses of Olympus. From the majestic hymn to Zeus, the father of gods and men, to the tender tribute to Demeter, goddess of agriculture and fertility, these hymns resonate with the timeless themes of power, love, and the human condition. Through Homer\'s masterful storytelling, readers are transported to a world where mortals and immortals intertwine, offering a profound reflection on the nature of divinity and humanity.</string>
-    <string name="date_reviews_3">5 Apr 2024</string>
-    <string name="author_reviews_3">Michael Thompson</string>
-    <string name="stars_reviews_3">4</string>
+    <string name="exit_title">Exit from the application</string>
+    <string name="exit_message">Are you sure you want to exit the application?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="write_your_review">Write Your Review</string>
+    <string name="you">You</string>
 
 
 </resources>

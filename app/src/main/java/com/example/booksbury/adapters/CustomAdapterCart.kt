@@ -23,7 +23,7 @@ class CustomAdapterCart(private val items: ArrayList<ItemCart>) : RecyclerView.A
         val currentItem = items[position]
 
 
-        holder.imageCoverBook.setImageResource(currentItem.imageResource)
+        //holder.imageCoverBook.setImageResource(currentItem.imageResource)
         holder.titleBook.text = currentItem.titleBook
         holder.nameAuthor.text = currentItem.nameAuthor
         holder.ratings.text = (currentItem.ratings.toString() + " Ratings")

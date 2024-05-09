@@ -1,13 +1,24 @@
 package com.example.booksbury.fragments
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.databinding.ProfileFragmentBinding
+import com.example.booksbury.items.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
 
 class ProfileFragment : Fragment() {
 
@@ -49,9 +60,49 @@ class ProfileFragment : Fragment() {
         binding.buttonBooks.setOnClickListener {
             findNavController().navigate(R.id.action_ProfileFragment_to_BooksFragment)
         }
+        binding.buttonExit.setOnClickListener {
+            showExitConfirmationDialog()
+        }
 
-        binding.nameUser.text = resources.getString(R.string.name_user)
-        binding.emailUser.text = resources.getString(R.string.email_user)
+        GlobalScope.launch(Dispatchers.IO) {
+            val user: User = fetchNameEmailDataFromServer()
+
+            binding.nameUser.text = user.userName
+            binding.emailUser.text = user.email
+
+        }
+    }
+
+    private fun showExitConfirmationDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle(getString(R.string.exit_title))
+            .setMessage(getString(R.string.exit_message))
+            .setPositiveButton(getString(R.string.yes)) { dialogInterface: DialogInterface, i: Int ->
+                activity?.finish()
+            }
+            .setNegativeButton(getString(R.string.no), null)
+            .show()
+    }
+
+    private suspend fun fetchNameEmailDataFromServer(): User {
+        return withContext(Dispatchers.IO) {
+            val ipAddress = (activity as MainActivity).getIpAddress()
+            val idUser = (activity as MainActivity).getIdUser()
+
+            val url = URL("http://$ipAddress:3000/api/user/$idUser")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+
+            val inputStream = connection.inputStream
+            val response = inputStream.bufferedReader().use { it.readText() }
+
+            val jsonResponse = JSONObject(response)
+
+            val userName = jsonResponse.getString("username")
+            val email = jsonResponse.getString("email")
+
+            User(userName, email)
+        }
     }
 
     override fun onDestroyView() {

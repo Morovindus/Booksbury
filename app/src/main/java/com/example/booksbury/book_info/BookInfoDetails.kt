@@ -7,28 +7,28 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.booksbury.MainActivity
-import com.example.booksbury.databinding.BookInfoAuthorBinding
-import com.example.booksbury.items.Author
-import com.squareup.picasso.Picasso
+import com.example.booksbury.databinding.BookInfoSynopsisBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-class BookInfoAuthor(private val idBook: Int) : Fragment() {
+class BookInfoDetails(private val idBook: Int) : Fragment() {
 
-    private var _binding: BookInfoAuthorBinding? = null
+    private var _binding: BookInfoSynopsisBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = BookInfoAuthorBinding.inflate(inflater, container, false)
+        _binding = BookInfoSynopsisBinding.inflate(inflater, container, false)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fetchDataFromServer()
@@ -36,31 +36,20 @@ class BookInfoAuthor(private val idBook: Int) : Fragment() {
 
     private fun fetchDataFromServer() {
         lifecycleScope.launch {
-            val author = fetchAuthorDataFromServer(idBook)
-
-            Picasso.get().load(author.authorImage).into(binding.profileAuthor)
-            binding.nameAuthor.text = author.authorName
-            binding.textAuthor.text = author.authorAbout
+            val details = fetchDetailsDataFromServer(idBook)
+            binding.textSynopsis.text = details
         }
     }
 
-    private suspend fun fetchAuthorDataFromServer(id: Int): Author {
+    private suspend fun fetchDetailsDataFromServer(id: Int): String {
         return withContext(Dispatchers.IO) {
             val ipAddress = (activity as MainActivity).getIpAddress()
-            val url = URL("http://$ipAddress:3000/api/books/$id/author")
+            val url = URL("http://$ipAddress:3000/api/books/$id/details")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
 
             val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            val jsonResponse = JSONObject(response)
-
-            val authorName = jsonResponse.getString("authorName")
-            val authorAbout = jsonResponse.getString("authorAbout")
-            val authorImage = jsonResponse.getString("authorImage")
-
-            Author(authorName, authorAbout, authorImage)
+            BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
         }
     }
 

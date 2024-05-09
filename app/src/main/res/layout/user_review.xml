@@ -5,28 +5,43 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <ImageView
+        android:id="@+id/stroke"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:src="@drawable/stroke"
+        android:scaleType="fitXY"
+        app:layout_constraintTop_toBottomOf="@+id/name_user"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <TextView
         android:id="@+id/name_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="@string/you"
         android:fontFamily="@font/inter_medium"
         android:textColor="?android:textColor"
+        android:layout_marginTop="6dp"
+        android:layout_marginStart="6dp"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintStart_toStartOf="@+id/stroke"
+        app:layout_constraintTop_toTopOf="@+id/stroke"/>
 
     <TextView
         android:id="@+id/date_reviews"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="1 May 2024"
         android:fontFamily="@font/inter_medium"
         android:textColor="?android:textColor"
         android:textSize="14sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="6dp"
+        app:layout_constraintTop_toTopOf="@+id/stroke"
+        app:layout_constraintEnd_toEndOf="@+id/stroke"/>
 
     <ImageView
         android:id="@+id/starFirst"
@@ -34,9 +49,11 @@
         android:layout_height="14dp"
         android:src="@drawable/star_white"
         android:scaleType="fitCenter"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="6dp"
         app:layout_constraintTop_toBottomOf="@+id/name_user"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="@+id/stroke"
+        app:layout_constraintBottom_toTopOf="@+id/text_reviews"/>
 
     <ImageView
         android:id="@+id/starSecond"
@@ -80,15 +97,15 @@
 
     <TextView
         android:id="@+id/text_reviews"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text=""
+        android:layout_marginVertical="5dp"
+        android:layout_marginHorizontal="6dp"
+        android:text="asfdfasdsafdasfdsadfsfdsfaddsafadsffdsadsafafdsdfsadfsaasdffasdasfdasfdasfadsfadsfdasfadsfdafsdasfadfsdasadfsfdafsadfsadfsadfsdasfdafsdasafdfsadfsadfsadfsdafsdafsdafsdafsadsafdfsdaThe Homeric Hymns offer a captivating journey into the realm of ancient Greek mythology, weaving together rich narratives and divine tales that resonate with timeless allure."
         android:textColor="?android:textColorSecondary"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/starFirst"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="@+id/stroke"
+        app:layout_constraintEnd_toEndOf="@+id/stroke"
+        app:layout_constraintBottom_toBottomOf="@+id/stroke"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

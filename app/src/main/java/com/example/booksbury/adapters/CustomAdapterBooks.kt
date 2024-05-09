@@ -8,9 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.booksbury.R
+import com.example.booksbury.fragments.HomeFragment
 import com.example.booksbury.items.ItemCart
+import com.squareup.picasso.Picasso
 
-class CustomAdapterBooks(private val items: ArrayList<ItemCart>) : RecyclerView.Adapter<CustomAdapterBooks.ViewHolder>() {
+class CustomAdapterBooks(private val items: ArrayList<ItemCart>, private val homeFragment: HomeFragment) : RecyclerView.Adapter<CustomAdapterBooks.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_books, parent, false)
@@ -22,9 +24,10 @@ class CustomAdapterBooks(private val items: ArrayList<ItemCart>) : RecyclerView.
         val currentItem = items[position]
 
 
-        holder.imageCoverBook.setImageResource(currentItem.imageResource)
+        Picasso.get().load(currentItem.imageResource).into(holder.imageCoverBook)
+
         holder.titleBook.text = currentItem.titleBook
-        holder.nameAuthor.text = currentItem.nameAuthor
+        holder.nameAuthor.text = "By " + currentItem.nameAuthor
         holder.ratings.text = (currentItem.ratings.toString() + " Ratings")
 
 
@@ -35,6 +38,11 @@ class CustomAdapterBooks(private val items: ArrayList<ItemCart>) : RecyclerView.
         if (currentItem.stars >= 3) holder.starThird.setImageResource(orangeStarDrawable)
         if (currentItem.stars >= 4) holder.starFourth.setImageResource(orangeStarDrawable)
         if (currentItem.stars >= 5) holder.starFifth.setImageResource(orangeStarDrawable)
+
+        holder.imageCoverBook.setOnClickListener {
+            val id = currentItem.id
+            homeFragment.navigateToBookInfoFragment(id)
+        }
     }
 
     override fun getItemCount(): Int {

@@ -5,28 +5,52 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.example.booksbury.MainActivity
 import com.example.booksbury.databinding.BookInfoSynopsisBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 
-class BookInfoSynopsis(private val synopsisText: String) : Fragment() {
+class BookInfoSynopsis(private val idBook: Int) : Fragment() {
 
-    private var _binding:BookInfoSynopsisBinding? = null
-
+    private var _binding: BookInfoSynopsisBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = BookInfoSynopsisBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.textSynopsis.text = synopsisText
+        fetchDataFromServer()
+    }
+    private fun fetchDataFromServer() {
+        lifecycleScope.launch {
+            val synopsis = fetchSynopsisDataFromServer(idBook)
+            binding.textSynopsis.text = synopsis
+        }
+    }
+
+    private suspend fun fetchSynopsisDataFromServer(id: Int): String {
+        return withContext(Dispatchers.IO) {
+            val ipAddress = (activity as MainActivity).getIpAddress()
+            val url = URL("http://$ipAddress:3000/api/books/$id/synopsis")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+
+            val inputStream = connection.inputStream
+            return@withContext BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
+        }
     }
 
     override fun onDestroyView() {

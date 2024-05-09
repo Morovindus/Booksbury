@@ -7,11 +7,18 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
 import com.example.booksbury.adapters.CustomAdapterMarket
 import com.example.booksbury.databinding.ExploreFragmentBinding
-import com.example.booksbury.items.ItemCart
+import com.example.booksbury.items.ItemExplore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.json.JSONArray
+import java.net.HttpURLConnection
+import java.net.URL
 
 class ExploreFragment : Fragment() {
 
@@ -48,67 +55,50 @@ class ExploreFragment : Fragment() {
             findNavController().navigate(R.id.action_ExploreFragment_to_NotificationFragment)
         }
 
-        val items = ArrayList<ItemCart>()
-        items.add(
-            ItemCart(
-                R.drawable.book_1, resources.getString(R.string.book_title_1),
-                resources.getString(R.string.author_1),
-                resources.getString(R.string.stars_first).toInt(),
-                resources.getString(R.string.ratings_first).toInt(),
-                resources.getString(R.string.price_1).toInt(),)
-        )
+        GlobalScope.launch(Dispatchers.IO) {
+            val items: ArrayList<ItemExplore> = fetchItemsFromServer()
 
-        items.add(
-            ItemCart(
-                R.drawable.book_2, resources.getString(R.string.book_title_2),
-                resources.getString(R.string.author_2),
-                resources.getString(R.string.stars_second).toInt(),
-                resources.getString(R.string.ratings_second).toInt(),
-                resources.getString(R.string.price_2).toInt(),)
-        )
+            val adapter = CustomAdapterMarket(items, this@ExploreFragment)
+            val layoutManager = GridLayoutManager(requireContext(), 2)
+            binding.recyclerView.layoutManager = layoutManager
+            binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 20))
+            binding.recyclerView.adapter = adapter
+        }
 
-        items.add(
-            ItemCart(
-                R.drawable.book_3, resources.getString(R.string.book_title_3),
-                resources.getString(R.string.author_3),
-                resources.getString(R.string.stars_third).toInt(),
-                resources.getString(R.string.ratings_third).toInt(),
-                resources.getString(R.string.price_3).toInt(),)
-        )
+    }
 
-        items.add(
-            ItemCart(
-                R.drawable.book_4, resources.getString(R.string.book_title_4),
-                resources.getString(R.string.author_4),
-                resources.getString(R.string.stars_fourth).toInt(),
-                resources.getString(R.string.ratings_fourth).toInt(),
-                resources.getString(R.string.price_4).toInt(),)
-        )
+    fun navigateToBookInfoFragment(id: Int) {
+        val bundle = Bundle().apply {
+            putInt("id", id)
+        }
+        findNavController().navigate(R.id.action_ExploreFragment_to_BookInfoFragment, bundle)
+    }
 
-        items.add(
-            ItemCart(
-                R.drawable.book_5, resources.getString(R.string.book_title_5),
-                resources.getString(R.string.author_5),
-                resources.getString(R.string.stars_fourth).toInt(),
-                resources.getString(R.string.ratings_fourth).toInt(),
-                resources.getString(R.string.price_5).toInt(),)
-        )
+    private fun fetchItemsFromServer(): ArrayList<ItemExplore> {
+        val ipAddress = (activity as MainActivity).getIpAddress()
 
-        items.add(
-            ItemCart(
-                R.drawable.book_6, resources.getString(R.string.book_title_6),
-                resources.getString(R.string.author_6),
-                resources.getString(R.string.stars_fourth).toInt(),
-                resources.getString(R.string.ratings_fourth).toInt(),
-                resources.getString(R.string.price_6).toInt(),)
-        )
+        val url = URL("http://$ipAddress:3000/api/all_books/all")
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
 
-        val adapter = CustomAdapterMarket(items)
-        val layoutManager = GridLayoutManager(requireContext(), 2)
-        binding.recyclerView.layoutManager = layoutManager
-        binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 20))
-        binding.recyclerView.adapter = adapter
+        val inputStream = connection.inputStream
+        val response = inputStream.bufferedReader().use { it.readText() }
 
+        val jsonResponse = JSONArray(response)
+
+        val items = ArrayList<ItemExplore>()
+        for (i in 0 until jsonResponse.length()) {
+            val bookObject = jsonResponse.getJSONObject(i)
+            val id = bookObject.getInt("_id")
+            val title = bookObject.getJSONObject("en").getString("title")
+            val authorName = bookObject.getJSONObject("en").getString("authorName")
+            val price = bookObject.getInt("price")
+            val averageCover = bookObject.getJSONObject("images").getString("averageCover")
+
+            val item = ItemExplore(id, averageCover, title, authorName, price)
+            items.add(item)
+        }
+        return items
     }
 
     override fun onDestroyView() {

@@ -7,9 +7,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.booksbury.R
-import com.example.booksbury.items.ItemCart
+import com.example.booksbury.fragments.ExploreFragment
+import com.example.booksbury.items.ItemExplore
+import com.squareup.picasso.Picasso
 
-class CustomAdapterMarket(private val items: ArrayList<ItemCart>) : RecyclerView.Adapter<CustomAdapterMarket.ViewHolder>() {
+class CustomAdapterMarket(private val items: ArrayList<ItemExplore>, private val exploreFragment: ExploreFragment) : RecyclerView.Adapter<CustomAdapterMarket.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_explore, parent, false)
@@ -20,10 +22,16 @@ class CustomAdapterMarket(private val items: ArrayList<ItemCart>) : RecyclerView
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = items[position]
 
-        holder.imageBook.setImageResource(currentItem.imageResource)
+        Picasso.get().load(currentItem.imageResource).into(holder.imageBook)
+
         holder.titleBook.text = currentItem.titleBook
-        holder.nameAuthor.text = currentItem.nameAuthor
+        holder.nameAuthor.text = "By " + currentItem.nameAuthor
         holder.price.text = "${currentItem.price}\u20BD"
+
+        holder.imageBook.setOnClickListener {
+            val id = currentItem.id
+            exploreFragment.navigateToBookInfoFragment(id)
+        }
     }
 
     override fun getItemCount(): Int {

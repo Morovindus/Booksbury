@@ -21,8 +21,8 @@ class CustomAdapterReview(private val items: ArrayList<Reviews>) : RecyclerView.
 
 
         holder.nameUser.text = currentItem.nameUser
-        holder.dateReviews.text = currentItem.dateReviews
-        holder.textReviews.text = currentItem.textReviews
+        holder.dateReviews.text = currentItem.date
+        holder.textReviews.text = currentItem.textUser
 
 
         val orangeStarDrawable = R.drawable.star_orange

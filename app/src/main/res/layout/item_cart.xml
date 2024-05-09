@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
         android:id="@+id/imageCoverBook"
@@ -11,132 +12,122 @@
         android:layout_height="60dp"
         android:background="?android:windowBackground"
         android:scaleType="fitCenter"
-        android:src="@drawable/covers_book_1"
-        android:layout_gravity="center"/>
+        android:src="@drawable/covers_book_8"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/title_book"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:layout_marginStart="20dp">
+        android:fontFamily="@font/dms_erifdisplay_regular"
+        android:text=""
+        android:textColor="?android:textColor"
+        android:textSize="16sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toStartOf="@+id/button_delete"
+        app:layout_constraintStart_toEndOf="@+id/imageCoverBook"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/name_author"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="?android:textColorSecondary"
+        android:textSize="12sp"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toStartOf="@+id/price"
+        app:layout_constraintStart_toEndOf="@+id/imageCoverBook"
+        app:layout_constraintTop_toBottomOf="@+id/title_book" />
 
-        <TextView
-            android:id="@+id/title_book"
-            android:fontFamily="@font/dms_erifdisplay_regular"
-            android:text="@string/title_book_first"
-            android:textColor="?android:textColor"
-            android:textSize="16sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+    <ImageView
+        android:id="@+id/starFirst"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginTop="2.5dp"
+        android:layout_marginStart="20dp"
+        android:src="@drawable/star_white"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageCoverBook"
+        app:layout_constraintTop_toBottomOf="@+id/name_author"/>
 
-        <TextView
-            android:id="@+id/name_author"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/author_first"
-            android:textColor="?android:textColorSecondary"
-            android:textSize="12sp"
-            android:layout_marginTop="2dp" />
+    <ImageView
+        android:id="@+id/starSecond"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginStart="2dp"
+        android:src="@drawable/star_white"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toEndOf="@+id/starFirst"
+        app:layout_constraintTop_toTopOf="@+id/starFirst"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="2dp">
+    <ImageView
+        android:id="@+id/starThird"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginStart="2dp"
+        android:src="@drawable/star_white"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toEndOf="@+id/starSecond"
+        app:layout_constraintTop_toTopOf="@+id/starSecond"/>
 
-            <LinearLayout
-                android:id="@+id/containerStars_1"
-                android:layout_width="78dp"
-                android:layout_height="14dp"
-                android:orientation="horizontal"
-                android:layout_gravity="top|start"
-                android:layout_marginTop="0.5dp">
+    <ImageView
+        android:id="@+id/starFourth"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginStart="2dp"
+        android:src="@drawable/star_white"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toTopOf="@+id/starThird"
+        app:layout_constraintStart_toEndOf="@+id/starThird" />
 
-                <ImageView
-                    android:id="@+id/starFirst"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:src="@drawable/star_white"
-                    android:scaleType="fitCenter" />
+    <ImageView
+        android:id="@+id/starFifth"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginStart="2dp"
+        android:src="@drawable/star_white"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toTopOf="@+id/starFourth"
+        app:layout_constraintStart_toEndOf="@+id/starFourth"/>
 
-                <ImageView
-                    android:id="@+id/starSecond"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_marginStart="2dp"
-                    android:src="@drawable/star_white"
-                    android:scaleType="fitCenter" />
-
-                <ImageView
-                    android:id="@+id/starThird"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_marginStart="2dp"
-                    android:src="@drawable/star_white"
-                    android:scaleType="fitCenter" />
-
-                <ImageView
-                    android:id="@+id/starFourth"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_marginStart="2dp"
-                    android:src="@drawable/star_white"
-                    android:scaleType="fitCenter" />
-
-                <ImageView
-                    android:id="@+id/starFifth"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_marginStart="2dp"
-                    android:src="@drawable/star_white"
-                    android:scaleType="fitCenter" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/textRating"
-                android:layout_width="wrap_content"
-                android:layout_height="15dp"
-                android:text="@string/ratings_first"
-                android:layout_marginStart="7dp"
-                android:layout_gravity="center|end"
-                android:textColor="?android:textColorSecondary"
-                android:textSize="10sp"
-                tools:ignore="SmallSp" />
-
-        </LinearLayout>
-
-
-
-    </LinearLayout>
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/textRating"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="right"
-        android:orientation="vertical">
+        android:layout_height="15dp"
+        android:text=""
+        android:layout_marginStart="7dp"
+        android:layout_gravity="center|end"
+        android:textColor="?android:textColorSecondary"
+        android:textSize="10sp"
+        tools:ignore="SmallSp"
+        app:layout_constraintStart_toEndOf="@+id/starFifth"
+        app:layout_constraintTop_toTopOf="@+id/starFifth"/>
 
-        <Button
-            android:id="@+id/button_delete"
-            android:layout_gravity="right"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:background="@drawable/cancelbutton"/>
+    <Button
+        android:id="@+id/button_delete"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@drawable/cancelbutton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <TextView
-            android:id="@+id/price"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="bottom|end"
-            android:fontFamily="@font/dms_erifdisplay_regular"
-            android:text="@string/price_4"
-            android:textColor="?android:textColor"
-            android:textSize="20sp"
-            tools:ignore="NestedWeights" />
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/dms_erifdisplay_regular"
+        android:text=""
+        android:textColor="?android:textColor"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 

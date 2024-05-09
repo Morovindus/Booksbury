@@ -6,12 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksbury.R
-import com.example.booksbury.SpacesItemDecoration
-import com.example.booksbury.adapters.CustomAdapterBooks
 import com.example.booksbury.databinding.FavouritesFragmentBinding
-import com.example.booksbury.items.ItemCart
 
 class FavouritesFragment : Fragment() {
 
@@ -49,7 +45,7 @@ class FavouritesFragment : Fragment() {
         }
 
 
-        val items = ArrayList<ItemCart>()
+        /*val items = ArrayList<ItemCart>()
         items.add(
             ItemCart(
                 R.drawable.covers_book_1, resources.getString(R.string.title_book_first),
@@ -126,7 +122,7 @@ class FavouritesFragment : Fragment() {
         val adapter = CustomAdapterBooks(items)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
-        binding.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapter*/
     }
 
     override fun onDestroyView() {
