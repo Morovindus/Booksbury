@@ -1,0 +1,108 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/backgroundRectangle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/rectangle_registration"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/registrationProfile"
+        android:src="@drawable/registration_profile"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="83dp"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="75dp"
+        app:layout_constraintStart_toStartOf="@id/backgroundRectangle"
+        app:layout_constraintTop_toTopOf="@id/backgroundRectangle"
+        app:layout_constraintEnd_toEndOf="@id/backgroundRectangle"/>
+
+
+    <TextView
+        android:id="@+id/sign_up_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:text="@string/sign_up_successful"
+        android:fontFamily="@font/inter_bold"
+        android:textColor="@color/light_orange"
+        android:textSize="25sp"
+        app:layout_constraintStart_toStartOf="@id/backgroundRectangle"
+        app:layout_constraintTop_toBottomOf="@id/registrationProfile"
+        app:layout_constraintEnd_toEndOf="@id/backgroundRectangle"/>
+
+    <TextView
+        android:id="@+id/description_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/your_account_has_been_created"
+        android:textColor="@color/black"
+        android:layout_marginTop="27dp"
+        android:textSize="15sp"
+        android:fontFamily="@font/kantumruy_regular"
+        app:layout_constraintStart_toStartOf="@id/backgroundRectangle"
+        app:layout_constraintTop_toBottomOf="@id/sign_up_text"
+        app:layout_constraintEnd_toEndOf="@id/backgroundRectangle"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/button_home_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="78dp"
+        android:layout_marginBottom="58dp"
+        app:layout_constraintStart_toStartOf="@+id/backgroundRectangle"
+        app:layout_constraintTop_toBottomOf="@+id/description_text"
+        app:layout_constraintEnd_toEndOf="@+id/backgroundRectangle"
+        app:layout_constraintBottom_toBottomOf="@+id/backgroundRectangle">
+
+        <ImageButton
+            android:id="@+id/button_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/button_home"
+            android:background="?android:windowBackground"
+            android:scaleType="fitXY"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView0"
+            android:src="@drawable/home_3"
+            android:scaleType="fitCenter"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toTopOf="@id/button_home"
+            app:layout_constraintBottom_toBottomOf="@id/button_home"
+            app:layout_constraintEnd_toStartOf="@id/textView0"/>
+
+        <TextView
+            android:id="@+id/textView0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/kantumruy_regular"
+            app:layout_constraintStart_toStartOf="@id/button_home"
+            app:layout_constraintEnd_toEndOf="@+id/button_home"
+            app:layout_constraintTop_toTopOf="@id/button_home"
+            app:layout_constraintBottom_toBottomOf="@id/button_home"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

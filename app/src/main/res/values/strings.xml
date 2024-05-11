@@ -57,6 +57,13 @@
 
     <string name="errorName">Enter name</string>
     <string name="errorPassword">Enter password</string>
+    <string name="errorEmail">Enter email</string>
+    <string name="errorPasswordConfirm">Enter confirm password</string>
+    <string name="errorConfirmPassword">Passwords do not match</string>
+    <string name="userExistsError">User with such name already exists</string>
+
+
+
     <string name="incorrectPassword">Incorrect password</string>
     <string name="incorrectUsername">User with this name not found"</string>
 
@@ -66,6 +73,9 @@
     <string name="no">No</string>
     <string name="write_your_review">Write Your Review</string>
     <string name="you">You</string>
+    <string name="sign_up_successful">Sign Up Successful!</string>
+    <string name="your_account_has_been_created">Your account has been created</string>
+    <string name="home">Home</string>
 
 
 </resources>

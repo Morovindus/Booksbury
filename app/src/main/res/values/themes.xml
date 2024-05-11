@@ -5,6 +5,8 @@
 
         <item name="android:textColor">@color/textColorLight</item>
         <item name="android:textColorSecondary">@color/textColorSecondaryLight</item>
+        <item name="android:textColorHighlight">@color/textColorRegistrationLight</item>
+
 
         <item name="android:windowBackground">@color/textColorDark</item>
 

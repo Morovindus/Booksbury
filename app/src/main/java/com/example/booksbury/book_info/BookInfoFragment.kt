@@ -9,23 +9,17 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.databinding.BookInfoFragmentBinding
-import com.example.booksbury.items.Reviews
 import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -97,50 +91,8 @@ class BookInfoFragment : Fragment() {
             0 -> BookInfoSynopsis(idBook)
             1 -> BookInfoDetails(idBook)
             2 -> BookInfoAuthor(idBook)
-            3 -> createReviewFragment()
+            3 -> BookInfoReviews(idBook)
             else -> Fragment()
-        }
-
-        private fun createReviewFragment() = BookInfoReviews().apply {
-            lifecycleScope.launch {
-                val reviews = fetchReviewsDataFromServer(idBook)
-                setAuthorAbout(reviews)
-            }
-        }
-    }
-
-    suspend fun fetchReviewsDataFromServer(bookId: Int): ArrayList<Reviews> {
-        return withContext(Dispatchers.IO) {
-            val reviews = ArrayList<Reviews>()
-            val ipAddress = (activity as MainActivity).getIpAddress()
-
-            val url = URL("http://$ipAddress:3000/api/books/$bookId/reviews")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val responseCode = connection.responseCode
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                val inputStream = connection.inputStream
-                val response = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
-
-                val jsonArray = JSONArray(response)
-                for (i in 0 until jsonArray.length()) {
-                    val jsonObject = jsonArray.getJSONObject(i)
-                    val review = Reviews(
-                        jsonObject.getInt("_id"),
-                        jsonObject.getString("nameUser"),
-                        jsonObject.getString("date"),
-                        jsonObject.getString("textUser"),
-                        jsonObject.getInt("stars")
-                    )
-                    reviews.add(review)
-                }
-            } else {
-                println("HTTP Error: $responseCode")
-            }
-
-            connection.disconnect()
-            reviews
         }
     }
 

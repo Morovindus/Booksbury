@@ -4,6 +4,7 @@
 
         <item name="android:textColor">@color/textColorDark</item>
         <item name="android:textColorSecondary">@color/textColorSecondaryDark</item>
+        <item name="android:textColorHighlight">@color/textColorRegistrationDark</item>
 
         <item name="android:windowBackground">@color/textColorLight</item>
 

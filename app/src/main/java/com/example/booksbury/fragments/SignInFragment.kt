@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -50,11 +51,11 @@ class SignInFragment : Fragment() {
             }
         }
         binding.signUpText.setOnClickListener {
-            //findNavController().navigate(R.id.action_SignInFragment_to_SignUpFragment)
-            findNavController().navigate(R.id.action_SignInFragment_to_HomeFragment)
+            findNavController().navigate(R.id.action_SignInFragment_to_SignUpFragment)
         }
     }
 
+    // Проверка, всех введенных полей пользователем
     private fun checkUsernameAndPassword(username: String, password: String) {
         lifecycleScope.launch(Dispatchers.IO) {
             val usernameExists = checkUsernameExists(username)
@@ -83,6 +84,7 @@ class SignInFragment : Fragment() {
         }
     }
 
+    // Запрос для получения id пользователя
     private fun getIdFromServer(username: String): Int {
         val ipAddress = (activity as MainActivity).getIpAddress()
         val url = URL("http:$ipAddress:3000/api/get_user_id/$username")
@@ -93,15 +95,15 @@ class SignInFragment : Fragment() {
         val inputStream = connection.inputStream
         val response = inputStream.bufferedReader().use { it.readText() }
 
-        inputStream.close() // Закрываем inputStream
-
-        connection.disconnect() // Закрываем соединение
+        inputStream.close()
+        connection.disconnect()
 
         val jsonResponse = JSONObject(response)
 
         return jsonResponse.getString("id").toInt()
     }
 
+    // Проверка, что введенный пользователем никнейм существует в БД
     private fun checkUsernameExists(username: String): Boolean {
         return try {
             val ipAddress = (activity as MainActivity).getIpAddress()
@@ -113,8 +115,8 @@ class SignInFragment : Fragment() {
             val inputStream = connection.inputStream
             val response = inputStream.bufferedReader().use { it.readText() }
 
-            inputStream.close() // Закрываем inputStream
-            connection.disconnect() // Закрываем соединение
+            inputStream.close()
+            connection.disconnect()
 
             val jsonResponse = JSONObject(response)
             jsonResponse.getBoolean("exists")
@@ -124,6 +126,7 @@ class SignInFragment : Fragment() {
         }
     }
 
+   // Проверка, что пользователь ввел вверный пароль
     private fun checkPasswordValid(username: String, password: String): Boolean {
         return try {
             val ipAddress = (activity as MainActivity).getIpAddress()
@@ -134,8 +137,8 @@ class SignInFragment : Fragment() {
             val inputStream = connection.inputStream
             val response = inputStream.bufferedReader().use { it.readText() }
 
-            inputStream.close() // Закрываем inputStream
-            connection.disconnect() // Закрываем соединение
+            inputStream.close()
+            connection.disconnect()
 
             val jsonResponse = JSONObject(response)
             jsonResponse.getBoolean("match")
@@ -145,24 +148,22 @@ class SignInFragment : Fragment() {
     }
 
 
-
+    // Проверка введенных полей пользователем
     private fun validateUsernameAndPassword(username: String, password: String): Boolean {
-        var isValid = true
 
-        if (username.isEmpty()) {
-            binding.editUsername.error = getString(R.string.errorName)
-            isValid = false
-        } else {
-            binding.editUsername.error = null
-        }
+        // Проверка имени пользователя
+        val isValidUsername = validateField(username, binding.editUsername, R.string.errorName)
 
-        if (password.isEmpty()) {
-            binding.editPassword.error = getString(R.string.errorPassword)
-            isValid = false
-        } else {
-            binding.editPassword.error = null
-        }
+        // Проверка пароля
+        val isValidPassword = validateField(password, binding.editPassword, R.string.errorPassword)
 
+        return isValidUsername && isValidPassword
+    }
+
+    // Проверка, если значение пустое, устанавливается сообщение об ошибке в EditText
+    private fun validateField(value: String, editText: EditText, errorMessageResId: Int): Boolean {
+        val isValid = value.isNotEmpty()
+        editText.error = if (!isValid) getString(errorMessageResId) else null
         return isValid
     }
 
