@@ -1,6 +1,8 @@
 package com.example.booksbury.adapters
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +10,18 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.booksbury.MainActivity
 import com.example.booksbury.R
+import com.example.booksbury.fragments.CartFragment
 import com.example.booksbury.items.ItemCart
+import com.squareup.picasso.Picasso
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.net.HttpURLConnection
+import java.net.URL
 
-class CustomAdapterCart(private val items: ArrayList<ItemCart>) : RecyclerView.Adapter<CustomAdapterCart.ViewHolder>() {
+class CustomAdapterCart(private val items: ArrayList<ItemCart>, private val context: Context, private val cartFragment: CartFragment) : RecyclerView.Adapter<CustomAdapterCart.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_cart, parent, false)
@@ -23,7 +33,7 @@ class CustomAdapterCart(private val items: ArrayList<ItemCart>) : RecyclerView.A
         val currentItem = items[position]
 
 
-        //holder.imageCoverBook.setImageResource(currentItem.imageResource)
+        Picasso.get().load(currentItem.imageResource).into(holder.imageCoverBook)
         holder.titleBook.text = currentItem.titleBook
         holder.nameAuthor.text = currentItem.nameAuthor
         holder.ratings.text = (currentItem.ratings.toString() + " Ratings")
@@ -39,8 +49,15 @@ class CustomAdapterCart(private val items: ArrayList<ItemCart>) : RecyclerView.A
         if (currentItem.stars >= 5) holder.starFifth.setImageResource(orangeStarDrawable)
 
         holder.buttonDelete.setOnClickListener {
-            items.removeAt(position)
-            notifyDataSetChanged()
+            val removedItem = items.removeAt(position) // Удаление элемента из списка и получение удаленного элемента
+            removeFromCart(removedItem.id) // Удаление элемента из корзины
+
+            // Пересчет общей суммы корзины
+            val newSum = cartFragment.getTotalSum() - removedItem.price
+            Log.d("myLogs", newSum.toString())
+            cartFragment.recalculationSum(newSum)
+
+            notifyItemRemoved(position) // Уведомление адаптера об удалении элемента из списка
         }
 
     }
@@ -63,5 +80,28 @@ class CustomAdapterCart(private val items: ArrayList<ItemCart>) : RecyclerView.A
         val starFifth: ImageView = itemView.findViewById(R.id.starFifth)
 
         val buttonDelete: Button = itemView.findViewById(R.id.button_delete)
+    }
+
+    // Запрос на удаления книги из корзины
+    private fun removeFromCart(bookId: Int) {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val ipAddress = (context as MainActivity).getIpAddress()
+                val userId = (context as MainActivity).getIdUser()
+
+                val url = URL("http:$ipAddress:3000/api/users/$userId/cart/$bookId")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "DELETE"
+
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    println("Книга успешно удалена из корзины пользователя")
+                } else {
+                    println("Ошибка при удалении книги из корзины пользователя: $responseCode")
+                }
+            } catch (e: Exception) {
+                println("Ошибка при удалении книги из корзины пользователя: ${e.message}")
+            }
+        }
     }
 }

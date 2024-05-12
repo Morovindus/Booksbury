@@ -99,7 +99,7 @@ class HomeFragment : Fragment() {
     private fun fetchMainBookFromServer(): MainBook {
         val ipAddress = (activity as MainActivity).getIpAddress()
 
-        val url = URL("http://$ipAddress:3000/api/books/one/random")
+        val url = URL("http:$ipAddress:3000/api/books/one/random")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
@@ -119,7 +119,7 @@ class HomeFragment : Fragment() {
     private fun fetchItemsFromServer(): ArrayList<ItemCart> {
         val ipAddress = (activity as MainActivity).getIpAddress()
 
-        val url = URL("http://$ipAddress:3000/api/books/special/random")
+        val url = URL("http:$ipAddress:3000/api/books/special/random")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 

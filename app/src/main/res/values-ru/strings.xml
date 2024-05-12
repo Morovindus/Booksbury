@@ -1,0 +1,85 @@
+<resources>
+    <string name="app_name">Booksbury</string>
+
+    <string name="button_buy">Купить</string>
+    <string name="Main_title_books">Books</string>
+    <string name="Main_title_bury">bury</string>
+    <string name="popular_books">Популярные книги</string>
+
+    <string name="button_classic">Классика</string>
+    <string name="button_romance">Романтика</string>
+    <string name="button_children">Детские</string>
+    <string name="button_horror">Хоррор</string>
+
+    <string name="explore_title">Магазин</string>
+    <string name="total_price">0</string>
+
+    <string name="title_book_info">Информация о книге</string>
+    <string name="text_released">Дата выпуска</string>
+    <string name="text_part">Часть</string>
+    <string name="text_page">Страница</string>
+    <string name="tabs_synopsis">Синопсис</string>
+    <string name="tabs_details">Подробности</string>
+    <string name="tabs_author">Автор</string>
+    <string name="tabs_review">Обзор</string>
+    <string name="start_reading">Начать чтение</string>
+    <string name="play_audio">Воспроизвести аудио</string>
+
+
+    <string name="search">Поиск</string>
+    <string name="notifications">Уведомления</string>
+    <string name="empty">Пусто</string>
+    <string name="you_dont_have_any_notification_at_this_time">У вас пока нет уведомлений</string>
+    <string name="profile">Профиль</string>
+    <string name="favourites">Избранное</string>
+
+    <string name="book">Книги</string>
+    <string name="cart">Корзина</string>
+    <string name="sign_out">Выход</string>
+
+    <string name="confirm_order">Подтвердить заказ</string>
+    <string name="total">Итого</string>
+    <string name="books">Книги</string>
+    <string name="sign_in_your_account">Войдите в свою учетную запись</string>
+    <string name="name">Имя пользователя</string>
+    <string name="example_name">Jon Smith</string>
+
+    <string name="password">Пароль</string>
+    <string name="example_password">*********</string>
+
+
+    <string name="login">Войти</string>
+    <string name="forgot_password">Забыли пароль?</string>
+    <string name="dont_have_an_account_sign_up">У вас нет учетной записи? Зарегистрироваться</string>
+    <string name="create_your_account">Создайте свою учетную запись</string>
+    <string name="email">Эл. почта</string>
+    <string name="example_email">jon.smith@email.com</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="already_registered_sign_in">Уже зарегистрированы? Войдите</string>
+
+    <string name="errorName">Введите имя</string>
+    <string name="errorPassword">Введите пароль</string>
+    <string name="errorEmail">Введите адрес электронной почты</string>
+    <string name="errorPasswordConfirm">Введите подтверждение пароля</string>
+    <string name="errorConfirmPassword">Пароли не совпадают</string>
+    <string name="userExistsError">Пользователь с таким именем уже существует</string>
+
+    <string name="incorrectPassword">Неверный пароль</string>
+    <string name="incorrectUsername">Пользователь с таким именем не найден</string>
+
+    <string name="exit_title">Выход из приложения</string>
+    <string name="exit_message">Вы уверены, что хотите выйти из приложения?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="write_your_review">Напишите свой отзыв</string>
+    <string name="you">Вы</string>
+    <string name="sign_up_successful">Регистрация успешно завершена!</string>
+    <string name="your_account_has_been_created">Ваша учетная запись была создана</string>
+    <string name="home">Главная</string>
+    <string name="there_are_not_books_here_yet">Здесь еще нет книг</string>
+    <string name="cart_is_currently_empty">Корзина в настоящее время пуста</string>
+    <string name="there_are_no_favorite_books_here_yet">Здесь пока нет избранных книг</string>
+
+
+</resources>

@@ -324,6 +324,7 @@
                 android:textColor="?android:textColor"
                 android:layout_marginBottom="20dp"
                 android:textSize="20sp"
+                android:textAlignment="center"
                 app:layout_constraintTop_toBottomOf="@id/button_1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

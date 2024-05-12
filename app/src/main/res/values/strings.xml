@@ -12,7 +12,7 @@
     <string name="button_horror">Horror</string>
 
     <string name="explore_title">Explore Market</string>
-    <string name="total_price">2998</string>
+    <string name="total_price">0</string>
 
     <string name="title_book_info">Book Info</string>
     <string name="text_released">Released</string>
@@ -62,8 +62,6 @@
     <string name="errorConfirmPassword">Passwords do not match</string>
     <string name="userExistsError">User with such name already exists</string>
 
-
-
     <string name="incorrectPassword">Incorrect password</string>
     <string name="incorrectUsername">User with this name not found"</string>
 
@@ -76,6 +74,9 @@
     <string name="sign_up_successful">Sign Up Successful!</string>
     <string name="your_account_has_been_created">Your account has been created</string>
     <string name="home">Home</string>
+    <string name="there_are_not_books_here_yet">There are not books here yet</string>
+    <string name="cart_is_currently_empty">Сart is currently empty</string>
+    <string name="there_are_no_favorite_books_here_yet">There are no favorite books here yet</string>
 
 
 </resources>

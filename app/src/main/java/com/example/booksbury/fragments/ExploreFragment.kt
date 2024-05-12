@@ -77,7 +77,7 @@ class ExploreFragment : Fragment() {
     private fun fetchItemsFromServer(): ArrayList<ItemExplore> {
         val ipAddress = (activity as MainActivity).getIpAddress()
 
-        val url = URL("http://$ipAddress:3000/api/all_books/all")
+        val url = URL("http://$ipAddress:3000/api/books/all")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 

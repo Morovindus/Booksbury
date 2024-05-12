@@ -241,6 +241,7 @@
                 android:textColor="?android:textColor"
                 android:textSize="20sp"
                 android:layout_marginBottom="20dp"
+                android:textAlignment="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

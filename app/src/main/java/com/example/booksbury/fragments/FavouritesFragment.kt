@@ -4,10 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.booksbury.MainActivity
 import com.example.booksbury.R
+import com.example.booksbury.SpacesItemDecoration
+import com.example.booksbury.adapters.CustomAdapterFavoriteBooks
 import com.example.booksbury.databinding.FavouritesFragmentBinding
+import com.example.booksbury.items.ItemCart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
 
 class FavouritesFragment : Fragment() {
 
@@ -44,85 +58,111 @@ class FavouritesFragment : Fragment() {
             findNavController().navigate(R.id.action_FavouritesFragment_to_NotificaionFragment)
         }
 
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                val books = withContext(Dispatchers.IO) {
+                    fetchBooksFromServer()
+                }
 
-        /*val items = ArrayList<ItemCart>()
-        items.add(
-            ItemCart(
-                R.drawable.covers_book_1, resources.getString(R.string.title_book_first),
-            resources.getString(R.string.author_first),
-            resources.getString(R.string.stars_first).toInt(),
-            resources.getString(R.string.ratings_first).toInt(),
-            resources.getString(R.string.price_first).toInt(),)
-        )
+                // Добавляем все купленные книги пользователем в массив
+                val purchasedBooks = ArrayList<ItemCart>()
+                for (book in books) {
+                    val purchasedBook = withContext(Dispatchers.IO) {
+                        fetchFavoriteBooksFromServer(book)
+                    }
+                    purchasedBooks.add(purchasedBook)
+                }
 
-        items.add(
-            ItemCart(
-                R.drawable.covers_book_2, resources.getString(R.string.title_book_second),
-            resources.getString(R.string.author_second),
-            resources.getString(R.string.stars_second).toInt(),
-            resources.getString(R.string.ratings_second).toInt(),
-            resources.getString(R.string.price_second).toInt(),)
-        )
-
-        items.add(
-            ItemCart(
-                R.drawable.covers_book_3, resources.getString(R.string.title_book_third),
-            resources.getString(R.string.author_third),
-            resources.getString(R.string.stars_third).toInt(),
-            resources.getString(R.string.ratings_third).toInt(),
-            resources.getString(R.string.price_third).toInt(),)
-        )
-
-        items.add(
-            ItemCart(
-                R.drawable.covers_book_4, resources.getString(R.string.title_book_fourth),
-            resources.getString(R.string.author_fourth),
-            resources.getString(R.string.stars_fourth).toInt(),
-            resources.getString(R.string.ratings_fourth).toInt(),
-            resources.getString(R.string.price_fourth).toInt(),)
-        )
-
-        items.add(
-            ItemCart(
-                R.drawable.covers_book_5, resources.getString(R.string.title_book_fifth),
-            resources.getString(R.string.author_fifth),
-            resources.getString(R.string.stars_fifth).toInt(),
-            resources.getString(R.string.ratings_fifth).toInt(),
-            resources.getString(R.string.price_fifth).toInt(),)
-        )
-
-        items.add(
-            ItemCart(
-                R.drawable.covers_book_6, resources.getString(R.string.title_book_six),
-            resources.getString(R.string.author_six),
-            resources.getString(R.string.stars_six).toInt(),
-            resources.getString(R.string.ratings_six).toInt(),
-            resources.getString(R.string.price_six).toInt(),)
-        )
-
-        items.add(
-            ItemCart(
-                R.drawable.covers_book_7, resources.getString(R.string.title_book_seven),
-            resources.getString(R.string.author_seven),
-            resources.getString(R.string.stars_seven).toInt(),
-            resources.getString(R.string.ratings_seven).toInt(),
-            resources.getString(R.string.price_seven).toInt(),)
-        )
-
-        items.add(
-            ItemCart(
-                R.drawable.covers_book_8, resources.getString(R.string.title_book_eighth),
-            resources.getString(R.string.author_eighth),
-            resources.getString(R.string.stars_eighth).toInt(),
-            resources.getString(R.string.ratings_eighth).toInt(),
-            resources.getString(R.string.price_eighth).toInt(),)
-        )
+                // Обновляем пользовательский интерфейс в главном потоке
+                val adapter = CustomAdapterFavoriteBooks(purchasedBooks, this@FavouritesFragment)
+                binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+                binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
+                binding.recyclerView.adapter = adapter
 
 
-        val adapter = CustomAdapterBooks(items)
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
-        binding.recyclerView.adapter = adapter*/
+            } catch (e: Exception) {
+
+                // Получаем родительский ConstraintLayout
+                val constraintLayout = binding.ConstraintLayout
+
+                // Создаем новое представление
+                val newView = LayoutInflater.from(requireContext()).inflate(R.layout.notification_no_favorite, null)
+
+                // Определяем параметры размещения для нового представления
+                val params = ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.MATCH_PARENT,
+                    ConstraintLayout.LayoutParams.WRAP_CONTENT
+                )
+
+                // Устанавливаем отношения в параметрах размещения для нового представления
+                params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+                params.topToBottom = R.id.blackRectangle
+                params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+                params.bottomToTop = R.id.cardView
+
+                // Устанавливаем новые параметры размещения для нового представления
+                newView.layoutParams = params
+
+                // Удаляем старое представление RecyclerView из родительского ConstraintLayout
+                constraintLayout.removeView(binding.recyclerView)
+
+                // Добавляем новое представление в родительский ConstraintLayout
+                constraintLayout.addView(newView)
+            }
+        }
+    }
+
+    // Возвращаем избранную книгу по id
+    private fun fetchFavoriteBooksFromServer(bookId: Int): ItemCart {
+        val ipAddress = (activity as MainActivity).getIpAddress()
+        val url = URL("http:$ipAddress:3000/book/bookById/$bookId")
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
+
+        val inputStream = connection.inputStream
+        val response = inputStream.bufferedReader().use { it.readText() }
+
+        val jsonObject = JSONObject(response)
+
+        val id = jsonObject.getString("_id").toInt()
+        val title = jsonObject.getString("title")
+        val authorName = jsonObject.getString("authorName")
+        val stars = jsonObject.getInt("averageStars")
+        val ratings = jsonObject.getInt("ratings")
+        val price = jsonObject.getInt("price")
+        val smallCover = jsonObject.getString("smallCover")
+
+        return ItemCart(id, smallCover, title, authorName, stars, ratings, price)
+    }
+
+    // Возвращаем все id избранных пользователем книг
+    private fun fetchBooksFromServer(): ArrayList<Int> {
+        val ipAddress = (activity as MainActivity).getIpAddress()
+        val userId = (activity as MainActivity).getIdUser()
+
+        val url = URL("http:$ipAddress:3000/api/users/$userId/favoriteBooks")
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
+
+        val inputStream = connection.inputStream
+        val response = inputStream.bufferedReader().use { it.readText() }
+
+        val jsonArray = JSONArray(response)
+
+        val items = ArrayList<Int>()
+        for (i in 0 until jsonArray.length()) {
+            val value = jsonArray.getInt(i)
+            items.add(value)
+        }
+        return items
+    }
+
+    // Метод для вывода на экран информации о книге
+    fun navigateToBookInfoFragment(id: Int) {
+        val bundle = Bundle().apply {
+            putInt("id", id)
+        }
+        findNavController().navigate(R.id.action_FavouritesFragment_to_BookInfoFragment, bundle)
     }
 
     override fun onDestroyView() {

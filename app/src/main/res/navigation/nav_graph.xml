@@ -137,6 +137,9 @@
         android:name="com.example.booksbury.fragments.BooksFragment"
         android:label="BooksFragment"
         tools:layout="@layout/books_fragment">
+        <action
+            android:id="@+id/action_BooksFragment_to_BookInfoFragment"
+            app:destination="@id/BookInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/SignInFragment"
