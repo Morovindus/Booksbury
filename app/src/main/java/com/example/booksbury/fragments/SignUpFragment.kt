@@ -1,6 +1,7 @@
 package com.example.booksbury.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,17 +29,13 @@ import java.util.Random
 class SignUpFragment : Fragment() {
 
     private var _binding: SignUpFragmentBinding? = null
-
     private val binding get() = _binding!!
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = SignUpFragmentBinding.inflate(inflater, container, false)
         return binding.root
-
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,6 +70,7 @@ class SignUpFragment : Fragment() {
                 if (validatePassword(password, passwordConfirm))
                 {
                     val idUser = generateUniqueRandomId(fetchUserIdsFromReviews())
+                    Log.d("myLogs", idUser.toString())
                     addNewUser(idUser, username, email, password)
 
                     val dialogFragment = MyDialogFragment(this@SignUpFragment)
@@ -101,7 +99,7 @@ class SignUpFragment : Fragment() {
     """.trimIndent()
 
         val ipAddress = (activity as MainActivity).getIpAddress()
-        val url = URL("http:$ipAddress:3000/api/users")
+        val url = URL("http:$ipAddress:3000/api/new_user")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "POST"
         connection.setRequestProperty("Content-Type", "application/json")
@@ -111,7 +109,6 @@ class SignUpFragment : Fragment() {
             val outputStream = OutputStreamWriter(connection.outputStream)
             outputStream.write(newUserJson)
             outputStream.flush()
-
 
             if (connection.responseCode == HttpURLConnection.HTTP_CREATED) {
                 println("Пользователь успешно добавлен")

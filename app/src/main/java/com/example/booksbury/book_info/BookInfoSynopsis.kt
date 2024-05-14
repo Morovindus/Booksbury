@@ -34,17 +34,22 @@ class BookInfoSynopsis(private val idBook: Int) : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         fetchDataFromServer()
     }
+
+    // Метод, выводящий на экран описание книги
     private fun fetchDataFromServer() {
         lifecycleScope.launch {
             val synopsis = fetchSynopsisDataFromServer(idBook)
-            binding.textSynopsis.text = synopsis
+            binding.textSynopsis.text = synopsis.substring(1, synopsis.length - 1)
         }
     }
 
+    // Запрос, возвращающий описание книги
     private suspend fun fetchSynopsisDataFromServer(id: Int): String {
         return withContext(Dispatchers.IO) {
             val ipAddress = (activity as MainActivity).getIpAddress()
-            val url = URL("http://$ipAddress:3000/api/books/$id/synopsis")
+            val language = (activity as MainActivity).getLanguage()
+
+            val url = URL("http://$ipAddress:3000/api/books/$id/synopsis/$language")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
 

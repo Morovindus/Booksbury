@@ -9,10 +9,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.booksbury.R
 import com.example.booksbury.fragments.BooksFragment
-import com.example.booksbury.items.ItemCart
+import com.example.booksbury.items.Book
 import com.squareup.picasso.Picasso
 
-class CustomAdapterPurchasedBooks(private val items: ArrayList<ItemCart>, private val booksFragment: BooksFragment) : RecyclerView.Adapter<CustomAdapterPurchasedBooks.ViewHolder>() {
+class CustomAdapterPurchasedBooks(private val items: ArrayList<Book>, private val booksFragment: BooksFragment) : RecyclerView.Adapter<CustomAdapterPurchasedBooks.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_books, parent, false)
@@ -27,8 +27,8 @@ class CustomAdapterPurchasedBooks(private val items: ArrayList<ItemCart>, privat
         Picasso.get().load(currentItem.imageResource).into(holder.imageCoverBook)
 
         holder.titleBook.text = currentItem.titleBook
-        holder.nameAuthor.text = "By " + currentItem.nameAuthor
-        holder.ratings.text = (currentItem.ratings.toString() + " Ratings")
+        holder.nameAuthor.text = currentItem.nameAuthor
+        holder.ratings.text = "${currentItem.ratings} ${booksFragment.getString(R.string.ratings)}"
 
 
         val orangeStarDrawable = R.drawable.star_orange

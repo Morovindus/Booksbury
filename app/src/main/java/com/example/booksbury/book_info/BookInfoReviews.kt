@@ -43,6 +43,7 @@ class BookInfoReviews(private val idBook: Int) : Fragment() {
         fetchDataFromServer()
     }
 
+    // Метод, выводящий все отзывы на экран
     private fun fetchDataFromServer() {
         lifecycleScope.launch {
             val reviews = fetchReviewsDataFromServer(idBook)
@@ -119,6 +120,7 @@ class BookInfoReviews(private val idBook: Int) : Fragment() {
         }
     }
 
+    // Запрос, возвращающий все отзывы по id книги
     suspend fun fetchReviewsDataFromServer(bookId: Int): ArrayList<Reviews> {
         return withContext(Dispatchers.IO) {
             val reviews = ArrayList<Reviews>()

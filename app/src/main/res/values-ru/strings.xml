@@ -18,10 +18,10 @@
     <string name="text_released">Дата выпуска</string>
     <string name="text_part">Часть</string>
     <string name="text_page">Страница</string>
-    <string name="tabs_synopsis">Синопсис</string>
+    <string name="tabs_synopsis">Описание</string>
     <string name="tabs_details">Подробности</string>
     <string name="tabs_author">Автор</string>
-    <string name="tabs_review">Обзор</string>
+    <string name="tabs_review">Отзывы</string>
     <string name="start_reading">Начать чтение</string>
     <string name="play_audio">Воспроизвести аудио</string>
 
@@ -80,6 +80,7 @@
     <string name="there_are_not_books_here_yet">Здесь еще нет книг</string>
     <string name="cart_is_currently_empty">Корзина в настоящее время пуста</string>
     <string name="there_are_no_favorite_books_here_yet">Здесь пока нет избранных книг</string>
+    <string name="ratings">Отзывов</string>
 
 
 </resources>

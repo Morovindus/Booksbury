@@ -31,10 +31,8 @@ class BookInfoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = BookInfoFragmentBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,9 +82,14 @@ class BookInfoFragment : Fragment() {
         }
     }
 
+    // Класс, отвечающий за управоление вкладок ViewPager
     private inner class ViewPagerAdapter(activity: FragmentActivity, private val idBook: Int) :
         FragmentStateAdapter(activity) {
+
+        // Возвращает общее количество вкладок
         override fun getItemCount(): Int = 4
+
+        // Создает и возвращает фрагменты для каждой вкладки
         override fun createFragment(position: Int): Fragment = when (position) {
             0 -> BookInfoSynopsis(idBook)
             1 -> BookInfoDetails(idBook)
@@ -97,10 +100,12 @@ class BookInfoFragment : Fragment() {
     }
 
 
+    // Запрос, который возвращает подробную информацию о книге
     private fun fetchItemsFromServer(id: Int) {
         val ipAddress = (activity as MainActivity).getIpAddress()
+        val language = (activity as MainActivity).getLanguage()
 
-        val url = URL("http://$ipAddress:3000/api/books/more/$id")
+        val url = URL("http://$ipAddress:3000/api/books/more/$id/$language")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
@@ -109,10 +114,9 @@ class BookInfoFragment : Fragment() {
 
         val jsonResponse = JSONObject(response)
 
-
         requireActivity().runOnUiThread {
-            binding.titleBook.text = jsonResponse.getJSONObject("en").getString("title")
-            binding.nameAuthor.text = "By " + jsonResponse.getJSONObject("en").getString("authorName")
+            binding.titleBook.text = jsonResponse.getJSONObject(language).getString("title")
+            binding.nameAuthor.text = jsonResponse.getJSONObject(language).getString("authorName")
             binding.price.text = "${jsonResponse.getInt("price")}\u20BD"
             binding.dateReleased.text = jsonResponse.getInt("released").toString()
             binding.part.text = jsonResponse.getInt("part").toString()
@@ -122,7 +126,6 @@ class BookInfoFragment : Fragment() {
             Picasso.get().load(middleCover).into(binding.mainImage)
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

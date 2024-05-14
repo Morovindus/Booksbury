@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksbury.MainActivity
@@ -13,9 +14,8 @@ import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
 import com.example.booksbury.adapters.CustomAdapterCart
 import com.example.booksbury.databinding.CartFragmentBinding
-import com.example.booksbury.items.ItemCart
+import com.example.booksbury.items.Book
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -26,17 +26,13 @@ import java.net.URL
 class CartFragment : Fragment() {
 
     private var _binding: CartFragmentBinding? = null
-
     private val binding get() = _binding!!
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = CartFragmentBinding.inflate(inflater, container, false)
         return binding.root
-
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,10 +41,12 @@ class CartFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        recalculationSum(getString(R.string.total_price).toInt())
+        fetchBooksAndUpdateUI()
+    }
 
-
-        GlobalScope.launch(Dispatchers.Main) {
+    // Метод, который реализует вывод всех книг в корзине на экран
+    private fun fetchBooksAndUpdateUI() {
+        lifecycleScope.launch {
             try {
                 var totalPrice = 0
                 val books = withContext(Dispatchers.IO) {
@@ -56,61 +54,69 @@ class CartFragment : Fragment() {
                 }
 
                 // Добавляем все книги в корзине в массив
-                val purchasedBooks = ArrayList<ItemCart>()
+                val cartBooks = ArrayList<Book>()
                 for (book in books) {
                     val purchasedBook = withContext(Dispatchers.IO) {
                         fetchCartBooksFromServer(book)
                     }
-                    purchasedBooks.add(purchasedBook)
+                    cartBooks.add(purchasedBook)
                     totalPrice += purchasedBook.price
                 }
 
-                // Обновляем пользовательский интерфейс в главном потоке
-                recalculationSum(totalPrice)
-
-                val adapter = CustomAdapterCart(purchasedBooks, requireContext(), this@CartFragment)
-                binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
-                binding.recyclerView.adapter = adapter
-
-
+                // Обновляем пользовательский интерфейс
+                updateUIWithCartBooks(cartBooks, totalPrice)
             } catch (e: Exception) {
-
-                // Получаем родительский ConstraintLayout
-                val constraintLayout = binding.ConstraintLayout
-
-                // Создаем новое представление
-                val newView = LayoutInflater.from(requireContext()).inflate(R.layout.notification_no_cart_book, null)
-
-                // Определяем параметры размещения для нового представления
-                val params = ConstraintLayout.LayoutParams(
-                    ConstraintLayout.LayoutParams.MATCH_PARENT,
-                    ConstraintLayout.LayoutParams.WRAP_CONTENT
-                )
-
-                // Устанавливаем отношения в параметрах размещения для нового представления
-                params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
-                params.topToBottom = R.id.blackRectangle
-                params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
-                params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
-
-                // Устанавливаем новые параметры размещения для нового представления
-                newView.layoutParams = params
-
-                // Удаляем старые представления из родительского ConstraintLayout
-                constraintLayout.removeView(binding.recyclerView)
-                constraintLayout.removeView(binding.cardView)
-
-                // Добавляем новое представление в родительский ConstraintLayout
-                constraintLayout.addView(newView)
+                showNoCartBooksNotification()
             }
         }
     }
 
+    // Метод для обновления пользовательского интерфейса
+    private fun updateUIWithCartBooks(cartBook: ArrayList<Book>, totalPrice: Int) {
+        recalculationSum(totalPrice)
+        val adapter = CustomAdapterCart(cartBook, requireContext(), this@CartFragment)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
+        binding.recyclerView.adapter = adapter
+    }
+
+    // Метод, который обрабатывает случай - пустого массива купленных книг
+    private fun showNoCartBooksNotification() {
+        // Получаем родительский ConstraintLayout
+        val constraintLayout = binding.ConstraintLayout
+
+        // Создаем новое представление
+        val newView = LayoutInflater.from(requireContext()).inflate(R.layout.notification_no_cart_book, null)
+
+        // Определяем параметры размещения для нового представления
+        val params = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        // Устанавливаем отношения в параметрах размещения для нового представления
+        params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+        params.topToBottom = R.id.blackRectangle
+        params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+        params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+
+        // Устанавливаем новые параметры размещения для нового представления
+        newView.layoutParams = params
+
+        // Удаляем старые представления из родительского ConstraintLayout
+        constraintLayout.removeView(binding.recyclerView)
+        constraintLayout.removeView(binding.cardView)
+
+        // Добавляем новое представление в родительский ConstraintLayout
+        constraintLayout.addView(newView)
+    }
+
     // Возвращаем книгу в корзине по id
-    private fun fetchCartBooksFromServer(bookId: Int): ItemCart {
+    private fun fetchCartBooksFromServer(bookId: Int): Book {
         val ipAddress = (activity as MainActivity).getIpAddress()
-        val url = URL("http:$ipAddress:3000/book/bookById/$bookId")
+        val language = (activity as MainActivity).getLanguage()
+
+        val url = URL("http:$ipAddress:3000/book/bookById/$bookId/$language/smallCover")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
@@ -127,7 +133,7 @@ class CartFragment : Fragment() {
         val price = jsonObject.getInt("price")
         val smallCover = jsonObject.getString("smallCover")
 
-        return ItemCart(id, smallCover, title, authorName, stars, ratings, price)
+        return Book(id, smallCover, title, authorName, stars, ratings, price)
     }
 
     // Возвращаем все id книг находящихся в корзине

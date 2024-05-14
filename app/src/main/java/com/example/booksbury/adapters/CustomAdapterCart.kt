@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.fragments.CartFragment
-import com.example.booksbury.items.ItemCart
+import com.example.booksbury.items.Book
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import java.net.HttpURLConnection
 import java.net.URL
 
-class CustomAdapterCart(private val items: ArrayList<ItemCart>, private val context: Context, private val cartFragment: CartFragment) : RecyclerView.Adapter<CustomAdapterCart.ViewHolder>() {
+class CustomAdapterCart(private val items: ArrayList<Book>, private val context: Context, private val cartFragment: CartFragment) : RecyclerView.Adapter<CustomAdapterCart.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_cart, parent, false)
@@ -36,9 +36,8 @@ class CustomAdapterCart(private val items: ArrayList<ItemCart>, private val cont
         Picasso.get().load(currentItem.imageResource).into(holder.imageCoverBook)
         holder.titleBook.text = currentItem.titleBook
         holder.nameAuthor.text = currentItem.nameAuthor
-        holder.ratings.text = (currentItem.ratings.toString() + " Ratings")
+        holder.ratings.text = "${currentItem.ratings} ${cartFragment.getString(R.string.ratings)}"
         holder.price.text = "${currentItem.price}\u20BD"
-
 
         val orangeStarDrawable = R.drawable.star_orange
 

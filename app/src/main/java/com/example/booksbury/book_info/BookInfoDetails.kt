@@ -34,17 +34,21 @@ class BookInfoDetails(private val idBook: Int) : Fragment() {
         fetchDataFromServer()
     }
 
+    // Метод, выводящий на экран подробности книги
     private fun fetchDataFromServer() {
         lifecycleScope.launch {
             val details = fetchDetailsDataFromServer(idBook)
-            binding.textSynopsis.text = details
+            binding.textSynopsis.text = details.substring(1, details.length - 1)
         }
     }
 
+    // Запрос, возвращающий подробности книги
     private suspend fun fetchDetailsDataFromServer(id: Int): String {
         return withContext(Dispatchers.IO) {
             val ipAddress = (activity as MainActivity).getIpAddress()
-            val url = URL("http://$ipAddress:3000/api/books/$id/details")
+            val language = (activity as MainActivity).getLanguage()
+
+            val url = URL("http://$ipAddress:3000/api/books/$id/details/$language")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
 

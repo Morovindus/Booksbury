@@ -34,6 +34,7 @@ class BookInfoAuthor(private val idBook: Int) : Fragment() {
         fetchDataFromServer()
     }
 
+    // Метод, выводящий на экран информацию об авторе
     private fun fetchDataFromServer() {
         lifecycleScope.launch {
             val author = fetchAuthorDataFromServer(idBook)
@@ -44,10 +45,13 @@ class BookInfoAuthor(private val idBook: Int) : Fragment() {
         }
     }
 
+    // Запрос, возвращающий информацию об авторе
     private suspend fun fetchAuthorDataFromServer(id: Int): Author {
         return withContext(Dispatchers.IO) {
             val ipAddress = (activity as MainActivity).getIpAddress()
-            val url = URL("http://$ipAddress:3000/api/books/$id/author")
+            val language = (activity as MainActivity).getLanguage()
+
+            val url = URL("http://$ipAddress:3000/api/books/$id/author/$language")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
 

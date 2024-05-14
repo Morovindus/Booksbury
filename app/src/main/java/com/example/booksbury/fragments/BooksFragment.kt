@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksbury.MainActivity
@@ -13,9 +14,8 @@ import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
 import com.example.booksbury.adapters.CustomAdapterPurchasedBooks
 import com.example.booksbury.databinding.BooksFragmentBinding
-import com.example.booksbury.items.ItemCart
+import com.example.booksbury.items.Book
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -26,17 +26,13 @@ import java.net.URL
 class BooksFragment : Fragment() {
 
     private var _binding: BooksFragmentBinding? = null
-
     private val binding get() = _binding!!
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = BooksFragmentBinding.inflate(inflater, container, false)
         return binding.root
-
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,14 +41,19 @@ class BooksFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        GlobalScope.launch(Dispatchers.Main) {
+        fetchBooksAndUpdateUI()
+    }
+
+    // Метод, который реализует вывод всех купленных книг на экран
+    private fun fetchBooksAndUpdateUI() {
+        lifecycleScope.launch {
             try {
                 val books = withContext(Dispatchers.IO) {
                     fetchBooksFromServer()
                 }
 
                 // Добавляем все купленные книги пользователем в массив
-                val purchasedBooks = ArrayList<ItemCart>()
+                val purchasedBooks = ArrayList<Book>()
                 for (book in books) {
                     val purchasedBook = withContext(Dispatchers.IO) {
                         fetchPurchasedBooksFromServer(book)
@@ -60,50 +61,59 @@ class BooksFragment : Fragment() {
                     purchasedBooks.add(purchasedBook)
                 }
 
-                // Обновляем пользовательский интерфейс в главном потоке
-                val adapter = CustomAdapterPurchasedBooks(purchasedBooks, this@BooksFragment)
-                binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
-                binding.recyclerView.adapter = adapter
-
-
+                // Обновляем пользовательский интерфейс
+                updateUIWithPurchasedBooks(purchasedBooks)
             } catch (e: Exception) {
-
-                // Получаем родительский ConstraintLayout
-                val constraintLayout = binding.ConstraintLayout
-
-                // Создаем новое представление
-                val newView = LayoutInflater.from(requireContext()).inflate(R.layout.notification_no_purchased_books, null)
-
-                // Определяем параметры размещения для нового представления
-                val params = ConstraintLayout.LayoutParams(
-                    ConstraintLayout.LayoutParams.MATCH_PARENT,
-                    ConstraintLayout.LayoutParams.WRAP_CONTENT
-                )
-
-                // Устанавливаем отношения в параметрах размещения для нового представления
-                params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
-                params.topToBottom = R.id.blackRectangle
-                params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
-                params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
-
-                // Устанавливаем новые параметры размещения для нового представления
-                newView.layoutParams = params
-
-                // Удаляем старое представление RecyclerView из родительского ConstraintLayout
-                val recyclerView = binding.recyclerView
-                constraintLayout.removeView(recyclerView)
-
-                // Добавляем новое представление в родительский ConstraintLayout
-                constraintLayout.addView(newView)
+                showNoPurchasedBooksNotification()
             }
         }
     }
 
+    // Метод для обновления пользовательского интерфейса
+    private fun updateUIWithPurchasedBooks(purchasedBooks: ArrayList<Book>) {
+        val adapter = CustomAdapterPurchasedBooks(purchasedBooks, this)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
+        binding.recyclerView.adapter = adapter
+    }
+
+    // Метод, который обрабатывает случай - пустого массива купленных книг
+    private fun showNoPurchasedBooksNotification() {
+        // Получаем родительский ConstraintLayout
+        val constraintLayout = binding.ConstraintLayout
+
+        // Создаем новое представление
+        val newView = LayoutInflater.from(requireContext()).inflate(R.layout.notification_no_purchased_books, null)
+
+        // Определяем параметры размещения для нового представления
+        val params = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        // Устанавливаем отношения в параметрах размещения для нового представления
+        params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+        params.topToBottom = R.id.blackRectangle
+        params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+        params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+
+        // Устанавливаем новые параметры размещения для нового представления
+        newView.layoutParams = params
+
+        // Удаляем старое представление RecyclerView из родительского ConstraintLayout
+        val recyclerView = binding.recyclerView
+        constraintLayout.removeView(recyclerView)
+
+        // Добавляем новое представление в родительский ConstraintLayout
+        constraintLayout.addView(newView)
+    }
+
     // Возвращаем купленную книгу по id
-    private fun fetchPurchasedBooksFromServer(bookId: Int): ItemCart {
+    private fun fetchPurchasedBooksFromServer(bookId: Int): Book {
         val ipAddress = (activity as MainActivity).getIpAddress()
-        val url = URL("http:$ipAddress:3000/book/bookById/$bookId")
+        val language = (activity as MainActivity).getLanguage()
+
+        val url = URL("http:$ipAddress:3000/book/bookById/$bookId/$language/smallCover")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
@@ -112,7 +122,7 @@ class BooksFragment : Fragment() {
 
         val jsonObject = JSONObject(response)
 
-        val id = jsonObject.getString("_id").toInt()
+        val id = jsonObject.getInt("_id")
         val title = jsonObject.getString("title")
         val authorName = jsonObject.getString("authorName")
         val stars = jsonObject.getInt("averageStars")
@@ -120,7 +130,7 @@ class BooksFragment : Fragment() {
         val price = jsonObject.getInt("price")
         val smallCover = jsonObject.getString("smallCover")
 
-        return ItemCart(id, smallCover, title, authorName, stars, ratings, price)
+        return Book(id, smallCover, title, authorName, stars, ratings, price)
     }
 
     // Возвращаем все id купленных пользователем книг
@@ -145,7 +155,7 @@ class BooksFragment : Fragment() {
         return items
     }
 
-    // Метод для вывода на экран информации о книге
+    // Метод, который позволяет переключить фрагмент, и передать ему значение id книги
     fun navigateToBookInfoFragment(id: Int) {
         val bundle = Bundle().apply {
             putInt("id", id)
