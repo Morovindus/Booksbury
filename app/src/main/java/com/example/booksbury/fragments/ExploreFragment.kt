@@ -70,7 +70,7 @@ class ExploreFragment : Fragment() {
 
     // Метод для обновления пользовательского интерфейса
     private fun updateRecyclerView(items: ArrayList<Book>) {
-        val adapter = CustomAdapterMarket(items, this@ExploreFragment)
+        val adapter = CustomAdapterMarket(items, requireContext(),this@ExploreFragment)
         val layoutManager = GridLayoutManager(requireContext(), 2)
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 20))

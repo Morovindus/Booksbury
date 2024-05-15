@@ -82,5 +82,12 @@
     <string name="there_are_no_favorite_books_here_yet">Здесь пока нет избранных книг</string>
     <string name="ratings">Отзывов</string>
 
+    <string name="book_already_purchased">Книга уже куплена</string>
+    <string name="book_already_in_cart">Книга уже в корзине</string>
+    <string name="book_added_to_cart">Книга добавлена в корзину</string>
+
+    <string name="book_added_to_favorites">Книга добавлена в избранное</string>
+    <string name="book_removed_from_favorites">Книга удалена из избранного</string>
+
 
 </resources>

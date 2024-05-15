@@ -112,8 +112,8 @@
 
     <Button
         android:id="@+id/button_delete"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="27dp"
+        android:layout_height="27dp"
         android:background="@drawable/cancelbutton"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

@@ -78,6 +78,7 @@
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <Button
+        android:id="@+id/button_buy"
         android:layout_width="wrap_content"
         android:layout_height="28dp"
         android:layout_alignParentEnd="true"

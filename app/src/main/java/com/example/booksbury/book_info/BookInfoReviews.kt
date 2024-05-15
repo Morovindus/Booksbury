@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -47,77 +48,68 @@ class BookInfoReviews(private val idBook: Int) : Fragment() {
     private fun fetchDataFromServer() {
         lifecycleScope.launch {
             val reviews = fetchReviewsDataFromServer(idBook)
-
-            var commented = false
-            var userReview: Reviews? = null
-
             val idUser = (activity as? MainActivity)?.getIdUser()
 
             val items = ArrayList<Reviews>()
+            var userReview: Reviews? = null
 
-            for (review in reviews) {
-                if (review.id != idUser)
-                {
-                    items.add(
-                        Reviews(
-                            review.id,
-                            review.nameUser,
-                            review.date,
-                            review.textUser,
-                            review.stars
-                        )
-                    )
+            reviews.forEach { review ->
+                if (review.id != idUser) {
+                    items.add(review)
                 } else {
-                    commented = true
-                    userReview = Reviews(
-                        review.id,
-                        review.nameUser,
-                        review.date,
-                        review.textUser,
-                        review.stars
-                    )
+                    userReview = review
                 }
             }
 
-            val adapter = CustomAdapterReview(items)
-            binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
-            binding.recyclerView.adapter = adapter
+            // Обновляем пользовательский интерфейс
+            updateRecyclerView(items)
 
+            val isBookPurchased = fetchBookFromPurchasedFromServer(idBook)
 
-            if (commented){
+            userReview?.let { review ->
                 // Добавляем уже существующий комментарий пользователя
+                addUserReviewToLayout(review)
+            }
+            if (userReview == null && isBookPurchased) {
+                // Добавляем кнопку "Добавление нового отзыва"
+                binding.container.addView(inflater.inflate(R.layout.button_write_review, binding.container, false))
+            }
+        }
+    }
 
-                val inflatedView = inflater.inflate(R.layout.user_review, binding.container,true)
-                inflatedView.id = View.generateViewId()
-
-                val dateTextView = inflatedView.findViewById<TextView>(R.id.date_reviews)
-                val starFirst = inflatedView.findViewById<ImageView>(R.id.starFirst)
-                val starSecond =inflatedView.findViewById<ImageView>(R.id.starSecond)
-                val starThird =inflatedView.findViewById<ImageView>(R.id.starThird)
-                val starFourth =inflatedView.findViewById<ImageView>(R.id.starFourth)
-                val starFifth = inflatedView.findViewById<ImageView>(R.id.starFifth)
+    // Метод для добавления, комментария пользователя
+    private fun addUserReviewToLayout(review: Reviews) {
+        binding.container.addView(
+            inflater.inflate(R.layout.user_review, binding.container, false).apply {
+                val dateTextView = findViewById<TextView>(R.id.date_reviews)
+                val starFirst = findViewById<ImageView>(R.id.starFirst)
+                val starSecond = findViewById<ImageView>(R.id.starSecond)
+                val starThird = findViewById<ImageView>(R.id.starThird)
+                val starFourth = findViewById<ImageView>(R.id.starFourth)
+                val starFifth = findViewById<ImageView>(R.id.starFifth)
 
                 val orangeStarDrawable = R.drawable.star_orange
 
-                if (userReview != null) {
-                    if (userReview.stars >= 1) starFirst.setImageResource(orangeStarDrawable)
-                    if (userReview.stars >= 2) starSecond.setImageResource(orangeStarDrawable)
-                    if (userReview.stars >= 3) starThird.setImageResource(orangeStarDrawable)
-                    if (userReview.stars >= 4) starFourth.setImageResource(orangeStarDrawable)
-                    if (userReview.stars >= 5) starFifth.setImageResource(orangeStarDrawable)
+                if (review.stars >= 1) starFirst.setImageResource(orangeStarDrawable)
+                if (review.stars >= 2) starSecond.setImageResource(orangeStarDrawable)
+                if (review.stars >= 3) starThird.setImageResource(orangeStarDrawable)
+                if (review.stars >= 4) starFourth.setImageResource(orangeStarDrawable)
+                if (review.stars >= 5) starFifth.setImageResource(orangeStarDrawable)
 
-                    val textReviewsTextView = inflatedView.findViewById<TextView>(R.id.text_reviews)
+                val textReviewsTextView = findViewById<TextView>(R.id.text_reviews)
 
-                    dateTextView.text = userReview.date
-                    textReviewsTextView.text = userReview.textUser
-                }
-            } else {
-                // Добавляем кнопку "Добавление нового отзыва"
-                inflater.inflate(R.layout.button_write_review, binding.container, true)
+                dateTextView.text = review.date
+                textReviewsTextView.text = review.textUser
             }
+        )
+    }
 
-        }
+    // Метод для обновления пользовательского интерфейса
+    private fun updateRecyclerView(items: ArrayList<Reviews>) {
+        val adapter = CustomAdapterReview(items)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
+        binding.recyclerView.adapter = adapter
     }
 
     // Запрос, возвращающий все отзывы по id книги
@@ -153,6 +145,24 @@ class BookInfoReviews(private val idBook: Int) : Fragment() {
 
             connection.disconnect()
             reviews
+        }
+    }
+
+    // Запрос, с помощью которого узнаем есть данная книга в уже купленных книгах у пользователя
+    private suspend fun fetchBookFromPurchasedFromServer(id: Int): Boolean {
+        return withContext(Dispatchers.IO) {
+            val ipAddress = (context as MainActivity).getIpAddress()
+            val userId = (context as MainActivity).getIdUser()
+
+            val url = URL("http:$ipAddress:3000/$userId/purchasedBooks/$id")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+
+            val inputStream = connection.inputStream
+            val response = inputStream.bufferedReader().use { it.readText() }
+
+            val jsonObject = JSONObject(response)
+            jsonObject.getBoolean("isBookPurchased")
         }
     }
 

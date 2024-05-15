@@ -79,5 +79,12 @@
     <string name="there_are_no_favorite_books_here_yet">There are no favorite books here yet</string>
     <string name="ratings">Ratings</string>
 
+    <string name="book_already_purchased">Book is already purchased</string>
+    <string name="book_already_in_cart">Book is already in the cart</string>
+    <string name="book_added_to_cart">Book added to cart</string>
+
+    <string name="book_added_to_favorites">Book added to favorites</string>
+    <string name="book_removed_from_favorites">Book removed from favorites</string>
+
 
 </resources>

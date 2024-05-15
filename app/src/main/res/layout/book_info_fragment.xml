@@ -38,6 +38,16 @@
             app:layout_constraintBottom_toBottomOf="parent"/>
 
         <Button
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:id="@+id/button_delete_favorite"
+            android:background="@drawable/cancelbutton"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <Button
             style="@style/Picture24dp"
             android:id="@+id/button_favourites"
             android:background="@drawable/save_2"

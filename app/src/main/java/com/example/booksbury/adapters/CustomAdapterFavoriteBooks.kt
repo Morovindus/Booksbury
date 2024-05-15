@@ -12,43 +12,49 @@ import com.example.booksbury.fragments.FavouritesFragment
 import com.example.booksbury.items.Book
 import com.squareup.picasso.Picasso
 
+// Адаптер для списка избранных книг
 class CustomAdapterFavoriteBooks(private val items: ArrayList<Book>, private val favoriteFragment: FavouritesFragment) : RecyclerView.Adapter<CustomAdapterFavoriteBooks.ViewHolder>() {
 
+    // Создание нового ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_books, parent, false)
         return ViewHolder(view)
     }
 
+    // Привязка данных к ViewHolder
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = items[position]
 
-
+        // Загрузка обложки книги с помощью Picasso
         Picasso.get().load(currentItem.imageResource).into(holder.imageCoverBook)
 
+        // Установка заголовка книги, имени автора, рейтинга книги
         holder.titleBook.text = currentItem.titleBook
         holder.nameAuthor.text = currentItem.nameAuthor
         holder.ratings.text = "${currentItem.ratings} ${favoriteFragment.getString(R.string.ratings)}"
 
-
+        // Установка звездочек рейтинга книги
         val orangeStarDrawable = R.drawable.star_orange
-
         if (currentItem.stars >= 1) holder.starFirst.setImageResource(orangeStarDrawable)
         if (currentItem.stars >= 2) holder.starSecond.setImageResource(orangeStarDrawable)
         if (currentItem.stars >= 3) holder.starThird.setImageResource(orangeStarDrawable)
         if (currentItem.stars >= 4) holder.starFourth.setImageResource(orangeStarDrawable)
         if (currentItem.stars >= 5) holder.starFifth.setImageResource(orangeStarDrawable)
 
+        // Обработка нажатия на обложку книги
         holder.imageCoverBook.setOnClickListener {
             val id = currentItem.id
             favoriteFragment.navigateToBookInfoFragment(id)
         }
     }
 
+    // Получение количества элементов в списке
     override fun getItemCount(): Int {
         return items.size
     }
 
+    // ViewHolder для отображения элемента списка избранных книг
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageCoverBook: ImageView = itemView.findViewById(R.id.imageCoverBook)
         val titleBook: TextView = itemView.findViewById(R.id.title_book)
