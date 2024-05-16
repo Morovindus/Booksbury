@@ -20,10 +20,16 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
+// Класс фрагмента профиля пользователя
 class ProfileFragment : Fragment() {
 
+    // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: ProfileFragmentBinding? = null
+
+    // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,10 +38,11 @@ class ProfileFragment : Fragment() {
         return binding.root
     }
 
+    // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Слушатели нажатий всех кнопок на экране
+        // Обработчики нажатий на все кнопки на экране
         binding.buttonHome.setOnClickListener { navigateToFragment(R.id.action_ProfileFragment_to_HomeFragment) }
         binding.buttonExplore.setOnClickListener { navigateToFragment(R.id.action_ProfileFragment_to_ExploreFragment) }
         binding.buttonFavourites.setOnClickListener { navigateToFragment(R.id.action_ProfileFragment_to_FavouritesFragment) }
@@ -45,6 +52,7 @@ class ProfileFragment : Fragment() {
         binding.buttonBooks.setOnClickListener { navigateToFragment(R.id.action_ProfileFragment_to_BooksFragment) }
         binding.buttonExit.setOnClickListener { showExitConfirmationDialog() }
 
+        // Получаем и обновляем данные о имени и электронной почте на экране
         fetchNameAndEmailUI()
     }
 

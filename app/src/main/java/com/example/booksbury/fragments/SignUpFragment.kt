@@ -26,10 +26,16 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.Random
 
+// Класс фрагмента регистрации нового пользователя
 class SignUpFragment : Fragment() {
 
+    // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: SignUpFragmentBinding? = null
+
+    // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,9 +43,12 @@ class SignUpFragment : Fragment() {
         _binding = SignUpFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+    // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Обработчики нажатий на кнопку "Регистрация"
         binding.buttonRegistration.setOnClickListener {
 
             val username = binding.editName.text.toString()
@@ -56,6 +65,8 @@ class SignUpFragment : Fragment() {
                 }
             }
         }
+
+        // Обработчик нажатия на текст "Войти"
         binding.signInText.setOnClickListener {
             findNavController().navigate(R.id.action_SignUpFragment_to_SignInFragment)
         }

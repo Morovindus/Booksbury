@@ -86,5 +86,15 @@
     <string name="book_added_to_favorites">Book added to favorites</string>
     <string name="book_removed_from_favorites">Book removed from favorites</string>
 
+    <string name="order_confirmation_title">Order Confirmation</string>
+    <string name="order_confirmation_message">Are you sure you want to place this order?</string>
+
+    <string name="order_confirmation_success">Order successfully placed</string>
+
+    <string name="you_just_buy">You just buy</string>
+
+    <string name="about_app">About the App</string>
+    <string name="design">Design</string>
+
 
 </resources>

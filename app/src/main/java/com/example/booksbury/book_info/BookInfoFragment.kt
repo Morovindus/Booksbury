@@ -27,10 +27,16 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
+// Класс фрагмента отображения информации о книге
 class BookInfoFragment : Fragment() {
 
+    // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: BookInfoFragmentBinding? = null
+
+    // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,9 +45,11 @@ class BookInfoFragment : Fragment() {
         return binding.root
     }
 
+    // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Назначение обработчика нажатия кнопки "Назад"
         binding.buttonBack.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -57,7 +65,6 @@ class BookInfoFragment : Fragment() {
 
         // Редактируем экран пользователя в зависимости от некоторых параметров
         handleBookButtons(idBook)
-
     }
 
     // Обрабатываем удаление и добавление кнопок на экране
@@ -213,7 +220,6 @@ class BookInfoFragment : Fragment() {
             else -> Fragment()
         }
     }
-
 
     // Запрос, который возвращает подробную информацию о книге
     private fun fetchItemsFromServer(id: Int) {

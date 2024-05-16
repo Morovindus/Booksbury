@@ -109,7 +109,7 @@
             app:layout_constraintTop_toBottomOf="@+id/total">
 
             <ImageButton
-                android:id="@+id/button2"
+                android:id="@+id/button_order"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/button_confirm"
@@ -128,10 +128,10 @@
                 android:textColor="?android:windowBackground"
                 android:scaleType="fitCenter"
                 android:fontFamily="@font/kantumruy_regular"
-                app:layout_constraintStart_toStartOf="@id/button2"
-                app:layout_constraintEnd_toEndOf="@id/button2"
-                app:layout_constraintTop_toTopOf="@id/button2"
-                app:layout_constraintBottom_toBottomOf="@id/button2"/>
+                app:layout_constraintStart_toStartOf="@id/button_order"
+                app:layout_constraintEnd_toEndOf="@id/button_order"
+                app:layout_constraintTop_toTopOf="@id/button_order"
+                app:layout_constraintBottom_toBottomOf="@id/button_order"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

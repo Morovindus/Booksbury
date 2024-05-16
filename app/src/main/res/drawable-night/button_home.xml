@@ -7,7 +7,7 @@
         android:viewportHeight="46">
       <path
           android:pathData="M4,0L173,0A4,4 0,0 1,177 4L177,42A4,4 0,0 1,173 46L4,46A4,4 0,0 1,0 42L0,4A4,4 0,0 1,4 0z"
-          android:fillColor="#FFC107"/>
+          android:fillColor="#3E3E3E"/>
     </vector>
   </item>
   <item>
@@ -17,7 +17,7 @@
         android:viewportHeight="46">
       <path
           android:pathData="M4,0L173,0A4,4 0,0 1,177 4L177,42A4,4 0,0 1,173 46L4,46A4,4 0,0 1,0 42L0,4A4,4 0,0 1,4 0z"
-          android:fillColor="#FFA000"/>
+          android:fillColor="#E1DFDF"/>
     </vector>
   </item>
 </selector>

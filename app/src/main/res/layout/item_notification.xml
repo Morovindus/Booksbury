@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/imageCoverBook"
+        android:layout_marginStart="30dp"
+        android:layout_width="83dp"
+        android:layout_height="83dp"
+        android:background="?android:windowBackground"
+        android:scaleType="fitCenter"
+        android:src="@drawable/covers_book_8"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/title_notification"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_medium"
+        android:text="You just buy"
+        android:textColor="?android:textColor"
+        android:textSize="16sp"
+        android:layout_marginTop="13dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageCoverBook"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/title_book"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Prisoner"
+        android:fontFamily="@font/dms_erifdisplay_regular"
+        android:textColor="?android:textColor"
+        android:textSize="16sp"
+        android:layout_marginTop="7dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageCoverBook"
+        app:layout_constraintTop_toBottomOf="@+id/title_notification" />
+
+    <TextView
+        android:id="@+id/title_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="3:30pm 25 May 2024"
+        android:fontFamily="@font/kantumruy_regular"
+        android:textColor="?android:textColor"
+        android:textSize="13.5sp"
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_book" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="?android:textColor"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

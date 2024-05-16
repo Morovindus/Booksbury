@@ -23,10 +23,16 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
+// Класс фрагмента главной страницы
 class HomeFragment : Fragment() {
 
+    // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: HomeFragmentBinding? = null
+
+    // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,10 +41,11 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Слушатели нажатий всех кнопок на экране
+        // Обработчики нажатий на все кнопки на экране
         binding.buttonMore.setOnClickListener { navigateToFragment(R.id.action_HomeFragment_to_ExploreFragment) }
         binding.buttonFavourites.setOnClickListener { navigateToFragment(R.id.action_HomeFragment_to_FavouritesFragment) }
         binding.buttonProfile.setOnClickListener { navigateToFragment(R.id.action_HomeFragment_to_ProfileFragment) }
@@ -46,10 +53,11 @@ class HomeFragment : Fragment() {
         binding.buttonSearch.setOnClickListener { navigateToFragment(R.id.action_HomeFragment_to_SearchFragment) }
         binding.buttonNotification.setOnClickListener { navigateToFragment(R.id.action_HomeFragment_to_NotificaionFragment) }
 
+        // Получаем и обновляем данные о книгах на экране
         fetchBooksAndUpdateUI()
     }
 
-    // Метод, который реализует вывод всех избранных книг на экран
+    // Метод, который реализует вывод случайных книг на экран
     private fun fetchBooksAndUpdateUI() {
         lifecycleScope.launch {
             // Загрузка основной книги из сети

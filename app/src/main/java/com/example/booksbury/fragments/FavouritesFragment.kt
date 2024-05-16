@@ -23,10 +23,16 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
+// Класс фрагмента избранных книг
 class FavouritesFragment : Fragment() {
 
+    // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: FavouritesFragmentBinding? = null
+
+    // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,6 +41,7 @@ class FavouritesFragment : Fragment() {
         return binding.root
     }
 
+    // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -45,6 +52,7 @@ class FavouritesFragment : Fragment() {
         binding.buttonSearch.setOnClickListener { navigateToFragment(R.id.action_FavouritesFragment_to_SearchFragment) }
         binding.buttonNotification.setOnClickListener { navigateToFragment(R.id.action_FavouritesFragment_to_NotificaionFragment) }
 
+        // Получаем и обновляем данные о книгах на экране
         fetchBooksAndUpdateUI()
     }
 

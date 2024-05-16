@@ -89,5 +89,15 @@
     <string name="book_added_to_favorites">Книга добавлена в избранное</string>
     <string name="book_removed_from_favorites">Книга удалена из избранного</string>
 
+    <string name="order_confirmation_title">Подтверждение заказа</string>
+    <string name="order_confirmation_message">Вы уверены, что хотите оформить этот заказ?</string>
+
+    <string name="order_confirmation_success">Заказ успешно оформлен</string>
+
+    <string name="you_just_buy">Вы только что купили</string>
+
+    <string name="about_app">О приложении</string>
+    <string name="design">Оформление</string>
+
 
 </resources>

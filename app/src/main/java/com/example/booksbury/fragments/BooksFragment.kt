@@ -23,10 +23,16 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
+// Класс фрагмента отображения списка купленных книг
 class BooksFragment : Fragment() {
 
+    // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: BooksFragmentBinding? = null
+
+    // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,13 +40,17 @@ class BooksFragment : Fragment() {
         _binding = BooksFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+    // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Обработчик нажатия кнопки "Назад"
         binding.buttonBack.setOnClickListener {
             findNavController().popBackStack()
         }
 
+        // Получение списка книг с сервера и обновление пользовательского интерфейса
         fetchBooksAndUpdateUI()
     }
 

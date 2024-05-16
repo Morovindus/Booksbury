@@ -125,12 +125,18 @@
         android:name="com.example.booksbury.fragments.NotificationFragment"
         android:label="NotificationFragment"
         tools:layout="@layout/notification_fragment">
+        <action
+            android:id="@+id/action_NotificationFragment_to_BookInfoFragment"
+            app:destination="@id/BookInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/CartFragment"
         android:name="com.example.booksbury.fragments.CartFragment"
         android:label="CartFragment"
         tools:layout="@layout/cart_fragment">
+        <action
+            android:id="@+id/action_CartFragment_to_HomeFragment"
+            app:destination="@id/HomeFragment" />
     </fragment>
     <fragment
         android:id="@+id/BooksFragment"

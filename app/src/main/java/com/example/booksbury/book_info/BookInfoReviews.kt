@@ -25,11 +25,19 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
+// Класс фрагмента отображения отзывов о книге
 class BookInfoReviews(private val idBook: Int) : Fragment() {
 
+    // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: BookInfoReviewsBinding? = null
+
+    // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // Приватное свойство для хранения объекта LayoutInflater
     private lateinit var inflater: LayoutInflater
+
+    // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,8 +47,11 @@ class BookInfoReviews(private val idBook: Int) : Fragment() {
         return binding.root
     }
 
+    // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Выполнение запроса на получение всех отзывов и обновление пользовательского интерфейса
         fetchDataFromServer()
     }
 
@@ -53,6 +64,7 @@ class BookInfoReviews(private val idBook: Int) : Fragment() {
             val items = ArrayList<Reviews>()
             var userReview: Reviews? = null
 
+            // Разделение отзывов на пользовательские и остальные
             reviews.forEach { review ->
                 if (review.id != idUser) {
                     items.add(review)
@@ -64,6 +76,7 @@ class BookInfoReviews(private val idBook: Int) : Fragment() {
             // Обновляем пользовательский интерфейс
             updateRecyclerView(items)
 
+            // Получение информации о том, приобрел ли пользователь данную книгу
             val isBookPurchased = fetchBookFromPurchasedFromServer(idBook)
 
             userReview?.let { review ->

@@ -17,11 +17,16 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
+// Класс фрагмента отображения информации об авторе книги
 class BookInfoAuthor(private val idBook: Int) : Fragment() {
 
+    // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: BookInfoAuthorBinding? = null
+
+    // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
 
+    // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,8 +34,12 @@ class BookInfoAuthor(private val idBook: Int) : Fragment() {
         _binding = BookInfoAuthorBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+    // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Выполнение запроса на получение данных об авторе и обновление пользовательского интерфейса
         fetchDataFromServer()
     }
 
@@ -39,6 +48,7 @@ class BookInfoAuthor(private val idBook: Int) : Fragment() {
         lifecycleScope.launch {
             val author = fetchAuthorDataFromServer(idBook)
 
+            // Установка имени автора книги, изображения автора книги и описание автора
             Picasso.get().load(author.authorImage).into(binding.profileAuthor)
             binding.nameAuthor.text = author.authorName
             binding.textAuthor.text = author.authorAbout

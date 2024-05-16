@@ -22,10 +22,16 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
+// Класс фрагмента магазина книг
 class ExploreFragment : Fragment() {
 
+    // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: ExploreFragmentBinding? = null
+
+    // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,6 +40,7 @@ class ExploreFragment : Fragment() {
         return binding.root
     }
 
+    // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -44,6 +51,7 @@ class ExploreFragment : Fragment() {
         binding.buttonSearch.setOnClickListener { navigateToFragment(R.id.action_ExploreFragment_to_SearchFragment) }
         binding.buttonNotification.setOnClickListener { navigateToFragment(R.id.action_ExploreFragment_to_NotificationFragment) }
 
+        // Получаем и обновляем данные о книгах на экране
         fetchBooksAndUpdateUI()
     }
 

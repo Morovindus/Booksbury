@@ -19,10 +19,16 @@ import java.io.UnsupportedEncodingException
 import java.net.HttpURLConnection
 import java.net.URL
 
+// Класс фрагмента входа в систему
 class SignInFragment : Fragment() {
 
+    // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: SignInFragmentBinding? = null
+
+    // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,9 +36,12 @@ class SignInFragment : Fragment() {
         _binding = SignInFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+    // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Обработчики нажатий на кнопки "Войти"
         binding.buttonLogin.setOnClickListener {
             val username = binding.editUsername.text.toString()
             val password = binding.editPassword.text.toString()
@@ -46,6 +55,8 @@ class SignInFragment : Fragment() {
                 }
             }
         }
+
+        // Обработчик нажатия на текст "Зарегистрироваться"
         binding.signUpText.setOnClickListener {
             findNavController().navigate(R.id.action_SignInFragment_to_SignUpFragment)
         }

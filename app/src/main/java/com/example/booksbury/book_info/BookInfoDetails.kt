@@ -16,11 +16,16 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
+// Класс фрагмента отображения подробностей книги
 class BookInfoDetails(private val idBook: Int) : Fragment() {
 
+    // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: BookInfoSynopsisBinding? = null
+
+    // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
 
+    // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,8 +34,11 @@ class BookInfoDetails(private val idBook: Int) : Fragment() {
         return binding.root
     }
 
+    // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Выполнение запроса на получение данных о деталях книги и обновление пользовательского интерфейса
         fetchDataFromServer()
     }
 
