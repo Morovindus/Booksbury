@@ -99,5 +99,16 @@
     <string name="about_app">О приложении</string>
     <string name="design">Оформление</string>
 
+    <string name="comment_success_message">Комментарий успешно отправлен!</string>
+    <string name="comment_success_description">Ваш комментарий был успешно отправлен.</string>
+
+    <string name="add_review">Добавить отзыв</string>
+    <string name="score">Оценка:</string>
+    <string name="write_review">Напишите ваш отзыв</string>
+    <string name="confirm">Добавить</string>
+
+    <string name="pls_select_rating">Пожалуйста поставьте оценку</string>
+    <string name="pls_write_review">Пожалуйства оставьте отзыв</string>
+
 
 </resources>

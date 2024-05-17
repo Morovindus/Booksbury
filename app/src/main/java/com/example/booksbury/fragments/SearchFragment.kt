@@ -21,9 +21,7 @@ class SearchFragment : Fragment() {
 
     private var enteredText: String = ""
 
-    private lateinit var editText: EditText
-
-    public companion object {
+    companion object {
         const val ENTERED_TEXT_KEY = "entered_text"
     }
 
@@ -44,31 +42,28 @@ class SearchFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        editText = binding.searchBar
-        val buttonCancel = binding.buttonCancel
-
         // Восстанавливаем сохраненное значение, если оно есть
         savedInstanceState?.let {
             enteredText = it.getString(ENTERED_TEXT_KEY, "")
-            editText.setText(enteredText)
+            binding.searchBar.setText(enteredText)
         }
 
         // Скрываем кнопку при запуске активности
-        buttonCancel.visibility = View.INVISIBLE
-        buttonCancel.isEnabled = false
+        binding.buttonCancel.visibility = View.INVISIBLE
+        binding.buttonCancel.isEnabled = false
 
         // Устанавливаем слушатель для изменений текста в текстовом поле
-        editText.addTextChangedListener(object : TextWatcher {
+        binding.searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 // Если текстовое поле не пустое, показываем кнопку, иначе скрываем
                 if (s.isNullOrEmpty()) {
-                    buttonCancel.visibility = Button.INVISIBLE
-                    buttonCancel.isEnabled = false
+                    binding.buttonCancel.visibility = Button.INVISIBLE
+                    binding.buttonCancel.isEnabled = false
                 } else {
-                    buttonCancel.visibility = Button.VISIBLE
-                    buttonCancel.isEnabled = true
+                    binding.buttonCancel.visibility = Button.VISIBLE
+                    binding.buttonCancel.isEnabled = true
                 }
             }
 
@@ -76,9 +71,9 @@ class SearchFragment : Fragment() {
         })
 
         // Сброс текста и скрытие клавиатуры при нажатии на кнопку
-        buttonCancel.setOnClickListener {
-            editText.text.clear()
-            hideKeyboard(editText)
+        binding.buttonCancel.setOnClickListener {
+            binding.searchBar.text.clear()
+            hideKeyboard(binding.searchBar)
         }
     }
 
@@ -88,10 +83,10 @@ class SearchFragment : Fragment() {
         imm.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
+    // Метод, для сохранения введенного текста
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        // Сохраняем введенный текст
-        outState.putString(ENTERED_TEXT_KEY, editText.text.toString())
+        outState.putString(ENTERED_TEXT_KEY, binding.searchBar.text.toString())
     }
 
     override fun onDestroyView() {

@@ -113,6 +113,9 @@
         android:name="com.example.booksbury.book_info.BookInfoFragment"
         android:label="BookInfoFragment"
         tools:layout="@layout/book_info_fragment">
+        <action
+            android:id="@+id/action_BookInfoFragment_to_ReviewFragment"
+            app:destination="@id/ReviewFragment" />
     </fragment>
     <fragment
         android:id="@+id/SearchFragment"
@@ -167,5 +170,14 @@
         <action
             android:id="@+id/action_SignUpFragment_to_SignInFragment"
             app:destination="@id/SignInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ReviewFragment"
+        android:name="com.example.booksbury.fragments.ReviewFragment"
+        android:label="ReviewFragment"
+        tools:layout="@layout/review_fragment">
+        <action
+            android:id="@+id/action_ReviewFragment_to_HomeFragment"
+            app:destination="@id/HomeFragment" />
     </fragment>
 </navigation>

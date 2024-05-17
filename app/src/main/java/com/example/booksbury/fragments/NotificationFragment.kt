@@ -6,13 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.booksbury.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
 import com.example.booksbury.adapters.CustomAdapterNotification
+import com.example.booksbury.book_info.BookInfoReviews
 import com.example.booksbury.databinding.NotificationFragmentBinding
 import com.example.booksbury.items.Notification
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +34,15 @@ class NotificationFragment : Fragment() {
     // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
 
+    // ViewModel для хранения состояния
+    private lateinit var viewModel: BookViewModel
+
+    // Блок companion object для хранения констант
+    companion object {
+        // Ключ для сохранения и восстановления идентификатора пользователя
+        const val ENTERED_ID_USER_KEY = "savedIdUser"
+    }
+
     // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +59,19 @@ class NotificationFragment : Fragment() {
         // Установка слушателя для кнопки "Назад"
         binding.buttonBack.setOnClickListener {
             findNavController().popBackStack()
+        }
+
+        // Инициализация ViewModel
+        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+
+        // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
+        if (viewModel.idUser == 0) {
+            viewModel.idUser = (activity as MainActivity).getIdUser()
+        }
+
+        // Восстанавливаем сохраненное значение, если оно есть
+        savedInstanceState?.let {
+            viewModel.idUser = it.getInt(BookInfoReviews.ENTERED_ID_USER_KEY, viewModel.idUser)
         }
 
         // Выполнение запроса на получение уведомлений и обновление пользовательского интерфейса
@@ -80,18 +105,15 @@ class NotificationFragment : Fragment() {
 
     // Метод, который позволяет переключить фрагмент, и передать ему значение id книги
     fun navigateToBookInfoFragment(id: Int) {
-        val bundle = Bundle().apply {
-            putInt("id", id)
-        }
-        findNavController().navigate(R.id.action_NotificationFragment_to_BookInfoFragment, bundle)
+        (activity as MainActivity).setIdBook(id)
+        findNavController().navigate(R.id.action_NotificationFragment_to_BookInfoFragment)
     }
 
     // Запрос на получение всех уведомлений
     private fun fetchNotificationFromServer(): ArrayList<Notification> {
         val ipAddress = (activity as MainActivity).getIpAddress()
-        val userId = (context as MainActivity).getIdUser()
 
-        val url = URL("http:$ipAddress:3000/api/users/$userId/notifications")
+        val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/notifications")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
@@ -144,6 +166,13 @@ class NotificationFragment : Fragment() {
         constraintLayout.addView(newView)
     }
 
+    // Метод, для сохранения введенного текста
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(BookInfoReviews.ENTERED_ID_USER_KEY, viewModel.idUser)
+    }
+
+    // Метод, вызываемый перед уничтожением представления фрагмента
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

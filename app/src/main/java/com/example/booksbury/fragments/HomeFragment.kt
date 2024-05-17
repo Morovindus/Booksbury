@@ -104,10 +104,8 @@ class HomeFragment : Fragment() {
 
     // Метод, который позволяет переключить фрагмент, и передать ему значение id книги
     fun navigateToBookInfoFragment(id: Int) {
-        val bundle = Bundle().apply {
-            putInt("id", id)
-        }
-        findNavController().navigate(R.id.action_HomeFragment_to_BookInfoFragment, bundle)
+        (activity as MainActivity).setIdBook(id)
+        findNavController().navigate(R.id.action_HomeFragment_to_BookInfoFragment)
     }
 
     // Запрос на получение одной случайной книги
@@ -188,6 +186,7 @@ class HomeFragment : Fragment() {
         findNavController().navigate(actionId)
     }
 
+    // Метод, вызываемый перед уничтожением представления фрагмента
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

@@ -11,9 +11,11 @@ import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.booksbury.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.databinding.BookInfoFragmentBinding
@@ -36,6 +38,29 @@ class BookInfoFragment : Fragment() {
     // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
 
+    // ViewModel для хранения состояния
+    private lateinit var viewModel: BookViewModel
+
+    // Блок companion object для хранения констант
+    companion object {
+        // Ключ для сохранения и восстановления идентификатора книги и идентификатора пользователя
+        const val ENTERED_ID_BOOK_KEY = "savedIdBook"
+        const val ENTERED_ID_USER_KEY = "savedIdUser"
+    }
+
+    // Метод, вызываемый при создании фрагмента
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Инициализация ViewModel
+        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+
+        // Восстанавливаем сохраненное значение, если оно есть
+        savedInstanceState?.let {
+            viewModel.idUser = it.getInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+            viewModel.idBook = it.getInt(ENTERED_ID_BOOK_KEY, viewModel.idBook)
+        }
+    }
+
     // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,45 +79,59 @@ class BookInfoFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        // Получаем значение id книги из предыдущего фрагмента
-        val idBook = arguments?.getInt("id", 0) ?: 0
+        // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
+        if (viewModel.idUser == 0) {
+            viewModel.idUser = (activity as MainActivity).getIdUser()
+        }
+
+        // Получаем значение id книги из предыдущего фрагмента, если оно еще не было установлено
+        if (viewModel.idBook == 0) {
+            viewModel.idBook = (activity as MainActivity).getIdBook()
+        }
 
         // Отправляем запрос, и инициализируем все поля на экране
-        fetchBookData(idBook)
+        fetchBookData()
 
         // Настраиваем ViewPager и TabLayout
-        setupViewPagerAndTabs(idBook)
+        setupViewPagerAndTabs()
 
         // Редактируем экран пользователя в зависимости от некоторых параметров
-        handleBookButtons(idBook)
+        handleBookButtons()
+    }
+
+    // Метод, для сохранения введенного текста
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(ENTERED_ID_BOOK_KEY, viewModel.idBook)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModel.idUser)
     }
 
     // Обрабатываем удаление и добавление кнопок на экране
-    private fun handleBookButtons(idBook: Int) {
+    private fun handleBookButtons() {
         val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val container = binding.container
 
         lifecycleScope.launch {
-            val isBookPurchased = fetchBookFromPurchasedFromServer(idBook)
-            val isBookFavorite = fetchBookFromFavoriteFromServer(idBook)
+            val isBookPurchased = fetchBookFromPurchasedFromServer()
+            val isBookFavorite = fetchBookFromFavoriteFromServer()
 
             withContext(Dispatchers.Main) {
                 if (isBookPurchased) {
                     // Если у пользователя уже есть эта книга
                     inflater.inflate(R.layout.button_read, container, true)
-                    setupFavoriteButton(isBookFavorite, idBook)
+                    setupFavoriteButton(isBookFavorite)
 
                 } else {
                     // Если у пользователя нет этой книги
                     inflater.inflate(R.layout.button_buy, container, true)
-                    setupBuyButton(inflater, container, idBook)
+                    setupBuyButton(inflater, container)
                 }
             }
         }
     }
 
     // Метод настраивающий отображение кнопок "Избранное" и "Удаление из избранного"
-    private fun setupFavoriteButton(isBookFavorite: Boolean, idBook: Int) {
+    private fun setupFavoriteButton(isBookFavorite: Boolean) {
         if (isBookFavorite) {
             // Если у пользователя книга в избранных
             setupButton(binding.buttonFavourites, false, View.INVISIBLE) {}
@@ -102,11 +141,11 @@ class BookInfoFragment : Fragment() {
 
                     // Посылаем запрос на удаление книги из избранного
                     withContext(Dispatchers.IO) {
-                        removeFromFavorite(idBook)
+                        removeFromFavorite()
                     }
                     Toast.makeText(activity, getString(R.string.book_removed_from_favorites), Toast.LENGTH_LONG).show()
 
-                    setupFavoriteButton(fetchBookFromFavoriteFromServer(idBook),idBook)
+                    setupFavoriteButton(fetchBookFromFavoriteFromServer())
                 }
             }
         } else {
@@ -116,11 +155,11 @@ class BookInfoFragment : Fragment() {
                 lifecycleScope.launch {
                     // Посылаем запрос на добавление книги в избранного
                     withContext(Dispatchers.IO) {
-                        addBookToFavorite(idBook)
+                        addBookToFavorite()
                     }
                     Toast.makeText(activity, getString(R.string.book_added_to_favorites), Toast.LENGTH_LONG).show()
 
-                    setupFavoriteButton(fetchBookFromFavoriteFromServer(idBook),idBook)
+                    setupFavoriteButton(fetchBookFromFavoriteFromServer())
                 }
             }
 
@@ -129,11 +168,10 @@ class BookInfoFragment : Fragment() {
     }
 
     // Запрос на удаления книги из избранного
-    private fun removeFromFavorite(bookId: Int) {
+    private fun removeFromFavorite() {
         val ipAddress = (context as MainActivity).getIpAddress()
-        val userId = (context as MainActivity).getIdUser()
 
-        val url = URL("http:$ipAddress:3000/api/users/$userId/deleteFavorite/$bookId")
+        val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/deleteFavorite/${viewModel.idBook}")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "DELETE"
 
@@ -156,14 +194,14 @@ class BookInfoFragment : Fragment() {
     }
 
     // Метод выводящий всю подробную информацию о книге на экран
-    private fun fetchBookData(idBook: Int) {
+    private fun fetchBookData() {
         GlobalScope.launch(Dispatchers.IO) {
-            fetchItemsFromServer(idBook)
+            fetchItemsFromServer()
         }
     }
 
     // Добавление кнопки "Купить", удаление кнопки "Избранное"
-    private fun setupBuyButton(inflater: LayoutInflater, container: ViewGroup, idBook: Int) {
+    private fun setupBuyButton(inflater: LayoutInflater, container: ViewGroup) {
         setupButton(binding.buttonFavourites, false, View.INVISIBLE) {}
 
         val buttonBuy = container.findViewById<AppCompatImageButton>(R.id.button_buy_book)
@@ -171,14 +209,14 @@ class BookInfoFragment : Fragment() {
         // Слушатель нажатия на кнопку "Купить"
         buttonBuy.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                val isBookInCart = fetchBookFromCartFromServer(idBook)
+                val isBookInCart = fetchBookFromCartFromServer()
 
                 // Показ уведомления должен быть выполнен на главном потоке
                 withContext(Dispatchers.Main) {
                     if (isBookInCart) {
                         Toast.makeText(activity, getString(R.string.book_already_in_cart), Toast.LENGTH_LONG).show()
                     } else {
-                        addBookToCart(idBook)
+                        addBookToCart()
                         Toast.makeText(activity, getString(R.string.book_added_to_cart), Toast.LENGTH_LONG).show()
                     }
                 }
@@ -187,10 +225,10 @@ class BookInfoFragment : Fragment() {
     }
 
     // Метод инициализируйющий ViewPager и TabLayout
-    private fun setupViewPagerAndTabs(idBook: Int) {
+    private fun setupViewPagerAndTabs() {
         val viewPager = binding.viewPager
         val tabLayout = binding.tabLayout
-        val adapter = ViewPagerAdapter(requireActivity(), idBook)
+        val adapter = ViewPagerAdapter(requireActivity())
         viewPager.adapter = adapter
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -205,7 +243,7 @@ class BookInfoFragment : Fragment() {
     }
 
     // Класс, отвечающий за управоление вкладок ViewPager
-    private inner class ViewPagerAdapter(activity: FragmentActivity, private val idBook: Int) :
+    private inner class ViewPagerAdapter(activity: FragmentActivity) :
         FragmentStateAdapter(activity) {
 
         // Возвращает общее количество вкладок
@@ -213,20 +251,20 @@ class BookInfoFragment : Fragment() {
 
         // Создает и возвращает фрагменты для каждой вкладки
         override fun createFragment(position: Int): Fragment = when (position) {
-            0 -> BookInfoSynopsis(idBook)
-            1 -> BookInfoDetails(idBook)
-            2 -> BookInfoAuthor(idBook)
-            3 -> BookInfoReviews(idBook)
+            0 -> BookInfoSynopsis()
+            1 -> BookInfoDetails()
+            2 -> BookInfoAuthor()
+            3 -> BookInfoReviews()
             else -> Fragment()
         }
     }
 
     // Запрос, который возвращает подробную информацию о книге
-    private fun fetchItemsFromServer(id: Int) {
+    private fun fetchItemsFromServer() {
         val ipAddress = (activity as MainActivity).getIpAddress()
         val language = (activity as MainActivity).getLanguage()
 
-        val url = URL("http://$ipAddress:3000/api/books/more/$id/$language")
+        val url = URL("http:$ipAddress:3000/api/books/more/${viewModel.idBook}/$language")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
@@ -249,12 +287,11 @@ class BookInfoFragment : Fragment() {
     }
 
     // Запрос, с помощью которого узнаем есть данная книга в избранных у пользователя
-    private suspend fun fetchBookFromFavoriteFromServer(id: Int): Boolean {
+    private suspend fun fetchBookFromFavoriteFromServer(): Boolean {
         return withContext(Dispatchers.IO) {
             val ipAddress = (context as MainActivity).getIpAddress()
-            val userId = (context as MainActivity).getIdUser()
 
-            val url = URL("http:$ipAddress:3000/$userId/favoriteBooks/$id")
+            val url = URL("http:$ipAddress:3000/${viewModel.idUser}/favoriteBooks/${viewModel.idBook}")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
 
@@ -267,12 +304,11 @@ class BookInfoFragment : Fragment() {
     }
 
     // Запрос, с помощью которого узнаем есть данная книга в корзине у пользователя
-    private suspend fun fetchBookFromCartFromServer(id: Int): Boolean {
+    private suspend fun fetchBookFromCartFromServer(): Boolean {
         return withContext(Dispatchers.IO) {
             val ipAddress = (context as MainActivity).getIpAddress()
-            val userId = (context as MainActivity).getIdUser()
 
-            val url = URL("http:$ipAddress:3000/$userId/cart/$id")
+            val url = URL("http:$ipAddress:3000/${viewModel.idUser}/cart/${viewModel.idBook}")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
 
@@ -285,12 +321,11 @@ class BookInfoFragment : Fragment() {
     }
 
     // Запрос, с помощью которого узнаем есть данная книга в уже купленных книгах у пользователя
-    private suspend fun fetchBookFromPurchasedFromServer(id: Int): Boolean {
+    private suspend fun fetchBookFromPurchasedFromServer(): Boolean {
         return withContext(Dispatchers.IO) {
             val ipAddress = (context as MainActivity).getIpAddress()
-            val userId = (context as MainActivity).getIdUser()
 
-            val url = URL("http:$ipAddress:3000/$userId/purchasedBooks/$id")
+            val url = URL("http:$ipAddress:3000/${viewModel.idUser}/purchasedBooks/${viewModel.idBook}")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
 
@@ -303,13 +338,12 @@ class BookInfoFragment : Fragment() {
     }
 
     // Запрос на добавление новой книги в избранное
-    private suspend fun addBookToFavorite(bookId: Int) {
+    private suspend fun addBookToFavorite() {
         withContext(Dispatchers.IO) {
             try {
                 val ipAddress = (context as MainActivity).getIpAddress()
-                val userId = (context as MainActivity).getIdUser()
 
-                val url = URL("http:$ipAddress:3000/add_favorite/$userId/$bookId")
+                val url = URL("http:$ipAddress:3000/add_favorite/${viewModel.idUser}/${viewModel.idBook}")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.setRequestProperty("Content-Type", "application/json")
@@ -333,13 +367,12 @@ class BookInfoFragment : Fragment() {
     }
 
     // Запрос на добавление новой книги в корзину
-    private suspend fun addBookToCart(bookId: Int) {
+    private suspend fun addBookToCart() {
         withContext(Dispatchers.IO) {
             try {
                 val ipAddress = (context as MainActivity).getIpAddress()
-                val userId = (context as MainActivity).getIdUser()
 
-                val url = URL("http:$ipAddress:3000/add_cart/$userId/$bookId")
+                val url = URL("http:$ipAddress:3000/add_cart/${viewModel.idUser}/${viewModel.idBook}")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.setRequestProperty("Content-Type", "application/json")
@@ -363,8 +396,11 @@ class BookInfoFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    // Метод, который позволяет переключить фрагмент, и передать ему значение id книги
+    fun navigateToReviewFragment(id: Int) {
+        val bundle = Bundle().apply {
+            putInt("id", id)
+        }
+        findNavController().navigate(R.id.action_BookInfoFragment_to_ReviewFragment, bundle)
     }
 }

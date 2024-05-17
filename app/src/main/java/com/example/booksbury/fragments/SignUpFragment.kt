@@ -11,8 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
-import com.example.booksbury.adapters.MyDialogFragment
 import com.example.booksbury.databinding.SignUpFragmentBinding
+import com.example.booksbury.dialog.MyDialogFragmentRegistration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -50,14 +50,14 @@ class SignUpFragment : Fragment() {
 
         // Обработчики нажатий на кнопку "Регистрация"
         binding.buttonRegistration.setOnClickListener {
-
             val username = binding.editName.text.toString()
             val email = binding.editEmail.text.toString()
             val password = binding.editPassword.text.toString()
             val passwordConfirm = binding.editPasswordConfirm.text.toString()
 
-            if (!validateUserFields(username, email, password, passwordConfirm)!!) {
-            } else {
+            // Проверка полей ввода
+            if (validateUserFields(username, email, password, passwordConfirm)) {
+                // Проверка уникальности имени пользователя и соответствия паролей
                 try {
                     checkUsernameAndPassword(username, email, password, passwordConfirm)
                 } catch (e: UnsupportedEncodingException) {
@@ -72,29 +72,31 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    // Проверка, всех данных введенных пользователем
+    // Проверка всех данных, введенных пользователем
     private fun checkUsernameAndPassword(username: String, email: String, password: String, passwordConfirm: String) {
         lifecycleScope.launch(Dispatchers.IO) {
             val usernameExists = checkUsernameExists(username)
-            if (!usernameExists)
-            {
-                if (validatePassword(password, passwordConfirm))
-                {
+            if (!usernameExists) {
+                if (validatePassword(password, passwordConfirm)) {
                     val idUser = generateUniqueRandomId(fetchUserIdsFromReviews())
                     Log.d("myLogs", idUser.toString())
                     addNewUser(idUser, username, email, password)
 
-                    val dialogFragment = MyDialogFragment(this@SignUpFragment)
-                    dialogFragment.show(parentFragmentManager, "dialog")
-
-                } else { }
+                    // Показ диалогового окна после успешной регистрации
+                    withContext(Dispatchers.Main) {
+                        val dialogFragment = MyDialogFragmentRegistration(this@SignUpFragment)
+                        dialogFragment.show(parentFragmentManager, "dialog")
+                    }
+                }
             } else {
-                binding.editName.error = getString(R.string.userExistsError)
+                withContext(Dispatchers.Main) {
+                    binding.editName.error = getString(R.string.userExistsError)
+                }
             }
         }
     }
 
-    // Добавления нового пользователя в БД
+    // Добавление нового пользователя в БД
     private fun addNewUser(idUser: Number, username: String, email: String, password: String) {
         val newUserJson = """
         {
@@ -110,7 +112,7 @@ class SignUpFragment : Fragment() {
     """.trimIndent()
 
         val ipAddress = (activity as MainActivity).getIpAddress()
-        val url = URL("http:$ipAddress:3000/api/new_user")
+        val url = URL("http://$ipAddress:3000/api/new_user")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "POST"
         connection.setRequestProperty("Content-Type", "application/json")
@@ -133,11 +135,11 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    // Проверка, что имя пользователя уже существует в БД
+    // Проверка, существует ли имя пользователя в БД
     private fun checkUsernameExists(username: String): Boolean {
         return try {
             val ipAddress = (activity as MainActivity).getIpAddress()
-            val url = URL("http:$ipAddress:3000/api/check_username/$username")
+            val url = URL("http://$ipAddress:3000/api/check_username/$username")
 
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
@@ -150,13 +152,12 @@ class SignUpFragment : Fragment() {
 
             val jsonResponse = JSONObject(response)
             jsonResponse.getBoolean("exists")
-
         } catch (e: Exception) {
             false
         }
     }
 
-    // Метод генерирующий случайный id пользователя
+    // Генерация уникального случайного id пользователя
     private fun generateUniqueRandomId(existingIds: List<Int>): Int {
         val random = Random()
         var generatedId: Int
@@ -208,7 +209,7 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    // Запрос возвращающий id всех уже имеющихся пользователей
+    // Запрос, возвращающий id всех уже имеющихся пользователей
     private suspend fun fetchUserIdsFromReviews(): ArrayList<Int> {
         return withContext(Dispatchers.IO) {
             val userIds = ArrayList<Int>()
@@ -238,7 +239,7 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    // Метод возвращающий пользователя на начальный экран
+    // Метод, возвращающий пользователя на начальный экран
     fun navigateToSignInFragment() {
         findNavController().navigate(R.id.action_SignUpFragment_to_SignInFragment)
     }

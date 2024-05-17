@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.booksbury.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.databinding.ProfileFragmentBinding
@@ -29,6 +31,27 @@ class ProfileFragment : Fragment() {
     // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
 
+    // ViewModel для хранения состояния
+    private lateinit var viewModel: BookViewModel
+
+    // Блок companion object для хранения констант
+    companion object {
+        // Ключ для сохранения и восстановления идентификатора пользователя
+        const val ENTERED_ID_USER_KEY = "savedIdUser"
+    }
+
+    // Метод, вызываемый при создании фрагмента
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Инициализация ViewModel
+        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+
+        // Восстанавливаем сохраненное значение, если оно есть
+        savedInstanceState?.let {
+            viewModel.idUser = it.getInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+        }
+    }
+
     // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,6 +64,11 @@ class ProfileFragment : Fragment() {
     // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
+        if (viewModel.idUser == 0) {
+            viewModel.idUser = (activity as MainActivity).getIdUser()
+        }
 
         // Обработчики нажатий на все кнопки на экране
         binding.buttonHome.setOnClickListener { navigateToFragment(R.id.action_ProfileFragment_to_HomeFragment) }
@@ -85,9 +113,8 @@ class ProfileFragment : Fragment() {
     private suspend fun fetchNameEmailDataFromServer(): User {
         return withContext(Dispatchers.IO) {
             val ipAddress = (activity as MainActivity).getIpAddress()
-            val idUser = (activity as MainActivity).getIdUser()
 
-            val url = URL("http://$ipAddress:3000/api/user/$idUser")
+            val url = URL("http://$ipAddress:3000/api/user/${viewModel.idUser}")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
 
@@ -108,6 +135,13 @@ class ProfileFragment : Fragment() {
         findNavController().navigate(actionId)
     }
 
+    // Метод, для сохранения введенного текста
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+    }
+
+    // Метод, вызываемый перед уничтожением представления фрагмента
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

@@ -1,4 +1,4 @@
-package com.example.booksbury.adapters
+package com.example.booksbury.dialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.fragment.app.DialogFragment
 import com.example.booksbury.R
-import com.example.booksbury.fragments.SignUpFragment
+import com.example.booksbury.fragments.ReviewFragment
 
-// Диалог, уведомляющий пользователя о успешной регистрации
-class MyDialogFragment(private val signUpFragment: SignUpFragment) : DialogFragment() {
+// Диалог, уведомляющий пользователя о успешной оставленном отзыве
+class MyDialogFragmentReview(private val reviewFragment: ReviewFragment) : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.dialog_registration, container, false)
+        val view = inflater.inflate(R.layout.dialog_review, container, false)
 
         // Задание горизонтальных отступов
         val horizontalMargin = resources.getDimensionPixelSize(R.dimen.bigPadding)
@@ -20,7 +20,7 @@ class MyDialogFragment(private val signUpFragment: SignUpFragment) : DialogFragm
 
         val button = view.findViewById<ImageButton>(R.id.button_home)
         button.setOnClickListener {
-            signUpFragment.navigateToSignInFragment()
+            reviewFragment.navigateToSignInFragment()
             dismiss()
         }
 

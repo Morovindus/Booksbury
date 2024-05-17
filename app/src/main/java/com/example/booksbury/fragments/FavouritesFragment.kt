@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.booksbury.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
@@ -32,6 +34,27 @@ class FavouritesFragment : Fragment() {
     // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
 
+    // ViewModel для хранения состояния
+    private lateinit var viewModel: BookViewModel
+
+    // Блок companion object для хранения констант
+    companion object {
+        // Ключ для сохранения и восстановления идентификатора пользователя
+        const val ENTERED_ID_USER_KEY = "savedIdUser"
+    }
+
+    // Метод, вызываемый при создании фрагмента
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Инициализация ViewModel
+        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+
+        // Восстанавливаем сохраненное значение, если оно есть
+        savedInstanceState?.let {
+            viewModel.idUser = it.getInt(BooksFragment.ENTERED_ID_USER_KEY, viewModel.idUser)
+        }
+    }
+
     // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +67,11 @@ class FavouritesFragment : Fragment() {
     // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
+        if (viewModel.idUser == 0) {
+            viewModel.idUser = (activity as MainActivity).getIdUser()
+        }
 
         // Слушатели нажатий всех кнопок на экране
         binding.buttonHome.setOnClickListener { navigateToFragment(R.id.action_FavouritesFragment_to_HomeFragment) }
@@ -81,8 +109,8 @@ class FavouritesFragment : Fragment() {
     }
 
     // Метод для обновления пользовательского интерфейса
-    private fun updateUIWithFavoriteBooks(favoritetBooks: ArrayList<Book>) {
-        val adapter = CustomAdapterFavoriteBooks(favoritetBooks, this@FavouritesFragment)
+    private fun updateUIWithFavoriteBooks(favoriteBooks: ArrayList<Book>) {
+        val adapter = CustomAdapterFavoriteBooks(favoriteBooks, this@FavouritesFragment)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
         binding.recyclerView.adapter = adapter
@@ -147,9 +175,8 @@ class FavouritesFragment : Fragment() {
     // Возвращаем все id избранных пользователем книг
     private fun fetchBooksFromServer(): ArrayList<Int> {
         val ipAddress = (activity as MainActivity).getIpAddress()
-        val userId = (activity as MainActivity).getIdUser()
 
-        val url = URL("http:$ipAddress:3000/api/users/$userId/favoriteBooks")
+        val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/favoriteBooks")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
@@ -173,12 +200,17 @@ class FavouritesFragment : Fragment() {
 
     // Метод, который позволяет переключить фрагмент, и передать ему значение id книги
     fun navigateToBookInfoFragment(id: Int) {
-        val bundle = Bundle().apply {
-            putInt("id", id)
-        }
-        findNavController().navigate(R.id.action_FavouritesFragment_to_BookInfoFragment, bundle)
+        (activity as MainActivity).setIdBook(id)
+        findNavController().navigate(R.id.action_FavouritesFragment_to_BookInfoFragment)
     }
 
+    // Метод, для сохранения введенного текста
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+    }
+
+    // Метод, вызываемый перед уничтожением представления фрагмента
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

@@ -96,5 +96,16 @@
     <string name="about_app">About the App</string>
     <string name="design">Design</string>
 
+    <string name="comment_success_message">Comment Submitted Successfully!</string>
+    <string name="comment_success_description">Your comment has been submitted successfully.</string>
+
+    <string name="add_review">Add review</string>
+    <string name="score">Score:</string>
+    <string name="write_review">Write your review</string>
+    <string name="confirm">Confirm</string>
+
+    <string name="pls_select_rating">Please select a rating</string>
+    <string name="pls_write_review">Please write a review</string>
+
 
 </resources>

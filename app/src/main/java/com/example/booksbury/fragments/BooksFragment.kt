@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.booksbury.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
@@ -32,6 +34,27 @@ class BooksFragment : Fragment() {
     // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
 
+    // ViewModel для хранения состояния
+    private lateinit var viewModel: BookViewModel
+
+    // Блок companion object для хранения констант
+    companion object {
+        // Ключ для сохранения и восстановления идентификатора пользователя
+        const val ENTERED_ID_USER_KEY = "savedIdUser"
+    }
+
+    // Метод, вызываемый при создании фрагмента
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Инициализация ViewModel
+        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+
+        // Восстанавливаем сохраненное значение, если оно есть
+        savedInstanceState?.let {
+            viewModel.idUser = it.getInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+        }
+    }
+
     // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +73,11 @@ class BooksFragment : Fragment() {
             findNavController().popBackStack()
         }
 
+        // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
+        if (viewModel.idUser == 0) {
+            viewModel.idUser = (activity as MainActivity).getIdUser()
+        }
+
         // Получение списка книг с сервера и обновление пользовательского интерфейса
         fetchBooksAndUpdateUI()
     }
@@ -64,9 +92,9 @@ class BooksFragment : Fragment() {
 
                 // Добавляем все купленные книги пользователем в массив
                 val purchasedBooks = ArrayList<Book>()
-                for (book in books) {
+                for (bookId in books) {
                     val purchasedBook = withContext(Dispatchers.IO) {
-                        fetchPurchasedBooksFromServer(book)
+                        fetchPurchasedBooksFromServer(bookId)
                     }
                     purchasedBooks.add(purchasedBook)
                 }
@@ -146,9 +174,8 @@ class BooksFragment : Fragment() {
     // Возвращаем все id купленных пользователем книг
     private fun fetchBooksFromServer(): ArrayList<Int> {
         val ipAddress = (activity as MainActivity).getIpAddress()
-        val userId = (activity as MainActivity).getIdUser()
 
-        val url = URL("http:$ipAddress:3000/api/users/$userId/purchasedBooks")
+        val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/purchasedBooks")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
@@ -167,12 +194,17 @@ class BooksFragment : Fragment() {
 
     // Метод, который позволяет переключить фрагмент, и передать ему значение id книги
     fun navigateToBookInfoFragment(id: Int) {
-        val bundle = Bundle().apply {
-            putInt("id", id)
-        }
-        findNavController().navigate(R.id.action_BooksFragment_to_BookInfoFragment, bundle)
+        (activity as MainActivity).setIdBook(id)
+        findNavController().navigate(R.id.action_BooksFragment_to_BookInfoFragment)
     }
 
+    // Метод, для сохранения введенного текста
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+    }
+
+    // Метод, вызываемый перед уничтожением представления фрагмента
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

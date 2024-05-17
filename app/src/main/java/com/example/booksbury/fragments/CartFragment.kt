@@ -10,9 +10,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.booksbury.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
@@ -45,6 +47,27 @@ class CartFragment : Fragment() {
     // Список книг в корзине
     private var cartBooksNew = ArrayList<Book>()
 
+    // ViewModel для хранения состояния
+    private lateinit var viewModel: BookViewModel
+
+    // Блок companion object для хранения констант
+    companion object {
+        // Ключ для сохранения и восстановления идентификатора пользователя
+        const val ENTERED_ID_USER_KEY = "savedIdUser"
+    }
+
+    // Метод, вызываемый при создании фрагмента
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Инициализация ViewModel
+        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+
+        // Восстанавливаем сохраненное значение, если оно есть
+        savedInstanceState?.let {
+            viewModel.idUser = it.getInt(BooksFragment.ENTERED_ID_USER_KEY, viewModel.idUser)
+        }
+    }
+
     // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +80,11 @@ class CartFragment : Fragment() {
     // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
+        if (viewModel.idUser == 0) {
+            viewModel.idUser = (activity as MainActivity).getIdUser()
+        }
 
         // Выводим список вех книг в корзине наэкран
         fetchBooksAndUpdateUI()
@@ -87,14 +115,13 @@ class CartFragment : Fragment() {
     // Метод для обработки подтверждения заказа
     private fun handleOrderConfirmation(cartBooks: ArrayList<Book>) {
         val ipAddress = (activity as MainActivity).getIpAddress()
-        val userId = (activity as MainActivity).getIdUser()
 
         for (book in cartBooks) {
             // Запуск корутины для каждого запроса
             CoroutineScope(Dispatchers.IO).launch {
 
                 // Отправляем уведомление о покупке книги
-                sendNotification(book, ipAddress, userId)
+                sendNotification(book, ipAddress)
 
                 // Добавляем книгу в массив купленных книг
                 addBookToPurchased(book.id)
@@ -116,9 +143,8 @@ class CartFragment : Fragment() {
         withContext(Dispatchers.IO) {
             try {
                 val ipAddress = (context as MainActivity).getIpAddress()
-                val userId = (context as MainActivity).getIdUser()
 
-                val url = URL("http:$ipAddress:3000/api/users/add_purchased/$userId/$bookId")
+                val url = URL("http:$ipAddress:3000/api/users/add_purchased/${viewModel.idUser}/$bookId")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.setRequestProperty("Content-Type", "application/json")
@@ -146,9 +172,8 @@ class CartFragment : Fragment() {
         GlobalScope.launch(Dispatchers.IO) {
             try {
                 val ipAddress = (context as MainActivity).getIpAddress()
-                val userId = (context as MainActivity).getIdUser()
 
-                val url = URL("http:$ipAddress:3000/api/users/$userId/cart/$bookId")
+                val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/cart/$bookId")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "DELETE"
 
@@ -165,7 +190,7 @@ class CartFragment : Fragment() {
     }
 
     // Метод для отправки уведомления
-    private suspend fun sendNotification(book: Book, ipAddress: String, userId: Int) {
+    private suspend fun sendNotification(book: Book, ipAddress: String) {
         val newNotificationJson = """
         {
           "bookId": "${book.id}",
@@ -174,7 +199,7 @@ class CartFragment : Fragment() {
         }
     """.trimIndent()
 
-        val url = URL("http:$ipAddress:3000/api/users/$userId/notifications")
+        val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/notifications")
         val connection = withContext(Dispatchers.IO) {
             url.openConnection() as HttpURLConnection
         }
@@ -308,9 +333,8 @@ class CartFragment : Fragment() {
     // Возвращаем все id книг находящихся в корзине
     private fun fetchBooksFromServer(): ArrayList<Int> {
         val ipAddress = (activity as MainActivity).getIpAddress()
-        val userId = (activity as MainActivity).getIdUser()
 
-        val url = URL("http:$ipAddress:3000/api/users/$userId/cart")
+        val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/cart")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
@@ -338,6 +362,13 @@ class CartFragment : Fragment() {
         return totalPriceRubles.substringBefore('\u20BD').toIntOrNull() ?: 0
     }
 
+    // Метод, для сохранения введенного текста
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+    }
+
+    // Метод, вызываемый перед уничтожением представления фрагмента
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

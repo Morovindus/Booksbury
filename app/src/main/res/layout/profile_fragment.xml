@@ -239,53 +239,6 @@
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <ImageButton
-                    android:id="@+id/button_exit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/orange_rectangle"
-                    android:background="?android:windowBackground"
-                    android:scaleType="fitCenter"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <ImageView
-                    style="@style/Picture24dp"
-                    android:id="@+id/imageView2"
-                    android:src="@drawable/exit"
-                    android:scaleType="fitCenter"
-                    android:layout_marginStart="54dp"
-                    app:layout_constraintTop_toTopOf="@id/button_exit"
-                    app:layout_constraintBottom_toBottomOf="@id/button_exit"
-                    app:layout_constraintStart_toStartOf="@id/button_exit"/>
-
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sign_out"
-                    android:textSize="22sp"
-                    android:layout_marginStart="11dp"
-                    android:textColor="?android:windowBackground"
-                    android:scaleType="fitCenter"
-                    android:fontFamily="@font/dms_erifdisplay_regular"
-                    app:layout_constraintStart_toEndOf="@id/imageView2"
-                    app:layout_constraintTop_toTopOf="@id/button_exit"
-                    app:layout_constraintBottom_toBottomOf="@id/button_exit"/>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/button_4"
-                android:layout_marginTop="28dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_3"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <ImageButton
                     android:id="@+id/button_design"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -324,12 +277,12 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/button_5"
+                android:id="@+id/button_4"
                 android:layout_marginTop="28dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_4"
+                app:layout_constraintTop_toBottomOf="@+id/button_3"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <ImageButton
@@ -367,6 +320,53 @@
                     app:layout_constraintStart_toEndOf="@id/imageView4"
                     app:layout_constraintTop_toTopOf="@id/button_about_app"
                     app:layout_constraintBottom_toBottomOf="@id/button_about_app"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/button_5"
+                android:layout_marginTop="28dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_4"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageButton
+                    android:id="@+id/button_exit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/orange_rectangle"
+                    android:background="?android:windowBackground"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <ImageView
+                    style="@style/Picture24dp"
+                    android:id="@+id/imageView2"
+                    android:src="@drawable/exit"
+                    android:scaleType="fitCenter"
+                    android:layout_marginStart="54dp"
+                    app:layout_constraintTop_toTopOf="@id/button_exit"
+                    app:layout_constraintBottom_toBottomOf="@id/button_exit"
+                    app:layout_constraintStart_toStartOf="@id/button_exit"/>
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sign_out"
+                    android:textSize="22sp"
+                    android:layout_marginStart="11dp"
+                    android:textColor="?android:windowBackground"
+                    android:scaleType="fitCenter"
+                    android:fontFamily="@font/dms_erifdisplay_regular"
+                    app:layout_constraintStart_toEndOf="@id/imageView2"
+                    app:layout_constraintTop_toTopOf="@id/button_exit"
+                    app:layout_constraintBottom_toBottomOf="@id/button_exit"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
