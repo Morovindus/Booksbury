@@ -180,7 +180,10 @@
             android:background="?android:windowBackground"
             app:layout_constraintStart_toStartOf="parent"
             android:scaleType="fitCenter"
-            tools:ignore="MissingConstraints" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
 
         <TextView
             android:id="@+id/textView3"

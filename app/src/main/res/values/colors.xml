@@ -22,5 +22,5 @@
     <color name="textColorSecondaryDark">@color/light_grey_2</color>
 
     <color name="textColorRegistrationLight">@color/light_orange</color>
-    <color name="textColorRegistrationDark">@color/light_white</color>
+    <color name="textColorRegistrationDark">@color/light_orange</color>
 </resources>

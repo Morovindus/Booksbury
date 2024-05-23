@@ -10,13 +10,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.booksbury.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
 import com.example.booksbury.adapters.CustomAdapterPurchasedBooks
 import com.example.booksbury.databinding.BooksFragmentBinding
 import com.example.booksbury.items.Book
+import com.example.booksbury.model.BookViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -117,9 +117,6 @@ class BooksFragment : Fragment() {
 
     // Метод, который обрабатывает случай - пустого массива купленных книг
     private fun showNoPurchasedBooksNotification() {
-        // Получаем родительский ConstraintLayout
-        val constraintLayout = binding.ConstraintLayout
-
         // Создаем новое представление
         val newView = LayoutInflater.from(requireContext()).inflate(R.layout.notification_no_purchased_books, null)
 
@@ -140,10 +137,10 @@ class BooksFragment : Fragment() {
 
         // Удаляем старое представление RecyclerView из родительского ConstraintLayout
         val recyclerView = binding.recyclerView
-        constraintLayout.removeView(recyclerView)
+        binding.ConstraintLayout.removeView(recyclerView)
 
         // Добавляем новое представление в родительский ConstraintLayout
-        constraintLayout.addView(newView)
+        binding.ConstraintLayout.addView(newView)
     }
 
     // Возвращаем купленную книгу по id

@@ -65,6 +65,8 @@
     <string name="errorConfirmPassword">Пароли не совпадают</string>
     <string name="userExistsError">Пользователь с таким именем уже существует</string>
 
+    <string name="QueryError">Введите поисковый запрос</string>
+
     <string name="incorrectPassword">Неверный пароль</string>
     <string name="incorrectUsername">Пользователь с таким именем не найден</string>
 
@@ -109,6 +111,24 @@
 
     <string name="pls_select_rating">Пожалуйста поставьте оценку</string>
     <string name="pls_write_review">Пожалуйства оставьте отзыв</string>
+
+    <string name="light_theme">Светлая</string>
+    <string name="dark_theme">Темная</string>
+    <string name="system_theme">Как в системе</string>
+    <string name="chose_theme">Выберите тему оформления</string>
+
+    <string name="about_author">Об авторе</string>
+    <string name="about_author_text">Автор данного приложения Худяков Марк студент группы ИКБО-26-21</string>
+    <string name="reference_information">Справочная информация</string>
+    <string name="reference_information_text">Booksbuy - это мобильное приложение для чтения книг, написанное на языке Kotlin. Пользователи могут искать, просматривать и читать книги различных жанров, а также прослушивать аудиокниги прямо с мобильного устройства. Помимо этого, приложение предоставляет возможность добавлять книги в избранное для последующего чтения и оставлять отзывы о прочитанных произведениях. Реализованная функция уведомлений позволяет пользователям быть в курсе новых поступлений книг.</string>
+
+    <string name="download_pdf">Загрузка книги</string>
+    <string name="download_mp3">Загрузка аудиокниги</string>
+
+    <string name="no_results">По вашему запросу ничего не найдено</string>
+    <string name="clear_history">Очистить историю</string>
+
+    <string name="clear_hostory_notification">История поиска очищена</string>
 
 
 </resources>

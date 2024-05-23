@@ -1,6 +1,5 @@
 package com.example.booksbury.adapters
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,21 +7,22 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.booksbury.R
-import com.example.booksbury.fragments.HomeFragment
+import com.example.booksbury.fragments.SearchFragment
 import com.example.booksbury.items.Book
 import com.squareup.picasso.Picasso
 
-// Адаптер для списка книг
-class CustomAdapterBooks(private val items: ArrayList<Book>, private val homeFragment: HomeFragment) : RecyclerView.Adapter<CustomAdapterBooks.ViewHolder>() {
+class CustomAdapterSearch(private var items: ArrayList<Book>, private val searchFragment: SearchFragment) : RecyclerView.Adapter<CustomAdapterSearch.ViewHolder>() {
 
-    // Создание нового ViewHolder
+    fun updateBooks(newBooks: ArrayList<Book>) {
+        items = newBooks
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_books, parent, false)
         return ViewHolder(view)
     }
 
-    // Привязка данных к ViewHolder
-    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = items[position]
 
@@ -32,7 +32,7 @@ class CustomAdapterBooks(private val items: ArrayList<Book>, private val homeFra
         // Установка заголовка книги, имени автора и рейтинга книги
         holder.titleBook.text = currentItem.titleBook
         holder.nameAuthor.text = currentItem.nameAuthor
-        holder.ratings.text = "${currentItem.ratings} ${homeFragment.getString(R.string.ratings)}"
+        holder.ratings.text = "${currentItem.ratings} ${searchFragment.getString(R.string.ratings)}"
 
         // Установка звездочек рейтинга книги
         val orangeStarDrawable = R.drawable.star_orange
@@ -45,7 +45,7 @@ class CustomAdapterBooks(private val items: ArrayList<Book>, private val homeFra
         // Обработка нажатия на обложку книги для открытия информации о книге
         holder.imageCoverBook.setOnClickListener {
             val id = currentItem.id
-            homeFragment.navigateToBookInfoFragment(id)
+            searchFragment.navigateToBookInfoFragment(id)
         }
     }
 

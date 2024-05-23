@@ -107,6 +107,9 @@
         <action
             android:id="@+id/action_ProfileFragment_to_BooksFragment"
             app:destination="@id/BooksFragment" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_AboutAppFragment"
+            app:destination="@id/AboutAppFragment" />
     </fragment>
     <fragment
         android:id="@+id/BookInfoFragment"
@@ -122,6 +125,9 @@
         android:name="com.example.booksbury.fragments.SearchFragment"
         android:label="SearchFragment"
         tools:layout="@layout/search_fragment">
+        <action
+            android:id="@+id/action_SearchFragment_to_BookInfoFragment"
+            app:destination="@id/BookInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/NotificationFragment"
@@ -179,5 +185,11 @@
         <action
             android:id="@+id/action_ReviewFragment_to_HomeFragment"
             app:destination="@id/HomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/AboutAppFragment"
+        android:name="com.example.booksbury.fragments.AboutAppFragment"
+        android:label="AboutAppFragment"
+        tools:layout="@layout/about_the_app_fragment">
     </fragment>
 </navigation>

@@ -62,6 +62,8 @@
     <string name="errorConfirmPassword">Passwords do not match</string>
     <string name="userExistsError">User with such name already exists</string>
 
+    <string name="QueryError">Enter your search term</string>
+
     <string name="incorrectPassword">Incorrect password</string>
     <string name="incorrectUsername">User with this name not found"</string>
 
@@ -107,5 +109,22 @@
     <string name="pls_select_rating">Please select a rating</string>
     <string name="pls_write_review">Please write a review</string>
 
+    <string name="light_theme">Light</string>
+    <string name="dark_theme">Dark</string>
+    <string name="system_theme">System</string>
+    <string name="chose_theme">Choose a design theme</string>
+
+    <string name="about_author">About the author</string>
+    <string name="about_author_text">The author of this application is Khudyakov Mark, a student of the IKBO-26-21 group</string>
+    <string name="reference_information">Reference information</string>
+    <string name="reference_information_text">Booksbury is a mobile book reader application written in Kotlin. Users can search, browse and read books of various genres, as well as listen to audiobooks directly from their mobile device. In addition, the application provides the ability to add books to favorites for later reading and leave feedback on the works you have read. The implemented notification function allows users to keep up to date with new book arrivals.</string>
+
+    <string name="download_pdf">Download book</string>
+    <string name="download_mp3">Download audiobook</string>
+
+    <string name="no_results">No results were found for your request</string>
+    <string name="clear_history">Clear History</string>
+
+    <string name="clear_hostory_notification">Search history cleared</string>
 
 </resources>

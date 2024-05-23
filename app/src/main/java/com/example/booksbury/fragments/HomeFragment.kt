@@ -1,10 +1,12 @@
 package com.example.booksbury.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +16,7 @@ import com.example.booksbury.SpacesItemDecoration
 import com.example.booksbury.adapters.CustomAdapterBooks
 import com.example.booksbury.databinding.HomeFragmentBinding
 import com.example.booksbury.items.Book
+import com.example.booksbury.model.BookViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +34,9 @@ class HomeFragment : Fragment() {
 
     // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModel: BookViewModel
 
     // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
@@ -53,41 +59,58 @@ class HomeFragment : Fragment() {
         binding.buttonSearch.setOnClickListener { navigateToFragment(R.id.action_HomeFragment_to_SearchFragment) }
         binding.buttonNotification.setOnClickListener { navigateToFragment(R.id.action_HomeFragment_to_NotificaionFragment) }
 
+        // Инициализация ViewModel
+        viewModel = ViewModelProvider(this)[BookViewModel::class.java]
+
+
         // Получаем и обновляем данные о книгах на экране
         fetchBooksAndUpdateUI()
     }
 
     // Метод, который реализует вывод случайных книг на экран
     private fun fetchBooksAndUpdateUI() {
-        lifecycleScope.launch {
-            // Загрузка основной книги из сети
-            val mainBook: Book = withContext(Dispatchers.IO) {
-                fetchMainBookFromServer()
-            }
 
-            // Загрузка изображения автора из сети
-            val authorImage: String = withContext(Dispatchers.IO) {
-                fetchAuthorImageFromServer(mainBook.id)
+        val language = (activity as MainActivity).getLanguage()
+
+        // Выполняем запрос на получение случайной книги
+        viewModel.fetchRandomBook(language, "bigCover") { mainBook, error ->
+            if (error != null) {
+                // Обработка ошибки
+                Log.e("MyLogs", "Failed to fetch random book: $error")
+            } else {
+                // Обработка успешного ответа
+                mainBook?.let { book ->
+                    // Обновляем UI с полученной книгой
+                    binding.mainTitle.text = book.titleBook
+                    Picasso.get().load(book.imageResource).into(binding.mainImage)
+
+                    // Используем корутину для получения изображения автора
+                    lifecycleScope.launch {
+                        try {
+                            val authorImageUrl = fetchAuthorImageFromServer(mainBook.id)
+                            Picasso.get().load(authorImageUrl).into(binding.imageAuthor)
+                        } catch (e: Exception) {
+                            Log.e("MyLogs", "Failed to fetch author image: $e")
+                        }
+                    }
+
+                    binding.mainTitle.text = mainBook.titleBook
+                    binding.textAuthor.text = mainBook.nameAuthor
+
+                    // Установка слушателя нажатия на основное изображение
+                    binding.mainImage.setOnClickListener {
+                        navigateToBookInfoFragment(mainBook.id)
+                    }
+                }
             }
+        }
+
+
+        lifecycleScope.launch {
 
             // Загрузка списка элементов из сети
             val topBooks: ArrayList<Book> = withContext(Dispatchers.IO) {
                 fetchItemsFromServer()
-            }
-
-            // Переключение на главный поток для обновления UI
-            withContext(Dispatchers.Main) {
-                // Отображение основной книги
-                Picasso.get().load(mainBook.imageResource).into(binding.mainImage)
-                Picasso.get().load(authorImage).into(binding.imageAuthor)
-                binding.mainTitle.text = mainBook.titleBook
-                binding.textAuthor.text = mainBook.nameAuthor
-
-                // Установка слушателя нажатия на основное изображение
-                binding.mainImage.setOnClickListener {
-                    val id = mainBook.id
-                    navigateToBookInfoFragment(id)
-                }
             }
 
             updateUIWithTopBooks(topBooks)
@@ -106,31 +129,6 @@ class HomeFragment : Fragment() {
     fun navigateToBookInfoFragment(id: Int) {
         (activity as MainActivity).setIdBook(id)
         findNavController().navigate(R.id.action_HomeFragment_to_BookInfoFragment)
-    }
-
-    // Запрос на получение одной случайной книги
-    private fun fetchMainBookFromServer(): Book {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-        val language = (activity as MainActivity).getLanguage()
-
-        val url = URL("http:$ipAddress:3000/api/books/randomBook/$language/bigCover")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-
-        val jsonObject = JSONObject(response)
-
-        val id = jsonObject.getInt("_id")
-        val title = jsonObject.getString("title")
-        val authorName = jsonObject.getString("authorName")
-        val stars = jsonObject.getInt("averageStars")
-        val ratings = jsonObject.getInt("ratings")
-        val price = jsonObject.getInt("price")
-        val bigCover = jsonObject.getString("bigCover")
-
-        return Book(id, bigCover, title, authorName, stars, ratings, price)
     }
 
     // Запрос на получение 10 случайных книг
@@ -165,20 +163,20 @@ class HomeFragment : Fragment() {
     }
 
     // Запрос на получение изображения автора главной книги
-    private fun fetchAuthorImageFromServer(id: Int): String {
+    private suspend fun fetchAuthorImageFromServer(id: Int): String {
         val ipAddress = (activity as MainActivity).getIpAddress()
-
         val url = URL("http:$ipAddress:3000/api/books/authorImage/$id")
-        val connection = url.openConnection() as HttpURLConnection
+        val connection = withContext(Dispatchers.IO) {
+            url.openConnection() as HttpURLConnection
+        }
         connection.requestMethod = "GET"
 
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
+        val response = withContext(Dispatchers.IO) {
+            connection.inputStream.bufferedReader().use { it.readText() }
+        }
 
         val jsonObject = JSONObject(response)
-        val imageAuthor = jsonObject.getString("imageAuthor")
-
-        return imageAuthor
+        return jsonObject.getString("imageAuthor")
     }
 
     // Метод переключающий фрагменты

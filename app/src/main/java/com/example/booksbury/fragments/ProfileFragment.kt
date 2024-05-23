@@ -6,15 +6,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.booksbury.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.databinding.ProfileFragmentBinding
 import com.example.booksbury.items.User
+import com.example.booksbury.model.BookViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -79,9 +80,36 @@ class ProfileFragment : Fragment() {
         binding.buttonCart.setOnClickListener { navigateToFragment(R.id.action_ProfileFragment_to_CartFragment) }
         binding.buttonBooks.setOnClickListener { navigateToFragment(R.id.action_ProfileFragment_to_BooksFragment) }
         binding.buttonExit.setOnClickListener { showExitConfirmationDialog() }
+        binding.buttonAboutApp.setOnClickListener { navigateToFragment(R.id.action_ProfileFragment_to_AboutAppFragment) }
+
+        binding.buttonDesign.setOnClickListener {
+            showThemeDialog()
+        }
 
         // Получаем и обновляем данные о имени и электронной почте на экране
         fetchNameAndEmailUI()
+    }
+
+    // Диалог для смены темы
+    private fun showThemeDialog() {
+        val themes = arrayOf(getString(R.string.light_theme), getString(R.string.dark_theme), getString(R.string.system_theme))
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle(getString(R.string.chose_theme))
+        builder.setItems(themes) { _, which ->
+            when (which) {
+                0 -> setAppTheme(AppCompatDelegate.MODE_NIGHT_NO)
+                1 -> setAppTheme(AppCompatDelegate.MODE_NIGHT_YES)
+                2 -> setAppTheme(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            }
+        }
+        builder.create().show()
+    }
+
+    // Метод, который меняет тему приложения
+    private fun setAppTheme(mode: Int) {
+        AppCompatDelegate.setDefaultNightMode(mode)
+        // Перезагрузить активность, чтобы применить новую тему
+        activity?.recreate()
     }
 
     // Метод, который реализует вывод на экран имя и почту пользователя
