@@ -6,18 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import com.example.booksbury.model.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.databinding.BookInfoAuthorBinding
-import com.example.booksbury.items.Author
+import com.example.booksbury.model.BookViewModel
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
 
 // Класс фрагмента отображения информации об авторе книги
 class BookInfoAuthor : Fragment() {
@@ -69,36 +61,17 @@ class BookInfoAuthor : Fragment() {
 
     // Метод, выводящий на экран информацию об авторе
     private fun fetchDataFromServer() {
-        lifecycleScope.launch {
-            val author = fetchAuthorDataFromServer()
 
-            // Установка имени автора книги, изображения автора книги и описание автора
-            Picasso.get().load(author.authorImage).into(binding.profileAuthor)
-            binding.nameAuthor.text = author.authorName
-            binding.textAuthor.text = author.authorAbout
-        }
-    }
+        val language = (activity as MainActivity).getLanguage()
 
-    // Запрос, возвращающий информацию об авторе
-    private suspend fun fetchAuthorDataFromServer(): Author {
-        return withContext(Dispatchers.IO) {
-            val ipAddress = (activity as MainActivity).getIpAddress()
-            val language = (activity as MainActivity).getLanguage()
-
-            val url = URL("http://$ipAddress:3000/api/books/${viewModel.idBook}/author/$language")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            val jsonResponse = JSONObject(response)
-
-            val authorName = jsonResponse.getString("authorName")
-            val authorAbout = jsonResponse.getString("authorAbout")
-            val authorImage = jsonResponse.getString("authorImage")
-
-            Author(authorName, authorAbout, authorImage)
+        viewModel.getAuthorInfo(viewModel.idBook, language) { authorInfo, error ->
+            if (authorInfo != null) {
+                Picasso.get().load(authorInfo.authorImage).into(binding.profileAuthor)
+                binding.nameAuthor.text = authorInfo.authorName
+                binding.textAuthor.text = authorInfo.authorAbout
+            } else {
+                println("Error: $error")
+            }
         }
     }
 

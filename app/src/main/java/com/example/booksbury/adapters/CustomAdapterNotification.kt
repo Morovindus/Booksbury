@@ -7,22 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
+import com.example.booksbury.entity.Notification
 import com.example.booksbury.fragments.NotificationFragment
-import com.example.booksbury.items.Notification
+import com.example.booksbury.model.BookViewModel
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
 
 // Адаптер для списка уведомлений
-class CustomAdapterNotification(private val items: ArrayList<Notification>, private val context: Context, private val notificationFragment: NotificationFragment) : RecyclerView.Adapter<CustomAdapterNotification.ViewHolder>() {
+class CustomAdapterNotification(private val items: List<Notification>, private val context: Context, private val notificationFragment: NotificationFragment) : RecyclerView.Adapter<CustomAdapterNotification.ViewHolder>() {
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModel: BookViewModel
 
     // Создание нового ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -35,15 +33,18 @@ class CustomAdapterNotification(private val items: ArrayList<Notification>, priv
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = items[position]
 
+        // Инициализация ViewModel
+        viewModel = ViewModelProvider(notificationFragment).get(BookViewModel::class.java)
+
         // Загрузка изображения книги с помощью Picasso
-        Picasso.get().load(currentItem.imageResource).into(holder.imageCoverBook)
+        Picasso.get().load(currentItem.image).into(holder.imageCoverBook)
 
-        (context as MainActivity).lifecycleScope.launch {
-            // Установка заголовка книги
-            val titleBook = getTitleBookByIdAndLang(currentItem.bookId)
-
-            withContext(Dispatchers.Main) {
+        val language = (context as MainActivity).getLanguage()
+        viewModel.getTitleBook(currentItem.bookId, language) { titleBook, error ->
+            if (titleBook != null) {
                 holder.titleBook.text = titleBook
+            } else {
+                println("Error: $error")
             }
         }
 
@@ -53,15 +54,12 @@ class CustomAdapterNotification(private val items: ArrayList<Notification>, priv
 
         // Слушатель нажатия на изображение книги
         holder.imageCoverBook.setOnClickListener {
-            val id = currentItem.bookId
-            notificationFragment.navigateToBookInfoFragment(id)
+            notificationFragment.navigateToBookInfoFragment(currentItem.bookId)
         }
     }
 
     // Получение количества элементов в списке
-    override fun getItemCount(): Int {
-        return items.size
-    }
+    override fun getItemCount() = items.size
 
     // ViewHolder для отображения элемента списка приобретенных книг
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -69,23 +67,5 @@ class CustomAdapterNotification(private val items: ArrayList<Notification>, priv
         val titleNotification: TextView = itemView.findViewById(R.id.title_notification)
         val titleBook: TextView = itemView.findViewById(R.id.title_book)
         val titleTime: TextView = itemView.findViewById(R.id.title_time)
-    }
-
-    // Запрос на получение названия книги по языку и id книги
-    private suspend fun getTitleBookByIdAndLang(bookId: Int): String {
-        return withContext(Dispatchers.IO) {
-            val ipAddress = (context as MainActivity).getIpAddress()
-            val language = (context as MainActivity).getLanguage()
-
-            val url = URL("http:$ipAddress:3000/api/users/titleBook/$bookId/$language")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            val jsonObject = JSONObject(response)
-            jsonObject.getString("title")
-        }
     }
 }

@@ -34,6 +34,5 @@ class MyDialogFragmentRegistration(private val signUpFragment: SignUpFragment) :
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
     }
 }

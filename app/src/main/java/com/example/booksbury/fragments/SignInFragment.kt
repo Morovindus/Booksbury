@@ -1,23 +1,22 @@
 package com.example.booksbury.fragments
 
+import EncryptionUtil
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.databinding.SignInFragmentBinding
+import com.example.booksbury.model.UserViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import java.io.UnsupportedEncodingException
-import java.net.HttpURLConnection
-import java.net.URL
 
 // Класс фрагмента входа в систему
 class SignInFragment : Fragment() {
@@ -27,6 +26,9 @@ class SignInFragment : Fragment() {
 
     // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModel: UserViewModel
 
     // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
@@ -40,6 +42,9 @@ class SignInFragment : Fragment() {
     // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Инициализация ViewModel
+        viewModel = ViewModelProvider(this)[UserViewModel::class.java]
 
         // Обработчики нажатий на кнопки "Войти"
         binding.buttonLogin.setOnClickListener {
@@ -65,24 +70,28 @@ class SignInFragment : Fragment() {
     // Проверка, всех введенных полей пользователем
     private fun checkUsernameAndPassword(username: String, password: String) {
         lifecycleScope.launch(Dispatchers.IO) {
-            val usernameExists = checkUsernameExists(username)
-            if (usernameExists) {
-                val passwordValid = checkPasswordValid(username, password)
-                if (passwordValid) {
-                    val idUser = getIdFromServer(username)
-                    (activity as MainActivity).setIdUser(idUser)
-                    withContext(Dispatchers.Main) {
-                        findNavController().navigate(R.id.action_SignInFragment_to_HomeFragment)
+            // Проверяем существование имени пользователя
+            viewModel.checkUsernameExists(username) { usernameExists ->
+                if (usernameExists) {
+                    // Если имя пользователя существует, проверяем введенный пароль
+                    viewModel.checkPasswordValid(username, EncryptionUtil().encrypt(password)) { passwordValid ->
+                        if (passwordValid) {
+                            // Если пароль подтвержден, получаем идентификатор пользователя
+                            viewModel.getId(username) { idUser ->
+                                idUser?.let { // Проверяем, что idUser не равен null
+                                    // Устанавливаем id пользователя и переходим на главный экран
+                                    (activity as MainActivity).setIdUser(idUser.toInt())
+                                    findNavController().navigate(R.id.action_SignInFragment_to_HomeFragment)
+                                }
+                            }
+                        } else {
+                            // Выводим сообщение об ошибке для поля ввода пароля
+                            binding.editPassword.error = getString(R.string.incorrectPassword)
+                            binding.editPassword.setText("")
+                        }
                     }
-
                 } else {
-                    withContext(Dispatchers.Main) {
-                        binding.editPassword.error = getString(R.string.incorrectPassword)
-                        binding.editPassword.setText("")
-                    }
-                }
-            } else {
-                withContext(Dispatchers.Main) {
+                    // Выводим сообщение об ошибке для поля ввода имени пользователя и пароля
                     binding.editUsername.error = getString(R.string.incorrectUsername)
                     binding.editUsername.setText("")
                     binding.editPassword.setText("")
@@ -90,70 +99,6 @@ class SignInFragment : Fragment() {
             }
         }
     }
-
-    // Запрос для получения id пользователя
-    private fun getIdFromServer(username: String): Int {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-        val url = URL("http:$ipAddress:3000/api/get_user_id/$username")
-
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-
-        inputStream.close()
-        connection.disconnect()
-
-        val jsonResponse = JSONObject(response)
-
-        return jsonResponse.getString("id").toInt()
-    }
-
-    // Проверка, что введенный пользователем никнейм существует в БД
-    private fun checkUsernameExists(username: String): Boolean {
-        return try {
-            val ipAddress = (activity as MainActivity).getIpAddress()
-            val url = URL("http:$ipAddress:3000/api/check_username/$username")
-
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            inputStream.close()
-            connection.disconnect()
-
-            val jsonResponse = JSONObject(response)
-            jsonResponse.getBoolean("exists")
-
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-   // Проверка, что пользователь ввел вверный пароль
-    private fun checkPasswordValid(username: String, password: String): Boolean {
-        return try {
-            val ipAddress = (activity as MainActivity).getIpAddress()
-            val url = URL("http:$ipAddress:3000/api/check_password/$username/$password")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            inputStream.close()
-            connection.disconnect()
-
-            val jsonResponse = JSONObject(response)
-            jsonResponse.getBoolean("match")
-        } catch (e: Exception) {
-            false
-        }
-    }
-
 
     // Проверка введенных полей пользователем
     private fun validateUsernameAndPassword(username: String, password: String): Boolean {

@@ -8,17 +8,23 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.booksbury.R
-import com.example.booksbury.fragments.HomeFragment
-import com.example.booksbury.items.Book
+import com.example.booksbury.entity.Book
+import com.example.booksbury.interfaces.OnBookClickListener
 import com.squareup.picasso.Picasso
 
 // Адаптер для списка книг
-class CustomAdapterBooks(private val items: ArrayList<Book>, private val homeFragment: HomeFragment) : RecyclerView.Adapter<CustomAdapterBooks.ViewHolder>() {
+class CustomAdapterBooks(private var items: List<Book>, private val listener: OnBookClickListener) : RecyclerView.Adapter<CustomAdapterBooks.ViewHolder>() {
 
     // Создание нового ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_books, parent, false)
         return ViewHolder(view)
+    }
+
+    // Метод для обновления списка книг
+    fun updateBooks(newBooks: ArrayList<Book>) {
+        items = newBooks
+        notifyDataSetChanged()
     }
 
     // Привязка данных к ViewHolder
@@ -32,7 +38,7 @@ class CustomAdapterBooks(private val items: ArrayList<Book>, private val homeFra
         // Установка заголовка книги, имени автора и рейтинга книги
         holder.titleBook.text = currentItem.titleBook
         holder.nameAuthor.text = currentItem.nameAuthor
-        holder.ratings.text = "${currentItem.ratings} ${homeFragment.getString(R.string.ratings)}"
+        holder.ratings.text = "${currentItem.ratings} ${holder.itemView.context.getString(R.string.ratings)}"
 
         // Установка звездочек рейтинга книги
         val orangeStarDrawable = R.drawable.star_orange
@@ -42,10 +48,9 @@ class CustomAdapterBooks(private val items: ArrayList<Book>, private val homeFra
         if (currentItem.stars >= 4) holder.starFourth.setImageResource(orangeStarDrawable)
         if (currentItem.stars >= 5) holder.starFifth.setImageResource(orangeStarDrawable)
 
-        // Обработка нажатия на обложку книги для открытия информации о книге
+        // Обработка нажатия на обложку книги
         holder.imageCoverBook.setOnClickListener {
-            val id = currentItem.id
-            homeFragment.navigateToBookInfoFragment(id)
+            listener.onBookClick(currentItem.id)
         }
     }
 

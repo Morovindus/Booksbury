@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksbury.MainActivity
@@ -15,19 +14,13 @@ import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
 import com.example.booksbury.adapters.CustomAdapterBooks
 import com.example.booksbury.databinding.HomeFragmentBinding
-import com.example.booksbury.items.Book
+import com.example.booksbury.entity.Book
+import com.example.booksbury.interfaces.OnBookClickListener
 import com.example.booksbury.model.BookViewModel
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
 
 // Класс фрагмента главной страницы
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), OnBookClickListener {
 
     // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: HomeFragmentBinding? = null
@@ -62,7 +55,6 @@ class HomeFragment : Fragment() {
         // Инициализация ViewModel
         viewModel = ViewModelProvider(this)[BookViewModel::class.java]
 
-
         // Получаем и обновляем данные о книгах на экране
         fetchBooksAndUpdateUI()
     }
@@ -84,13 +76,11 @@ class HomeFragment : Fragment() {
                     binding.mainTitle.text = book.titleBook
                     Picasso.get().load(book.imageResource).into(binding.mainImage)
 
-                    // Используем корутину для получения изображения автора
-                    lifecycleScope.launch {
-                        try {
-                            val authorImageUrl = fetchAuthorImageFromServer(mainBook.id)
-                            Picasso.get().load(authorImageUrl).into(binding.imageAuthor)
-                        } catch (e: Exception) {
-                            Log.e("MyLogs", "Failed to fetch author image: $e")
+                    viewModel.getAuthorImage(mainBook.id) { authorImage, error ->
+                        if (authorImage != null) {
+                            Picasso.get().load(authorImage).into(binding.imageAuthor)
+                        } else {
+                            println("Error: $error")
                         }
                     }
 
@@ -99,84 +89,34 @@ class HomeFragment : Fragment() {
 
                     // Установка слушателя нажатия на основное изображение
                     binding.mainImage.setOnClickListener {
-                        navigateToBookInfoFragment(mainBook.id)
+                        onBookClick(mainBook.id)
                     }
                 }
             }
         }
 
-
-        lifecycleScope.launch {
-
-            // Загрузка списка элементов из сети
-            val topBooks: ArrayList<Book> = withContext(Dispatchers.IO) {
-                fetchItemsFromServer()
+        // Получение 10 книг с сервера
+        viewModel.getTenBooks(language) { topBooks, error ->
+            if (topBooks != null) {
+                updateUIWithTopBooks(topBooks)
+            } else {
+                println("Error: $error")
             }
-
-            updateUIWithTopBooks(topBooks)
         }
     }
 
     // Метод для обновления пользовательского интерфейса
-    private fun updateUIWithTopBooks(topBooks: ArrayList<Book>) {
-        val adapter = CustomAdapterBooks(topBooks, this@HomeFragment)
+    private fun updateUIWithTopBooks(topBooks: List<Book>) {
+        val adapter = CustomAdapterBooks(topBooks, this)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
         binding.recyclerView.adapter = adapter
     }
 
     // Метод, который позволяет переключить фрагмент, и передать ему значение id книги
-    fun navigateToBookInfoFragment(id: Int) {
+    override fun onBookClick(id: Int) {
         (activity as MainActivity).setIdBook(id)
         findNavController().navigate(R.id.action_HomeFragment_to_BookInfoFragment)
-    }
-
-    // Запрос на получение 10 случайных книг
-    private fun fetchItemsFromServer(): ArrayList<Book> {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-        val language = (activity as MainActivity).getLanguage()
-
-        val url = URL("http:$ipAddress:3000/api/books/special/random/$language")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-
-        val jsonResponse = JSONArray(response)
-
-        val items = ArrayList<Book>()
-        for (i in 0 until jsonResponse.length()) {
-            val bookObject = jsonResponse.getJSONObject(i)
-            val id = bookObject.getInt("_id")
-            val title = bookObject.getString("title")
-            val authorName = bookObject.getString("authorName")
-            val stars = bookObject.getInt("averageStars")
-            val ratings = bookObject.getInt("ratings")
-            val price = bookObject.getInt("price")
-            val smallCover = bookObject.getString("smallCover")
-
-            val item = Book(id, smallCover, title, authorName, stars, ratings, price)
-            items.add(item)
-        }
-        return items
-    }
-
-    // Запрос на получение изображения автора главной книги
-    private suspend fun fetchAuthorImageFromServer(id: Int): String {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-        val url = URL("http:$ipAddress:3000/api/books/authorImage/$id")
-        val connection = withContext(Dispatchers.IO) {
-            url.openConnection() as HttpURLConnection
-        }
-        connection.requestMethod = "GET"
-
-        val response = withContext(Dispatchers.IO) {
-            connection.inputStream.bufferedReader().use { it.readText() }
-        }
-
-        val jsonObject = JSONObject(response)
-        return jsonObject.getString("imageAuthor")
     }
 
     // Метод переключающий фрагменты

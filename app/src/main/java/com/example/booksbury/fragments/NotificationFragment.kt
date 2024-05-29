@@ -7,23 +7,17 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.booksbury.model.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
 import com.example.booksbury.adapters.CustomAdapterNotification
 import com.example.booksbury.book_info.BookInfoReviews
 import com.example.booksbury.databinding.NotificationFragmentBinding
-import com.example.booksbury.items.Notification
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import java.net.HttpURLConnection
-import java.net.URL
+import com.example.booksbury.entity.Notification
+import com.example.booksbury.model.BookViewModel
+import com.example.booksbury.model.UserViewModel
 
 // Класс фрагмента уведомлений, отображаемого в пользовательском интерфейсе
 class NotificationFragment : Fragment() {
@@ -35,7 +29,10 @@ class NotificationFragment : Fragment() {
     private val binding get() = _binding!!
 
     // ViewModel для хранения состояния
-    private lateinit var viewModel: BookViewModel
+    private lateinit var viewModelBook: BookViewModel
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModelUser: UserViewModel
 
     // Блок companion object для хранения констант
     companion object {
@@ -62,16 +59,17 @@ class NotificationFragment : Fragment() {
         }
 
         // Инициализация ViewModel
-        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+        viewModelBook = ViewModelProvider(this)[BookViewModel::class.java]
+        viewModelUser = ViewModelProvider(this)[UserViewModel::class.java]
 
         // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
-        if (viewModel.idUser == 0) {
-            viewModel.idUser = (activity as MainActivity).getIdUser()
+        if (viewModelBook.idUser == 0) {
+            viewModelBook.idUser = (activity as MainActivity).getIdUser()
         }
 
         // Восстанавливаем сохраненное значение, если оно есть
         savedInstanceState?.let {
-            viewModel.idUser = it.getInt(BookInfoReviews.ENTERED_ID_USER_KEY, viewModel.idUser)
+            viewModelBook.idUser = it.getInt(BookInfoReviews.ENTERED_ID_USER_KEY, viewModelBook.idUser)
         }
 
         // Выполнение запроса на получение уведомлений и обновление пользовательского интерфейса
@@ -80,23 +78,19 @@ class NotificationFragment : Fragment() {
 
     // Метод, который реализует вывод всех уведомлений на экран
     private fun fetchBooksAndUpdateUI() {
-        lifecycleScope.launch {
-            try {
-                // Загрузка всех уведомлений из сети
-                val notifications: ArrayList<Notification> = withContext(Dispatchers.IO) {
-                    fetchNotificationFromServer()
-                }
-
+        viewModelUser.getUserNotifications(viewModelBook.idUser) { notifications, error ->
+            if (notifications != null) {
                 updateUIWithNotifications(notifications)
-            } catch (e: Exception) {
+
+            } else {
                 showNoNotificationsNotification()
+                println("Error: $error")
             }
         }
     }
 
     // Метод для обновления пользовательского интерфейса
-    private fun updateUIWithNotifications(notifications: ArrayList<Notification>) {
-        notifications.reverse()
+    private fun updateUIWithNotifications(notifications: List<Notification>) {
         val adapter = CustomAdapterNotification(notifications, requireContext(),this@NotificationFragment)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
@@ -107,32 +101,6 @@ class NotificationFragment : Fragment() {
     fun navigateToBookInfoFragment(id: Int) {
         (activity as MainActivity).setIdBook(id)
         findNavController().navigate(R.id.action_NotificationFragment_to_BookInfoFragment)
-    }
-
-    // Запрос на получение всех уведомлений
-    private fun fetchNotificationFromServer(): ArrayList<Notification> {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-
-        val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/notifications")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-
-        val jsonResponse = JSONArray(response)
-
-        val items = ArrayList<Notification>()
-        for (i in 0 until jsonResponse.length()) {
-            val bookObject = jsonResponse.getJSONObject(i)
-            val bookId = bookObject.getInt("bookId")
-            val time = bookObject.getString("time")
-            val image = bookObject.getString("image")
-
-            val item = Notification(bookId, time, image)
-            items.add(item)
-        }
-        return items
     }
 
     // Метод, который обрабатывает случай - пустого массива уведомлений
@@ -169,7 +137,7 @@ class NotificationFragment : Fragment() {
     // Метод, для сохранения введенного текста
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(BookInfoReviews.ENTERED_ID_USER_KEY, viewModel.idUser)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModelBook.idUser)
     }
 
     // Метод, вызываемый перед уничтожением представления фрагмента

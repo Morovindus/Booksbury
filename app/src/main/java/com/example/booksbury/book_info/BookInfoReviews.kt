@@ -17,17 +17,10 @@ import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
 import com.example.booksbury.adapters.CustomAdapterReview
 import com.example.booksbury.databinding.BookInfoReviewsBinding
-import com.example.booksbury.items.Reviews
+import com.example.booksbury.entity.Reviews
 import com.example.booksbury.model.BookViewModel
-import kotlinx.coroutines.Dispatchers
+import com.example.booksbury.model.UserViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
 
 // Класс фрагмента отображения отзывов о книге
 class BookInfoReviews : Fragment() {
@@ -42,7 +35,10 @@ class BookInfoReviews : Fragment() {
     private lateinit var inflater: LayoutInflater
 
     // ViewModel для хранения состояния
-    private lateinit var viewModel: BookViewModel
+    private lateinit var viewModelBook: BookViewModel
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModelUser: UserViewModel
 
     // Блок companion object для хранения констант
     companion object {
@@ -55,12 +51,13 @@ class BookInfoReviews : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Инициализация ViewModel
-        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+        viewModelBook = ViewModelProvider(this)[BookViewModel::class.java]
+        viewModelUser = ViewModelProvider(this)[UserViewModel::class.java]
 
         // Восстанавливаем сохраненное значение, если оно есть
         savedInstanceState?.let {
-            viewModel.idUser = it.getInt(BookInfoFragment.ENTERED_ID_USER_KEY, viewModel.idUser)
-            viewModel.idBook = it.getInt(BookInfoFragment.ENTERED_ID_BOOK_KEY, viewModel.idBook)
+            viewModelBook.idUser = it.getInt(BookInfoFragment.ENTERED_ID_USER_KEY, viewModelBook.idUser)
+            viewModelBook.idBook = it.getInt(BookInfoFragment.ENTERED_ID_BOOK_KEY, viewModelBook.idBook)
         }
     }
 
@@ -79,13 +76,13 @@ class BookInfoReviews : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Получаем значение id книги из предыдущего фрагмента, если оно еще не было установлено
-        if (viewModel.idBook == 0) {
-            viewModel.idBook = (activity as MainActivity).getIdBook()
+        if (viewModelBook.idBook == 0) {
+            viewModelBook.idBook = (activity as MainActivity).getIdBook()
         }
 
         // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
-        if (viewModel.idUser == 0) {
-            viewModel.idUser = (activity as MainActivity).getIdUser()
+        if (viewModelBook.idUser == 0) {
+            viewModelBook.idUser = (activity as MainActivity).getIdUser()
         }
 
         // Выполнение запроса на получение всех отзывов и обновление пользовательского интерфейса
@@ -94,44 +91,50 @@ class BookInfoReviews : Fragment() {
 
     // Метод, выводящий все отзывы на экран
     private fun fetchDataFromServer() {
-        lifecycleScope.launch {
-            val reviews = fetchReviewsDataFromServer()
+        // Получение отзывов с сервера
+        viewModelBook.getBookReviews(viewModelBook.idBook) { reviews, error ->
+            if (reviews != null) {
+                // Разделение отзывов на пользовательские и остальные
+                val (otherReviews, userReviews) = reviews.partition { it._id != viewModelBook.idUser }
 
-            val items = ArrayList<Reviews>()
-            var userReview: Reviews? = null
+                // Обновление списка отзывов на экране
+                updateRecyclerView(otherReviews)
 
-            // Разделение отзывов на пользовательские и остальные
-            reviews.forEach { review ->
-                if (review.id != viewModel.idUser) {
-                    items.add(review)
-                } else {
-                    userReview = review
-                }
-            }
-
-            // Обновляем пользовательский интерфейс
-            updateRecyclerView(items)
-
-            // Получение информации о том, приобрел ли пользователь данную книгу
-            val isBookPurchased = fetchBookFromPurchasedFromServer()
-
-            userReview?.let { review ->
-                // Добавляем уже существующий комментарий пользователя
-                addUserReviewToLayout(review)
-            }
-            if (userReview == null && isBookPurchased) {
-                // Добавляем кнопку "Добавление нового отзыва"
-                binding.container.addView(inflater.inflate(R.layout.button_write_review, binding.container, false))
-
-                val buttonReview = binding.container.findViewById<AppCompatImageButton>(R.id.button_write_review)
-
-                // Слушатель нажатия на кнопку "Добавить отзыв"
-                buttonReview.setOnClickListener {
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        val navController = findNavController()
-                        navController.navigate(R.id.action_BookInfoFragment_to_ReviewFragment)
+                // Проверка приобретения книги пользователем и добавление возможности написания отзыва
+                val userReview = userReviews.firstOrNull() // Извлекаем отзыв пользователя или null, если его нет
+                viewModelUser.isBookPurchased(viewModelBook.idUser, viewModelBook.idBook) { isBookPurchased, error ->
+                    if (isBookPurchased != null) {
+                        if (userReview == null && isBookPurchased) {
+                            addUserReviewButtonToLayout()
+                        } else {
+                            userReview?.let { addUserReviewToLayout(it) }
+                        }
+                    } else {
+                        println("Error: $error")
                     }
                 }
+            } else {
+                println("Error: $error")
+            }
+        }
+    }
+
+    // Добавление кнопки "Добавить отзыв" в макет
+    private fun addUserReviewButtonToLayout() {
+        binding.container.addView(
+            inflater.inflate(
+                R.layout.button_write_review,
+                binding.container,
+                false
+            )
+        )
+
+        val buttonReview = binding.container.findViewById<AppCompatImageButton>(R.id.button_write_review)
+        // Слушатель нажатия на кнопку "Добавить отзыв"
+        buttonReview.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val navController = findNavController()
+                navController.navigate(R.id.action_BookInfoFragment_to_ReviewFragment)
             }
         }
     }
@@ -164,71 +167,18 @@ class BookInfoReviews : Fragment() {
     }
 
     // Метод для обновления пользовательского интерфейса
-    private fun updateRecyclerView(items: ArrayList<Reviews>) {
+    private fun updateRecyclerView(items: List<Reviews>) {
         val adapter = CustomAdapterReview(items)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
         binding.recyclerView.adapter = adapter
     }
 
-    // Запрос, возвращающий все отзывы по id книги
-    suspend fun fetchReviewsDataFromServer(): ArrayList<Reviews> {
-        return withContext(Dispatchers.IO) {
-            val reviews = ArrayList<Reviews>()
-            val ipAddress = (activity as MainActivity).getIpAddress()
-
-            val url = URL("http:$ipAddress:3000/api/books/${viewModel.idBook}/reviews")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val responseCode = connection.responseCode
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                val inputStream = connection.inputStream
-                val response = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
-
-                val jsonArray = JSONArray(response)
-                for (i in 0 until jsonArray.length()) {
-                    val jsonObject = jsonArray.getJSONObject(i)
-                    val review = Reviews(
-                        jsonObject.getInt("_id"),
-                        jsonObject.getString("nameUser"),
-                        jsonObject.getString("date"),
-                        jsonObject.getString("textUser"),
-                        jsonObject.getInt("stars")
-                    )
-                    reviews.add(review)
-                }
-            } else {
-                println("HTTP Error: $responseCode")
-            }
-
-            connection.disconnect()
-            reviews
-        }
-    }
-
-    // Запрос, с помощью которого узнаем есть данная книга в уже купленных книгах у пользователя
-    private suspend fun fetchBookFromPurchasedFromServer(): Boolean {
-        return withContext(Dispatchers.IO) {
-            val ipAddress = (context as MainActivity).getIpAddress()
-
-            val url = URL("http:$ipAddress:3000/${viewModel.idUser}/purchasedBooks/${viewModel.idBook}")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            val jsonObject = JSONObject(response)
-            jsonObject.getBoolean("isBookPurchased")
-        }
-    }
-
     // Метод, для сохранения введенного текста
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(ENTERED_ID_BOOK_KEY, viewModel.idBook)
-        outState.putInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+        outState.putInt(ENTERED_ID_BOOK_KEY, viewModelBook.idBook)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModelBook.idUser)
     }
 
     // Метод, вызываемый перед уничтожением представления фрагмента

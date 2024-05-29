@@ -17,18 +17,17 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.databinding.BookInfoFragmentBinding
 import com.example.booksbury.model.BookViewModel
+import com.example.booksbury.model.UserViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -48,7 +47,10 @@ class BookInfoFragment : Fragment() {
     private val binding get() = _binding!!
 
     // ViewModel для хранения состояния
-    private lateinit var viewModel: BookViewModel
+    private lateinit var viewModelBook: BookViewModel
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModelUser: UserViewModel
 
     // Блок companion object для хранения констант
     companion object {
@@ -61,12 +63,13 @@ class BookInfoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Инициализация ViewModel
-        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+        viewModelBook = ViewModelProvider(this)[BookViewModel::class.java]
+        viewModelUser = ViewModelProvider(this)[UserViewModel::class.java]
 
         // Восстанавливаем сохраненное значение, если оно есть
         savedInstanceState?.let {
-            viewModel.idUser = it.getInt(ENTERED_ID_USER_KEY, viewModel.idUser)
-            viewModel.idBook = it.getInt(ENTERED_ID_BOOK_KEY, viewModel.idBook)
+            viewModelBook.idUser = it.getInt(ENTERED_ID_USER_KEY, viewModelBook.idUser)
+            viewModelBook.idBook = it.getInt(ENTERED_ID_BOOK_KEY, viewModelBook.idBook)
         }
     }
 
@@ -89,13 +92,13 @@ class BookInfoFragment : Fragment() {
         }
 
         // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
-        if (viewModel.idUser == 0) {
-            viewModel.idUser = (activity as MainActivity).getIdUser()
+        if (viewModelBook.idUser == 0) {
+            viewModelBook.idUser = (activity as MainActivity).getIdUser()
         }
 
         // Получаем значение id книги из предыдущего фрагмента, если оно еще не было установлено
-        if (viewModel.idBook == 0) {
-            viewModel.idBook = (activity as MainActivity).getIdBook()
+        if (viewModelBook.idBook == 0) {
+            viewModelBook.idBook = (activity as MainActivity).getIdBook()
         }
 
         // Отправляем запрос, и инициализируем все поля на экране
@@ -111,8 +114,8 @@ class BookInfoFragment : Fragment() {
     // Метод, для сохранения введенного текста
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(ENTERED_ID_BOOK_KEY, viewModel.idBook)
-        outState.putInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+        outState.putInt(ENTERED_ID_BOOK_KEY, viewModelBook.idBook)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModelBook.idUser)
     }
 
     // Обрабатываем удаление и добавление кнопок на экране
@@ -120,15 +123,20 @@ class BookInfoFragment : Fragment() {
         val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val container = binding.container
 
-        lifecycleScope.launch {
-            val isBookPurchased = fetchBookFromPurchasedFromServer()
-            val isBookFavorite = fetchBookFromFavoriteFromServer()
-
-            withContext(Dispatchers.Main) {
+        viewModelUser.isBookPurchased(viewModelBook.idUser, viewModelBook.idBook) { isBookPurchased, error ->
+            if (isBookPurchased != null) {
                 if (isBookPurchased) {
                     // Если у пользователя уже есть эта книга
+
+                    viewModelUser.isBookFavorite(viewModelBook.idUser, viewModelBook.idBook) { isBookFavorite, error ->
+                        if (isBookFavorite != null) {
+                            setupFavoriteButton(isBookFavorite)
+                        } else {
+                            println("Error: $error")
+                        }
+                    }
+
                     inflater.inflate(R.layout.button_read, container, true)
-                    setupFavoriteButton(isBookFavorite)
                     setupReadButton()
 
                 } else {
@@ -136,6 +144,8 @@ class BookInfoFragment : Fragment() {
                     inflater.inflate(R.layout.button_buy, container, true)
                     setupBuyButton(inflater, container)
                 }
+            } else {
+                println("Error: $error")
             }
         }
     }
@@ -196,7 +206,7 @@ class BookInfoFragment : Fragment() {
                 val ipAddress = (activity as MainActivity).getIpAddress()
                 val language = (activity as MainActivity).getLanguage()
 
-                val url = URL("http:$ipAddress:3000/api/books/${viewModel.idBook}/mp3/$language")
+                val url = URL("http:$ipAddress:3000/api/books/${viewModelBook.idBook}/mp3/$language")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
 
@@ -307,7 +317,7 @@ class BookInfoFragment : Fragment() {
                 val ipAddress = (activity as MainActivity).getIpAddress()
                 val language = (activity as MainActivity).getLanguage()
 
-                val url = URL("http:$ipAddress:3000/api/books/${viewModel.idBook}/pdf/$language")
+                val url = URL("http:$ipAddress:3000/api/books/${viewModelBook.idBook}/pdf/$language")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
 
@@ -389,49 +399,48 @@ class BookInfoFragment : Fragment() {
             setupButton(binding.buttonFavourites, false, View.INVISIBLE) {}
 
             setupButton(binding.buttonDeleteFavorite, true, View.VISIBLE) {
-                lifecycleScope.launch {
 
-                    // Посылаем запрос на удаление книги из избранного
-                    withContext(Dispatchers.IO) {
-                        removeFromFavorite()
+                // Посылаем запрос на удаление книги из избранного
+                viewModelUser.deleteFavoriteBook(viewModelBook.idUser, viewModelBook.idBook) { success, error ->
+                    if (success) {
+                        Toast.makeText(activity, getString(R.string.book_removed_from_favorites), Toast.LENGTH_LONG).show()
+
+                        viewModelUser.isBookFavorite(viewModelBook.idUser, viewModelBook.idBook) { isBookFavorite, error ->
+                            if (isBookFavorite != null) {
+                                setupFavoriteButton(isBookFavorite)
+                            } else {
+                                ("Error: $error")
+                            }
+                        }
+
+                    } else {
+                        println("Ошибка: $error")
                     }
-                    Toast.makeText(activity, getString(R.string.book_removed_from_favorites), Toast.LENGTH_LONG).show()
-
-                    setupFavoriteButton(fetchBookFromFavoriteFromServer())
                 }
             }
         } else {
             // Если у пользователя данной книги в избранных нет
             setupButton(binding.buttonFavourites, true, View.VISIBLE) {
 
-                lifecycleScope.launch {
-                    // Посылаем запрос на добавление книги в избранного
-                    withContext(Dispatchers.IO) {
-                        addBookToFavorite()
-                    }
-                    Toast.makeText(activity, getString(R.string.book_added_to_favorites), Toast.LENGTH_LONG).show()
+                // Посылаем запрос на добавление книги в избранного
+                viewModelUser.addBookToFavorite(viewModelBook.idUser, viewModelBook.idBook) { success, message ->
+                    if (success) {
+                        Toast.makeText(activity, getString(R.string.book_added_to_favorites), Toast.LENGTH_LONG).show()
 
-                    setupFavoriteButton(fetchBookFromFavoriteFromServer())
+                        viewModelUser.isBookFavorite(viewModelBook.idUser, viewModelBook.idBook) { isBookFavorite, error ->
+                            if (isBookFavorite != null) {
+                                setupFavoriteButton(isBookFavorite)
+                            } else {
+                                println("Error: $error")
+                            }
+                        }
+                    } else {
+                        println("Ошибка при добавлении книги в избранное: $message")
+                    }
                 }
             }
 
             setupButton(binding.buttonDeleteFavorite, false, View.INVISIBLE) {}
-        }
-    }
-
-    // Запрос на удаления книги из избранного
-    private fun removeFromFavorite() {
-        val ipAddress = (context as MainActivity).getIpAddress()
-
-        val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/deleteFavorite/${viewModel.idBook}")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "DELETE"
-
-        val responseCode = connection.responseCode
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            println("Книга успешно удалена из избранного")
-        } else {
-            println("Ошибка при удалении книги из избранного: $responseCode")
         }
     }
 
@@ -447,8 +456,21 @@ class BookInfoFragment : Fragment() {
 
     // Метод выводящий всю подробную информацию о книге на экран
     private fun fetchBookData() {
-        GlobalScope.launch(Dispatchers.IO) {
-            fetchItemsFromServer()
+        val language = (activity as MainActivity).getLanguage()
+
+        viewModelBook.getBookMoreDetails(viewModelBook.idBook, language) { bookDetails, error ->
+            if (bookDetails != null) {
+                binding.titleBook.text = bookDetails.title
+                binding.nameAuthor.text = bookDetails.authorName
+                binding.price.text = "${bookDetails.price.toInt()}\u20BD"
+                binding.dateReleased.text = bookDetails.released
+                binding.part.text = bookDetails.part
+                binding.page.text = bookDetails.page
+
+                Picasso.get().load(bookDetails.images).into(binding.mainImage)
+            } else {
+                println("Ошибка: $error")
+            }
         }
     }
 
@@ -460,17 +482,23 @@ class BookInfoFragment : Fragment() {
 
         // Слушатель нажатия на кнопку "Купить"
         buttonBuy.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                val isBookInCart = fetchBookFromCartFromServer()
 
-                // Показ уведомления должен быть выполнен на главном потоке
-                withContext(Dispatchers.Main) {
+            viewModelUser.isBookInCart(viewModelBook.idUser, viewModelBook.idBook) { isBookInCart, error ->
+                if (isBookInCart != null) {
                     if (isBookInCart) {
                         Toast.makeText(activity, getString(R.string.book_already_in_cart), Toast.LENGTH_LONG).show()
                     } else {
-                        addBookToCart()
-                        Toast.makeText(activity, getString(R.string.book_added_to_cart), Toast.LENGTH_LONG).show()
+                        // Добавление книги в корзину
+                        viewModelUser.addBookToCart(viewModelBook.idUser, viewModelBook.idBook) { success, message ->
+                            if (success) {
+                                Toast.makeText(activity, getString(R.string.book_added_to_cart), Toast.LENGTH_LONG).show()
+                            } else {
+                                println("Ошибка при добавлении книги в корзину: $message")
+                            }
+                        }
                     }
+                } else {
+                    println("Ошибка: $error")
                 }
             }
         }
@@ -509,150 +537,5 @@ class BookInfoFragment : Fragment() {
             3 -> BookInfoReviews()
             else -> Fragment()
         }
-    }
-
-    // Запрос, который возвращает подробную информацию о книге
-    private fun fetchItemsFromServer() {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-        val language = (activity as MainActivity).getLanguage()
-
-        val url = URL("http:$ipAddress:3000/api/books/more/${viewModel.idBook}/$language")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-
-        val jsonResponse = JSONObject(response)
-
-        requireActivity().runOnUiThread {
-            binding.titleBook.text = jsonResponse.getJSONObject(language).getString("title")
-            binding.nameAuthor.text = jsonResponse.getJSONObject(language).getString("authorName")
-            binding.price.text = "${jsonResponse.getInt("price")}\u20BD"
-            binding.dateReleased.text = jsonResponse.getInt("released").toString()
-            binding.part.text = jsonResponse.getInt("part").toString()
-            binding.page.text = jsonResponse.getInt("page").toString()
-
-            val middleCover = jsonResponse.getJSONObject("images").getString("middleCover")
-            Picasso.get().load(middleCover).into(binding.mainImage)
-        }
-    }
-
-    // Запрос, с помощью которого узнаем есть данная книга в избранных у пользователя
-    private suspend fun fetchBookFromFavoriteFromServer(): Boolean {
-        return withContext(Dispatchers.IO) {
-            val ipAddress = (context as MainActivity).getIpAddress()
-
-            val url = URL("http:$ipAddress:3000/${viewModel.idUser}/favoriteBooks/${viewModel.idBook}")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            val jsonObject = JSONObject(response)
-            jsonObject.getBoolean("isBookFavorite")
-        }
-    }
-
-    // Запрос, с помощью которого узнаем есть данная книга в корзине у пользователя
-    private suspend fun fetchBookFromCartFromServer(): Boolean {
-        return withContext(Dispatchers.IO) {
-            val ipAddress = (context as MainActivity).getIpAddress()
-
-            val url = URL("http:$ipAddress:3000/${viewModel.idUser}/cart/${viewModel.idBook}")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            val jsonObject = JSONObject(response)
-            jsonObject.getBoolean("isBookInCart")
-        }
-    }
-
-    // Запрос, с помощью которого узнаем есть данная книга в уже купленных книгах у пользователя
-    private suspend fun fetchBookFromPurchasedFromServer(): Boolean {
-        return withContext(Dispatchers.IO) {
-            val ipAddress = (context as MainActivity).getIpAddress()
-
-            val url = URL("http:$ipAddress:3000/${viewModel.idUser}/purchasedBooks/${viewModel.idBook}")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            val jsonObject = JSONObject(response)
-            jsonObject.getBoolean("isBookPurchased")
-        }
-    }
-
-    // Запрос на добавление новой книги в избранное
-    private suspend fun addBookToFavorite() {
-        withContext(Dispatchers.IO) {
-            try {
-                val ipAddress = (context as MainActivity).getIpAddress()
-
-                val url = URL("http:$ipAddress:3000/add_favorite/${viewModel.idUser}/${viewModel.idBook}")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "POST"
-                connection.setRequestProperty("Content-Type", "application/json")
-                connection.doOutput = true
-
-                val responseCode = connection.responseCode
-                val responseMessage = connection.inputStream.bufferedReader().use { it.readText() }
-
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    // Успешное добавление книги в корзину
-                } else {
-                    val jsonResponse = JSONObject(responseMessage)
-                    val message = jsonResponse.optString("message", "Ошибка при добавлении книги в корзину")
-                    Log.d("addBookToFavorite", "Ошибка: $message")
-                }
-            } catch (e: Exception) {
-                // Логируем исключение
-                Log.d("addBookToFavorite", "Ошибка при отправке запроса: ${e.message}")
-            }
-        }
-    }
-
-    // Запрос на добавление новой книги в корзину
-    private suspend fun addBookToCart() {
-        withContext(Dispatchers.IO) {
-            try {
-                val ipAddress = (context as MainActivity).getIpAddress()
-
-                val url = URL("http:$ipAddress:3000/add_cart/${viewModel.idUser}/${viewModel.idBook}")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "POST"
-                connection.setRequestProperty("Content-Type", "application/json")
-                connection.doOutput = true
-
-                val responseCode = connection.responseCode
-                val responseMessage = connection.inputStream.bufferedReader().use { it.readText() }
-
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    // Успешное добавление книги в корзину
-                } else {
-                    val jsonResponse = JSONObject(responseMessage)
-                    val message = jsonResponse.optString("message", "Ошибка при добавлении книги в корзину")
-                    // Логируем ошибку
-                    Log.d("addBookToCart", "Ошибка: $message")
-                }
-            } catch (e: Exception) {
-                // Логируем исключение
-                Log.d("addBookToCart", "Ошибка при отправке запроса: ${e.message}")
-            }
-        }
-    }
-
-    // Метод, который позволяет переключить фрагмент, и передать ему значение id книги
-    fun navigateToReviewFragment(id: Int) {
-        val bundle = Bundle().apply {
-            putInt("id", id)
-        }
-        findNavController().navigate(R.id.action_BookInfoFragment_to_ReviewFragment, bundle)
     }
 }

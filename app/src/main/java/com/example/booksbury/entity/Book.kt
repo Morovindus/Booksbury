@@ -1,4 +1,4 @@
-package com.example.booksbury.items
+package com.example.booksbury.entity
 
 // Класс, предоставляющий информацию о книге
 data class Book(

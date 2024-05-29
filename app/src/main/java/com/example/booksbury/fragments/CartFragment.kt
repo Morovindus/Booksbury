@@ -3,7 +3,6 @@ package com.example.booksbury.fragments
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,26 +10,17 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.booksbury.model.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
 import com.example.booksbury.adapters.CustomAdapterCart
 import com.example.booksbury.databinding.CartFragmentBinding
-import com.example.booksbury.items.Book
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
-import java.net.URL
+import com.example.booksbury.entity.Book
+import com.example.booksbury.entity.Notification
+import com.example.booksbury.model.BookViewModel
+import com.example.booksbury.model.UserViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -48,7 +38,10 @@ class CartFragment : Fragment() {
     private var cartBooksNew = ArrayList<Book>()
 
     // ViewModel для хранения состояния
-    private lateinit var viewModel: BookViewModel
+    private lateinit var viewModelBook: BookViewModel
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModelUser: UserViewModel
 
     // Блок companion object для хранения констант
     companion object {
@@ -60,11 +53,12 @@ class CartFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Инициализация ViewModel
-        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+        viewModelBook = ViewModelProvider(this)[BookViewModel::class.java]
+        viewModelUser = ViewModelProvider(this)[UserViewModel::class.java]
 
         // Восстанавливаем сохраненное значение, если оно есть
         savedInstanceState?.let {
-            viewModel.idUser = it.getInt(BooksFragment.ENTERED_ID_USER_KEY, viewModel.idUser)
+            viewModelBook.idUser = it.getInt(BooksFragment.ENTERED_ID_USER_KEY, viewModelBook.idUser)
         }
     }
 
@@ -82,8 +76,8 @@ class CartFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
-        if (viewModel.idUser == 0) {
-            viewModel.idUser = (activity as MainActivity).getIdUser()
+        if (viewModelBook.idUser == 0) {
+            viewModelBook.idUser = (activity as MainActivity).getIdUser()
         }
 
         // Выводим список вех книг в корзине наэкран
@@ -114,20 +108,34 @@ class CartFragment : Fragment() {
 
     // Метод для обработки подтверждения заказа
     private fun handleOrderConfirmation(cartBooks: ArrayList<Book>) {
-        val ipAddress = (activity as MainActivity).getIpAddress()
 
         for (book in cartBooks) {
-            // Запуск корутины для каждого запроса
-            CoroutineScope(Dispatchers.IO).launch {
 
-                // Отправляем уведомление о покупке книги
-                sendNotification(book, ipAddress)
-
-                // Добавляем книгу в массив купленных книг
-                addBookToPurchased(book.id)
-
-                // Удаляем книгу из корзины
-                removeFromCart(book.id)
+            // Добавление нового уведомления
+            viewModelUser.addNotification(viewModelBook.idUser, Notification(book.id, getCurrentDateTimeFormatted(), book.imageResource) ) { success, error ->
+                // Если добавление успешно
+                if (success) {
+                    println("Уведомление успешно добавлено")
+                    // Посылаем запрос на добавление книги в избранного
+                    viewModelUser.addBookToPurchased(viewModelBook.idUser, book.id) { success, message ->
+                        if (success) {
+                            println("Книга добавлена в купленное")
+                            // Посылаем запрос на удаление книги из избранного
+                            viewModelUser.deleteCartBook(viewModelBook.idUser, book.id) { success, error ->
+                                if (success) {
+                                    println("Книга успешно удалена из корзины пользователя")
+                                } else {
+                                    println("Ошибка: $error")
+                                }
+                            }
+                        } else {
+                            println("Ошибка при добавлении книги в купленное: $message")
+                        }
+                    }
+                } else {
+                    // Если произошла ошибка при добавлении
+                    println("Ошибка при добавлении уведомления: $error")
+                }
             }
         }
 
@@ -136,97 +144,6 @@ class CartFragment : Fragment() {
 
         // Переключаем экран пользователя на главную страницу
         findNavController().navigate(R.id.action_CartFragment_to_HomeFragment)
-    }
-
-    // Запрос на добавление новой книги в купленное
-    private suspend fun addBookToPurchased(bookId: Int) {
-        withContext(Dispatchers.IO) {
-            try {
-                val ipAddress = (context as MainActivity).getIpAddress()
-
-                val url = URL("http:$ipAddress:3000/api/users/add_purchased/${viewModel.idUser}/$bookId")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "POST"
-                connection.setRequestProperty("Content-Type", "application/json")
-                connection.doOutput = true
-
-                val responseCode = connection.responseCode
-                val responseMessage = connection.inputStream.bufferedReader().use { it.readText() }
-
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    println("Книга успешно добавлена в купленное")
-                } else {
-                    val jsonResponse = JSONObject(responseMessage)
-                    val message = jsonResponse.optString("message", "Ошибка при добавлении книги в купленное")
-                    Log.d("addBookToFavorite", "Ошибка: $message")
-                }
-            } catch (e: Exception) {
-                // Логируем исключение
-                Log.d("addBookToFavorite", "Ошибка при отправке запроса: ${e.message}")
-            }
-        }
-    }
-
-    // Запрос на удаления книги из корзины
-    private fun removeFromCart(bookId: Int) {
-        GlobalScope.launch(Dispatchers.IO) {
-            try {
-                val ipAddress = (context as MainActivity).getIpAddress()
-
-                val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/cart/$bookId")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "DELETE"
-
-                val responseCode = connection.responseCode
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    println("Книга успешно удалена из корзины пользователя")
-                } else {
-                    println("Ошибка при удалении книги из корзины пользователя: $responseCode")
-                }
-            } catch (e: Exception) {
-                println("Ошибка при удалении книги из корзины пользователя: ${e.message}")
-            }
-        }
-    }
-
-    // Метод для отправки уведомления
-    private suspend fun sendNotification(book: Book, ipAddress: String) {
-        val newNotificationJson = """
-        {
-          "bookId": "${book.id}",
-          "time": "${getCurrentDateTimeFormatted()}",
-          "image": "${book.imageResource}"
-        }
-    """.trimIndent()
-
-        val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/notifications")
-        val connection = withContext(Dispatchers.IO) {
-            url.openConnection() as HttpURLConnection
-        }
-        connection.requestMethod = "POST"
-        connection.setRequestProperty("Content-Type", "application/json")
-        connection.doOutput = true
-
-        try {
-            withContext(Dispatchers.IO) {
-                val outputStream = OutputStreamWriter(connection.outputStream)
-                outputStream.write(newNotificationJson)
-                outputStream.flush()
-            }
-
-            val responseMessage = withContext(Dispatchers.IO) {
-                if (connection.responseCode == HttpURLConnection.HTTP_CREATED) {
-                    "Уведомление успешно добавлено"
-                } else {
-                    "Ошибка при добавлении уведомления: ${connection.responseMessage}"
-                }
-            }
-            println(responseMessage)
-        } catch (e: Exception) {
-            println("Ошибка при отправке запроса: ${e.message}")
-        } finally {
-            connection.disconnect()
-        }
     }
 
     // Метод, для получения текущей даты и времени
@@ -238,29 +155,45 @@ class CartFragment : Fragment() {
 
     // Метод, который реализует вывод всех книг в корзине на экран
     private fun fetchBooksAndUpdateUI() {
-        lifecycleScope.launch {
-            try {
+
+        viewModelUser.getBookInCart(viewModelBook.idUser) { cartBookId, error ->
+            if (cartBookId != null) {
+                // Создаем массив для хранения всех купленных книг пользователем
+                val purchasedBooks = ArrayList<Book>()
                 var totalPrice = 0
-                val books = withContext(Dispatchers.IO) {
-                    fetchBooksFromServer()
-                }
+                val totalBooks = cartBookId.size
+                var completedBooks = 0
 
-                // Добавляем все книги в корзине в массив
-                val cartBooks = ArrayList<Book>()
-                for (book in books) {
-                    val purchasedBook = withContext(Dispatchers.IO) {
-                        fetchCartBooksFromServer(book)
+                for (bookId in cartBookId) {
+                    val language = (activity as MainActivity).getLanguage()
+                    viewModelBook.getPurchasedBook(bookId, language) { purchasedBook, error ->
+                        if (purchasedBook != null) {
+                            purchasedBooks.add(purchasedBook)
+                            totalPrice += purchasedBook.price
+                        } else {
+                            println("Ошибка: $error")
+                        }
+
+                        // Увеличиваем счетчик завершенных вызовов
+                        completedBooks++
+
+                        // Проверяем, завершены ли все вызовы
+                        if (completedBooks == totalBooks) {
+                            // Обновляем пользовательский интерфейс
+                            updateUIWithCartBooks(purchasedBooks, totalPrice)
+                            cartBooksNew = purchasedBooks
+                        }
                     }
-                    cartBooks.add(purchasedBook)
-                    totalPrice += purchasedBook.price
                 }
 
-                cartBooksNew = cartBooks
-
-                // Обновляем пользовательский интерфейс
-                updateUIWithCartBooks(cartBooks, totalPrice)
-            } catch (e: Exception) {
+                // Если books пуст, вызовы getPurchasedBook не произойдут, нужно обновить UI здесь
+                if (totalBooks == 0) {
+                    updateUIWithCartBooks(purchasedBooks, totalPrice)
+                    cartBooksNew = purchasedBooks
+                }
+            } else {
                 showNoCartBooksNotification()
+                println("Error: $error")
             }
         }
     }
@@ -268,7 +201,7 @@ class CartFragment : Fragment() {
     // Метод для обновления пользовательского интерфейса
     private fun updateUIWithCartBooks(cartBook: ArrayList<Book>, totalPrice: Int) {
         recalculationSum(totalPrice)
-        val adapter = CustomAdapterCart(cartBook, requireContext(), this@CartFragment)
+        val adapter = CustomAdapterCart(cartBook, this@CartFragment)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
         binding.recyclerView.adapter = adapter
@@ -305,52 +238,6 @@ class CartFragment : Fragment() {
         constraintLayout.addView(newView)
     }
 
-    // Возвращаем книгу в корзине по id
-    private fun fetchCartBooksFromServer(bookId: Int): Book {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-        val language = (activity as MainActivity).getLanguage()
-
-        val url = URL("http:$ipAddress:3000/book/bookById/$bookId/$language/smallCover")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-
-        val jsonObject = JSONObject(response)
-
-        val id = jsonObject.getString("_id").toInt()
-        val title = jsonObject.getString("title")
-        val authorName = jsonObject.getString("authorName")
-        val stars = jsonObject.getInt("averageStars")
-        val ratings = jsonObject.getInt("ratings")
-        val price = jsonObject.getInt("price")
-        val smallCover = jsonObject.getString("smallCover")
-
-        return Book(id, smallCover, title, authorName, stars, ratings, price)
-    }
-
-    // Возвращаем все id книг находящихся в корзине
-    private fun fetchBooksFromServer(): ArrayList<Int> {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-
-        val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/cart")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-
-        val jsonArray = JSONArray(response)
-
-        val items = ArrayList<Int>()
-        for (i in 0 until jsonArray.length()) {
-            val value = jsonArray.getInt(i)
-            items.add(value)
-        }
-        return items
-    }
-
     // Пересчет общей суммы всех книг в корзине
     fun recalculationSum(totalPrice: Int){
         binding.totalPrice.text = "$totalPrice\u20BD"
@@ -365,7 +252,7 @@ class CartFragment : Fragment() {
     // Метод, для сохранения введенного текста
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModelBook.idUser)
     }
 
     // Метод, вызываемый перед уничтожением представления фрагмента

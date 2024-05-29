@@ -7,26 +7,20 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
-import com.example.booksbury.adapters.CustomAdapterPurchasedBooks
+import com.example.booksbury.adapters.CustomAdapterBooks
 import com.example.booksbury.databinding.BooksFragmentBinding
-import com.example.booksbury.items.Book
+import com.example.booksbury.entity.Book
+import com.example.booksbury.interfaces.OnBookClickListener
 import com.example.booksbury.model.BookViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
+import com.example.booksbury.model.UserViewModel
 
 // Класс фрагмента отображения списка купленных книг
-class BooksFragment : Fragment() {
+class BooksFragment : Fragment(), OnBookClickListener {
 
     // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: BooksFragmentBinding? = null
@@ -35,7 +29,10 @@ class BooksFragment : Fragment() {
     private val binding get() = _binding!!
 
     // ViewModel для хранения состояния
-    private lateinit var viewModel: BookViewModel
+    private lateinit var viewModelBook: BookViewModel
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModelUser: UserViewModel
 
     // Блок companion object для хранения констант
     companion object {
@@ -47,11 +44,12 @@ class BooksFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Инициализация ViewModel
-        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+        viewModelBook = ViewModelProvider(this)[BookViewModel::class.java]
+        viewModelUser = ViewModelProvider(this)[UserViewModel::class.java]
 
         // Восстанавливаем сохраненное значение, если оно есть
         savedInstanceState?.let {
-            viewModel.idUser = it.getInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+            viewModelBook.idUser = it.getInt(ENTERED_ID_USER_KEY, viewModelBook.idUser)
         }
     }
 
@@ -74,8 +72,8 @@ class BooksFragment : Fragment() {
         }
 
         // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
-        if (viewModel.idUser == 0) {
-            viewModel.idUser = (activity as MainActivity).getIdUser()
+        if (viewModelBook.idUser == 0) {
+            viewModelBook.idUser = (activity as MainActivity).getIdUser()
         }
 
         // Получение списка книг с сервера и обновление пользовательского интерфейса
@@ -84,32 +82,48 @@ class BooksFragment : Fragment() {
 
     // Метод, который реализует вывод всех купленных книг на экран
     private fun fetchBooksAndUpdateUI() {
-        lifecycleScope.launch {
-            try {
-                val books = withContext(Dispatchers.IO) {
-                    fetchBooksFromServer()
-                }
 
-                // Добавляем все купленные книги пользователем в массив
+        viewModelUser.getBookId(viewModelBook.idUser) { books, error ->
+            if (books != null) {
+                // Создаем массив для хранения всех купленных книг пользователем
                 val purchasedBooks = ArrayList<Book>()
+                val totalBooks = books.size
+                var completedBooks = 0
+
                 for (bookId in books) {
-                    val purchasedBook = withContext(Dispatchers.IO) {
-                        fetchPurchasedBooksFromServer(bookId)
+                    val language = (activity as MainActivity).getLanguage()
+                    viewModelBook.getPurchasedBook(bookId, language) { purchasedBook, error ->
+                        if (purchasedBook != null) {
+                            purchasedBooks.add(purchasedBook)
+                        } else {
+                            println("Ошибка: $error")
+                        }
+
+                        // Увеличиваем счетчик завершенных вызовов
+                        completedBooks++
+
+                        // Проверяем, завершены ли все вызовы
+                        if (completedBooks == totalBooks) {
+                            // Обновляем пользовательский интерфейс
+                            updateUIWithPurchasedBooks(purchasedBooks)
+                        }
                     }
-                    purchasedBooks.add(purchasedBook)
                 }
 
-                // Обновляем пользовательский интерфейс
-                updateUIWithPurchasedBooks(purchasedBooks)
-            } catch (e: Exception) {
+                // Если books пуст, вызовы getPurchasedBook не произойдут, нужно обновить UI здесь
+                if (totalBooks == 0) {
+                    updateUIWithPurchasedBooks(purchasedBooks)
+                }
+            } else {
                 showNoPurchasedBooksNotification()
+                println("Error: $error")
             }
         }
     }
 
     // Метод для обновления пользовательского интерфейса
     private fun updateUIWithPurchasedBooks(purchasedBooks: ArrayList<Book>) {
-        val adapter = CustomAdapterPurchasedBooks(purchasedBooks, this)
+        val adapter = CustomAdapterBooks(purchasedBooks, this)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
         binding.recyclerView.adapter = adapter
@@ -143,54 +157,8 @@ class BooksFragment : Fragment() {
         binding.ConstraintLayout.addView(newView)
     }
 
-    // Возвращаем купленную книгу по id
-    private fun fetchPurchasedBooksFromServer(bookId: Int): Book {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-        val language = (activity as MainActivity).getLanguage()
-
-        val url = URL("http:$ipAddress:3000/book/bookById/$bookId/$language/smallCover")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-
-        val jsonObject = JSONObject(response)
-
-        val id = jsonObject.getInt("_id")
-        val title = jsonObject.getString("title")
-        val authorName = jsonObject.getString("authorName")
-        val stars = jsonObject.getInt("averageStars")
-        val ratings = jsonObject.getInt("ratings")
-        val price = jsonObject.getInt("price")
-        val smallCover = jsonObject.getString("smallCover")
-
-        return Book(id, smallCover, title, authorName, stars, ratings, price)
-    }
-
-    // Возвращаем все id купленных пользователем книг
-    private fun fetchBooksFromServer(): ArrayList<Int> {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-
-        val url = URL("http:$ipAddress:3000/api/users/${viewModel.idUser}/purchasedBooks")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-
-        val jsonArray = JSONArray(response)
-
-        val items = ArrayList<Int>()
-        for (i in 0 until jsonArray.length()) {
-            val value = jsonArray.getInt(i)
-            items.add(value)
-        }
-        return items
-    }
-
     // Метод, который позволяет переключить фрагмент, и передать ему значение id книги
-    fun navigateToBookInfoFragment(id: Int) {
+    override fun onBookClick(id: Int) {
         (activity as MainActivity).setIdBook(id)
         findNavController().navigate(R.id.action_BooksFragment_to_BookInfoFragment)
     }
@@ -198,7 +166,7 @@ class BooksFragment : Fragment() {
     // Метод, для сохранения введенного текста
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModelBook.idUser)
     }
 
     // Метод, вызываемый перед уничтожением представления фрагмента

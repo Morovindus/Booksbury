@@ -34,6 +34,5 @@ class MyDialogFragmentReview(private val reviewFragment: ReviewFragment) : Dialo
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
     }
 }

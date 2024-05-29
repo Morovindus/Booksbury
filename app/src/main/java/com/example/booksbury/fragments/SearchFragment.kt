@@ -25,12 +25,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
-import com.example.booksbury.adapters.CustomAdapterSearch
+import com.example.booksbury.adapters.CustomAdapterBooks
 import com.example.booksbury.databinding.SearchFragmentBinding
+import com.example.booksbury.interfaces.OnBookClickListener
 import com.example.booksbury.model.BookViewModel
 
 // Класс фрагмента поиска книг
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), OnBookClickListener {
 
     // Приватное свойство для хранения привязки к макету фрагмента
     private var _binding: SearchFragmentBinding? = null
@@ -39,7 +40,7 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
 
     // Адаптер для RecyclerView
-    private lateinit var adapter: CustomAdapterSearch
+    private lateinit var adapter: CustomAdapterBooks
 
     // ViewModel для хранения состояния
     private lateinit var viewModel: BookViewModel
@@ -294,14 +295,14 @@ class SearchFragment : Fragment() {
 
     // Метод для обновления пользовательского интерфейса
     private fun updateUIWithFavoriteBooks() {
-        adapter = CustomAdapterSearch(ArrayList(), this@SearchFragment)
+        adapter = CustomAdapterBooks(ArrayList(), this)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.addItemDecoration(SpacesItemDecoration(80, 0))
         binding.recyclerView.adapter = adapter
     }
 
     // Метод для скрытия клавиатуры
-    fun hideKeyboard(editText: EditText) {
+    private fun hideKeyboard(editText: EditText) {
         val imm = editText.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(editText.windowToken, 0)
     }
@@ -313,7 +314,7 @@ class SearchFragment : Fragment() {
     }
 
     // Метод, который позволяет переключить фрагмент, и передать ему значение id книги
-    fun navigateToBookInfoFragment(id: Int) {
+    override fun onBookClick(id: Int) {
         (activity as MainActivity).setIdBook(id)
         findNavController().navigate(R.id.action_SearchFragment_to_BookInfoFragment)
     }

@@ -14,21 +14,13 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.booksbury.model.BookViewModel
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.databinding.ReviewFragmentBinding
 import com.example.booksbury.dialog.MyDialogFragmentReview
-import com.example.booksbury.items.User
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
-import java.net.URL
+import com.example.booksbury.model.BookViewModel
+import com.example.booksbury.model.UserViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -43,7 +35,10 @@ class ReviewFragment : Fragment() {
     private val binding get() = _binding!!
 
     // ViewModel для хранения состояния
-    private lateinit var viewModel: BookViewModel
+    private lateinit var viewModelBook: BookViewModel
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModelUser: UserViewModel
 
     // Блок companion object для хранения констант
     companion object {
@@ -57,13 +52,14 @@ class ReviewFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Инициализация ViewModel
-        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+        viewModelBook = ViewModelProvider(this).get(BookViewModel::class.java)
+        viewModelUser = ViewModelProvider(this).get(UserViewModel::class.java)
 
         // Восстанавливаем сохраненное значение, если оно есть
         savedInstanceState?.let {
-            viewModel.idBook = it.getInt(ENTERED_ID_BOOK_KEY, viewModel.idBook)
-            viewModel.idUser = it.getInt(ENTERED_ID_USER_KEY, viewModel.idUser)
-            viewModel.star = it.getInt(ENTERED_STAR_KEY, viewModel.star)
+            viewModelBook.idBook = it.getInt(ENTERED_ID_BOOK_KEY, viewModelBook.idBook)
+            viewModelBook.idUser = it.getInt(ENTERED_ID_USER_KEY, viewModelBook.idUser)
+            viewModelBook.star = it.getInt(ENTERED_STAR_KEY, viewModelBook.star)
         }
     }
 
@@ -81,18 +77,18 @@ class ReviewFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Получаем значение id звезды из предыдущего фрагмента, если оно еще не было установлено
-        if (viewModel.star == 0) {
-            viewModel.star = 0
+        if (viewModelBook.star == 0) {
+            viewModelBook.star = 0
         }
 
         // Получаем значение id книги из предыдущего фрагмента, если оно еще не было установлено
-        if (viewModel.idBook == 0) {
-            viewModel.idBook = (activity as MainActivity).getIdBook()
+        if (viewModelBook.idBook == 0) {
+            viewModelBook.idBook = (activity as MainActivity).getIdBook()
         }
 
         // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
-        if (viewModel.idUser == 0) {
-            viewModel.idUser = (activity as MainActivity).getIdUser()
+        if (viewModelBook.idUser == 0) {
+            viewModelBook.idUser = (activity as MainActivity).getIdUser()
         }
 
         // Инициализация звезд
@@ -105,7 +101,7 @@ class ReviewFragment : Fragment() {
         )
 
         // Восстанавливаем количество звезд
-        setRating(viewModel.star, starViews)
+        setRating(viewModelBook.star, starViews)
 
         // Установка слушателей клика для звезд
         starViews.forEachIndexed { index, imageView ->
@@ -122,7 +118,7 @@ class ReviewFragment : Fragment() {
 
         // Установка слушателя для кнопки "Назад"
         binding.buttonBack.setOnClickListener {
-            (activity as MainActivity).setIdBook(viewModel.idBook)
+            (activity as MainActivity).setIdBook(viewModelBook.idBook)
 
             findNavController().popBackStack()
         }
@@ -132,25 +128,35 @@ class ReviewFragment : Fragment() {
             val reviewText = binding.reviewBar.text.toString().trim()
 
             // Проверка на наличие оценки
-            if (viewModel.star == 0) {
+            if (viewModelBook.star == 0) {
                 Toast.makeText(context, getString(R.string.pls_select_rating), Toast.LENGTH_SHORT).show()
 
                 // Проверка на заполненность поля отзыва
             } else if (reviewText.isEmpty()) {
                 binding.reviewBar.error = getString(R.string.pls_write_review)
             } else {
-                lifecycleScope.launch {
-                    // Получение имени пользователя и почты
-                    val user: User = withContext(Dispatchers.IO) {
-                        fetchNameEmailDataFromServer()
+                // Получение имени пользователя и почты
+                viewModelUser.getUserDetails(viewModelBook.idUser) { userInfo, error ->
+                    if (userInfo != null) {
+
+                        // Отправка запроса на добавление нового отзыва
+                        viewModelBook.addNewReview(viewModelBook.idBook, viewModelBook.idUser, userInfo.username, getCurrentDateFormatted(), reviewText, viewModelBook.star) { success, error ->
+                            // Если добавление успешно
+                            if (success) {
+                                println("Комменатрий успешно добавлен")
+                            } else {
+                                // Если произошла ошибка при добавлении
+                                println("Ошибка при добавлении комментария: $error")
+                            }
+                        }
+
+                        // Показ диалогового окна после успешного добавления отзыва
+                        val dialogFragment = MyDialogFragmentReview(this@ReviewFragment)
+                        dialogFragment.show(parentFragmentManager, "dialog")
+
+                    } else {
+                        println("Error: $error")
                     }
-
-                    // Отправка запроса на добавление нового отзыва
-                    addReview(user.userName, reviewText)
-
-                    // Показ диалогового окна после успешного добавления отзыва
-                    val dialogFragment = MyDialogFragmentReview(this@ReviewFragment)
-                    dialogFragment.show(parentFragmentManager, "dialog")
                 }
             }
         }
@@ -180,7 +186,7 @@ class ReviewFragment : Fragment() {
 
     // Метод для установки визуальной оценки на экран
     private fun setRating(rating: Int, starViews: List<ImageView>) {
-        viewModel.star = rating
+        viewModelBook.star = rating
         // Изменение изображения звезд в зависимости от выбранного рейтинга
         starViews.forEachIndexed { index, imageView ->
             if (index < rating) {
@@ -188,64 +194,6 @@ class ReviewFragment : Fragment() {
             } else {
                 imageView.setImageResource(R.drawable.star_white)
             }
-        }
-    }
-
-    // Запрос для добавления нового отзыва
-    private suspend fun addReview(nameUser: String, textUser: String) {
-        withContext(Dispatchers.IO) {
-            val ipAddress = (activity as MainActivity).getIpAddress()
-            val url = URL("http:$ipAddress:3000/api/books/${viewModel.idBook}/reviews")
-            val date = getCurrentDateFormatted()
-
-            val reviewJson = JSONObject().apply {
-                put("userId", viewModel.idUser)
-                put("nameUser", nameUser)
-                put("date", date)
-                put("textUser", textUser)
-                put("stars", viewModel.star)
-            }
-
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "POST"
-            connection.setRequestProperty("Content-Type", "application/json")
-            connection.doOutput = true
-
-            try {
-                val outputStream = OutputStreamWriter(connection.outputStream)
-                outputStream.write(reviewJson.toString())
-                outputStream.flush()
-
-                val responseCode = connection.responseCode
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    println("Отзыв успешно добавлен")
-                } else {
-                    println("Ошибка при добавлении отзыва: ${connection.responseMessage}")
-                }
-            } catch (e: Exception) {
-                println("Ошибка при отправке запроса: ${e.message}")
-            } finally {
-                connection.disconnect()
-            }
-        }
-    }
-
-    // Запрос возвращающий имя и почту пользователя
-    private suspend fun fetchNameEmailDataFromServer(): User {
-        return withContext(Dispatchers.IO) {
-            val ipAddress = (activity as MainActivity).getIpAddress()
-            val url = URL("http:$ipAddress:3000/api/user/${viewModel.idUser}")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            val jsonResponse = JSONObject(response)
-            val userName = jsonResponse.getString("username")
-            val email = jsonResponse.getString("email")
-
-            User(userName, email)
         }
     }
 
@@ -270,9 +218,9 @@ class ReviewFragment : Fragment() {
     // Метод, для сохранения введенного текста
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(ENTERED_ID_BOOK_KEY, viewModel.idBook)
-        outState.putInt(ENTERED_ID_USER_KEY, viewModel.idUser)
-        outState.putInt(ENTERED_STAR_KEY, viewModel.star)
+        outState.putInt(ENTERED_ID_BOOK_KEY, viewModelBook.idBook)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModelBook.idUser)
+        outState.putInt(ENTERED_STAR_KEY, viewModelBook.star)
     }
 
     // Метод, вызываемый перед уничтожением представления фрагмента

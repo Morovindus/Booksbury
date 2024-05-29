@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.booksbury.MainActivity
@@ -13,14 +13,8 @@ import com.example.booksbury.R
 import com.example.booksbury.SpacesItemDecoration
 import com.example.booksbury.adapters.CustomAdapterMarket
 import com.example.booksbury.databinding.ExploreFragmentBinding
-import com.example.booksbury.items.Book
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
+import com.example.booksbury.entity.Book
+import com.example.booksbury.model.BookViewModel
 
 // Класс фрагмента магазина книг
 class ExploreFragment : Fragment() {
@@ -30,6 +24,21 @@ class ExploreFragment : Fragment() {
 
     // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModelBook: BookViewModel
+
+    // Метод, вызываемый при создании фрагмента
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Инициализация ViewModel
+        viewModelBook = ViewModelProvider(this)[BookViewModel::class.java]
+
+        // Восстанавливаем сохраненное значение, если оно есть
+        savedInstanceState?.let {
+            viewModelBook.idUser = it.getInt(BooksFragment.ENTERED_ID_USER_KEY, viewModelBook.idUser)
+        }
+    }
 
     // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
@@ -57,22 +66,41 @@ class ExploreFragment : Fragment() {
 
     // Метод, который реализует вывод всех книг на экран
     private fun fetchBooksAndUpdateUI() {
-        lifecycleScope.launch {
-            val books = withContext(Dispatchers.IO) {
-                fetchBooksFromServer()
-            }
 
-            // Добавляем все книги в массив
-            val allBooks = ArrayList<Book>()
+        viewModelBook.getAllBookId() { allBookId, error ->
+            if (allBookId != null) {
+                // Создаем массив для хранения всех книг
+                val purchasedBooks = ArrayList<Book>()
+                val totalBooks = allBookId.size
+                var completedBooks = 0
 
-            for (book in books) {
-                val allBook = withContext(Dispatchers.IO) {
-                    fetchAllBooksFromServer(book)
+                for (bookId in allBookId) {
+                    val language = (activity as MainActivity).getLanguage()
+                    viewModelBook.getPurchasedBook(bookId, language) { purchasedBook, error ->
+                        if (purchasedBook != null) {
+                            purchasedBooks.add(purchasedBook)
+                        } else {
+                            println("Ошибка: $error")
+                        }
+
+                        // Увеличиваем счетчик завершенных вызовов
+                        completedBooks++
+
+                        // Проверяем, завершены ли все вызовы
+                        if (completedBooks == totalBooks) {
+                            // Обновляем пользовательский интерфейс
+                            updateRecyclerView(purchasedBooks)
+                        }
+                    }
                 }
-                allBooks.add(allBook)
-            }
 
-            updateRecyclerView(allBooks)
+                // Если books пуст, вызовы getPurchasedBook не произойдут, нужно обновить UI здесь
+                if (totalBooks == 0) {
+                    updateRecyclerView(purchasedBooks)
+                }
+            } else {
+                println("Error: $error")
+            }
         }
     }
 
@@ -91,55 +119,15 @@ class ExploreFragment : Fragment() {
         findNavController().navigate(R.id.action_ExploreFragment_to_BookInfoFragment)
     }
 
-    // Запрос на получение всех книг
-    private fun fetchAllBooksFromServer(bookId: Int): Book {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-        val language = (activity as MainActivity).getLanguage()
-
-        val url = URL("http:$ipAddress:3000/book/bookById/$bookId/$language/averageCover")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-
-        val jsonObject = JSONObject(response)
-
-        val id = jsonObject.getString("_id").toInt()
-        val title = jsonObject.getString("title")
-        val authorName = jsonObject.getString("authorName")
-        val stars = jsonObject.getInt("averageStars")
-        val ratings = jsonObject.getInt("ratings")
-        val price = jsonObject.getInt("price")
-        val averageCover = jsonObject.getString("averageCover")
-
-        return Book(id, averageCover, title, authorName, stars, ratings, price)
-    }
-
-    // Возвращаем все id всех книг
-    private fun fetchBooksFromServer(): ArrayList<Int> {
-        val ipAddress = (activity as MainActivity).getIpAddress()
-
-        val url = URL("http:$ipAddress:3000/api/books/ids")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-
-        val jsonArray = JSONArray(response)
-
-        val items = ArrayList<Int>()
-        for (i in 0 until jsonArray.length()) {
-            val value = jsonArray.getInt(i)
-            items.add(value)
-        }
-        return items
-    }
-
     // Метод переключающий фрагменты
     private fun navigateToFragment(actionId: Int) {
         findNavController().navigate(actionId)
+    }
+
+    // Метод, для сохранения введенного текста
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(FavouritesFragment.ENTERED_ID_USER_KEY, viewModelBook.idUser)
     }
 
     // Метод, вызываемый перед уничтожением представления фрагмента

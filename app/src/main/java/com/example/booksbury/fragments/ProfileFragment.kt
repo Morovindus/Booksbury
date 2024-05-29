@@ -9,19 +9,12 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.databinding.ProfileFragmentBinding
-import com.example.booksbury.items.User
 import com.example.booksbury.model.BookViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
+import com.example.booksbury.model.UserViewModel
 
 // Класс фрагмента профиля пользователя
 class ProfileFragment : Fragment() {
@@ -33,7 +26,10 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
     // ViewModel для хранения состояния
-    private lateinit var viewModel: BookViewModel
+    private lateinit var viewModelBook: BookViewModel
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModelUser: UserViewModel
 
     // Блок companion object для хранения констант
     companion object {
@@ -45,11 +41,12 @@ class ProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Инициализация ViewModel
-        viewModel = ViewModelProvider(this).get(BookViewModel::class.java)
+        viewModelBook = ViewModelProvider(this)[BookViewModel::class.java]
+        viewModelUser = ViewModelProvider(this)[UserViewModel::class.java]
 
         // Восстанавливаем сохраненное значение, если оно есть
         savedInstanceState?.let {
-            viewModel.idUser = it.getInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+            viewModelBook.idUser = it.getInt(ENTERED_ID_USER_KEY, viewModelBook.idUser)
         }
     }
 
@@ -67,8 +64,8 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Получаем значение id пользователя из предыдущего фрагмента, если оно еще не было установлено
-        if (viewModel.idUser == 0) {
-            viewModel.idUser = (activity as MainActivity).getIdUser()
+        if (viewModelBook.idUser == 0) {
+            viewModelBook.idUser = (activity as MainActivity).getIdUser()
         }
 
         // Обработчики нажатий на все кнопки на экране
@@ -114,14 +111,15 @@ class ProfileFragment : Fragment() {
 
     // Метод, который реализует вывод на экран имя и почту пользователя
     private fun fetchNameAndEmailUI() {
-        lifecycleScope.launch {
-            val user: User = withContext(Dispatchers.IO) {
-                fetchNameEmailDataFromServer()
+            // Получение имени пользователя и почты
+        viewModelUser.getUserDetails(viewModelBook.idUser) { userInfo, error ->
+            if (userInfo != null) {
+                // Обновляем пользовательский интерфейс в главном потоке
+                binding.nameUser.text = userInfo.username
+                binding.emailUser.text = userInfo.email
+            }else {
+                println("Error: $error")
             }
-
-            // Обновляем пользовательский интерфейс в главном потоке
-            binding.nameUser.text = user.userName
-            binding.emailUser.text = user.email
         }
     }
 
@@ -137,27 +135,6 @@ class ProfileFragment : Fragment() {
             .show()
     }
 
-    // Запрос возвращающий имя и почту пользователя
-    private suspend fun fetchNameEmailDataFromServer(): User {
-        return withContext(Dispatchers.IO) {
-            val ipAddress = (activity as MainActivity).getIpAddress()
-
-            val url = URL("http://$ipAddress:3000/api/user/${viewModel.idUser}")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            val jsonResponse = JSONObject(response)
-
-            val userName = jsonResponse.getString("username")
-            val email = jsonResponse.getString("email")
-
-            User(userName, email)
-        }
-    }
-
     // Метод переключающий фрагменты
     private fun navigateToFragment(actionId: Int) {
         findNavController().navigate(actionId)
@@ -166,7 +143,7 @@ class ProfileFragment : Fragment() {
     // Метод, для сохранения введенного текста
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(ENTERED_ID_USER_KEY, viewModel.idUser)
+        outState.putInt(ENTERED_ID_USER_KEY, viewModelBook.idUser)
     }
 
     // Метод, вызываемый перед уничтожением представления фрагмента

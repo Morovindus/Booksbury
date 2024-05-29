@@ -7,10 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.booksbury.R
-import com.example.booksbury.items.Reviews
+import com.example.booksbury.entity.Reviews
 
 // Адаптер для списка отзывов
-class CustomAdapterReview(private val items: ArrayList<Reviews>) : RecyclerView.Adapter<CustomAdapterReview.ViewHolder>() {
+class CustomAdapterReview(private val items: List<Reviews>) : RecyclerView.Adapter<CustomAdapterReview.ViewHolder>() {
 
     // Создание нового ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,9 +37,7 @@ class CustomAdapterReview(private val items: ArrayList<Reviews>) : RecyclerView.
     }
 
     // Получение количества элементов в списке
-    override fun getItemCount(): Int {
-        return items.size
-    }
+    override fun getItemCount() = items.size
 
     // ViewHolder для отображения элемента списка отзывов
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

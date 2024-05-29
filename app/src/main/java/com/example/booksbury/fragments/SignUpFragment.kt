@@ -1,29 +1,22 @@
 package com.example.booksbury.fragments
 
+import EncryptionUtil
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.booksbury.MainActivity
 import com.example.booksbury.R
 import com.example.booksbury.databinding.SignUpFragmentBinding
 import com.example.booksbury.dialog.MyDialogFragmentRegistration
+import com.example.booksbury.model.UserViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
 import java.io.UnsupportedEncodingException
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.Random
 
 // Класс фрагмента регистрации нового пользователя
@@ -34,6 +27,9 @@ class SignUpFragment : Fragment() {
 
     // Приватное свойство, предоставляющее доступ к привязке к макету фрагмента
     private val binding get() = _binding!!
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModel: UserViewModel
 
     // Метод, вызываемый при создании макета фрагмента
     override fun onCreateView(
@@ -47,6 +43,9 @@ class SignUpFragment : Fragment() {
     // Метод, вызываемый после создания макета фрагмента
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Инициализация ViewModel
+        viewModel = ViewModelProvider(this)[UserViewModel::class.java]
 
         // Обработчики нажатий на кнопку "Регистрация"
         binding.buttonRegistration.setOnClickListener {
@@ -74,86 +73,43 @@ class SignUpFragment : Fragment() {
 
     // Проверка всех данных, введенных пользователем
     private fun checkUsernameAndPassword(username: String, email: String, password: String, passwordConfirm: String) {
+        // Запускаем корутину на диспетчере ввода-вывода для выполнения сетевых операций
         lifecycleScope.launch(Dispatchers.IO) {
-            val usernameExists = checkUsernameExists(username)
-            if (!usernameExists) {
-                if (validatePassword(password, passwordConfirm)) {
-                    val idUser = generateUniqueRandomId(fetchUserIdsFromReviews())
-                    Log.d("myLogs", idUser.toString())
-                    addNewUser(idUser, username, email, password)
 
-                    // Показ диалогового окна после успешной регистрации
-                    withContext(Dispatchers.Main) {
+            // Проверка, существует ли пользователь с таким именем
+            viewModel.checkUsernameExists(username) { usernameExists ->
+
+                // Если имя пользователя не существует, продолжаем
+                if (!usernameExists) {
+                    // Проверка, совпадают ли пароли и удовлетворяют ли они требованиям
+                    if (validatePassword(password, passwordConfirm)) {
+
+                        // Получение всех ID пользователей для генерации уникального ID
+                        viewModel.getAllUserId { allIdUser ->
+                            // Генерация уникального случайного ID для нового пользователя
+                            val idUser = generateUniqueRandomId(allIdUser)
+
+                            // Добавление нового пользователя в базу данных
+                            viewModel.addNewUser(idUser, username, email, EncryptionUtil().encrypt(password)) { success, error ->
+                                // Если добавление успешно
+                                if (success) {
+                                    println("Пользователь успешно добавлен")
+                                } else {
+                                    // Если произошла ошибка при добавлении
+                                    println("Ошибка при добавлении пользователя: $error")
+                                }
+                            }
+                        }
+
+                        // Показ диалогового окна после успешной регистрации
                         val dialogFragment = MyDialogFragmentRegistration(this@SignUpFragment)
                         dialogFragment.show(parentFragmentManager, "dialog")
                     }
-                }
-            } else {
-                withContext(Dispatchers.Main) {
+                } else {
+                    // Если имя пользователя уже существует, показываем ошибку
                     binding.editName.error = getString(R.string.userExistsError)
                 }
             }
-        }
-    }
-
-    // Добавление нового пользователя в БД
-    private fun addNewUser(idUser: Number, username: String, email: String, password: String) {
-        val newUserJson = """
-        {
-          "_id": $idUser,
-          "username": "$username",
-          "email": "$email",
-          "password": "$password",
-          "notifications": [],
-          "purchasedBooks": [],
-          "favoriteBooks": [],
-          "cart": []
-        }
-    """.trimIndent()
-
-        val ipAddress = (activity as MainActivity).getIpAddress()
-        val url = URL("http://$ipAddress:3000/api/new_user")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "POST"
-        connection.setRequestProperty("Content-Type", "application/json")
-        connection.doOutput = true
-
-        try {
-            val outputStream = OutputStreamWriter(connection.outputStream)
-            outputStream.write(newUserJson)
-            outputStream.flush()
-
-            if (connection.responseCode == HttpURLConnection.HTTP_CREATED) {
-                println("Пользователь успешно добавлен")
-            } else {
-                println("Ошибка при добавлении пользователя: ${connection.responseMessage}")
-            }
-        } catch (e: Exception) {
-            println("Ошибка при отправке запроса: ${e.message}")
-        } finally {
-            connection.disconnect()
-        }
-    }
-
-    // Проверка, существует ли имя пользователя в БД
-    private fun checkUsernameExists(username: String): Boolean {
-        return try {
-            val ipAddress = (activity as MainActivity).getIpAddress()
-            val url = URL("http://$ipAddress:3000/api/check_username/$username")
-
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-
-            inputStream.close()
-            connection.disconnect()
-
-            val jsonResponse = JSONObject(response)
-            jsonResponse.getBoolean("exists")
-        } catch (e: Exception) {
-            false
         }
     }
 
@@ -198,44 +154,12 @@ class SignUpFragment : Fragment() {
     }
 
     // Проверка, что поля пароля и подтверждения пароля совпадают
-    private suspend fun validatePassword(password: String, confirmPassword: String): Boolean {
+    private fun validatePassword(password: String, confirmPassword: String): Boolean {
         return if (password == confirmPassword) {
             true
         } else {
-            withContext(Dispatchers.Main) {
-                binding.editPasswordConfirm.error = getString(R.string.errorConfirmPassword)
-            }
+            binding.editPasswordConfirm.error = getString(R.string.errorConfirmPassword)
             false
-        }
-    }
-
-    // Запрос, возвращающий id всех уже имеющихся пользователей
-    private suspend fun fetchUserIdsFromReviews(): ArrayList<Int> {
-        return withContext(Dispatchers.IO) {
-            val userIds = ArrayList<Int>()
-            val ipAddress = (activity as MainActivity).getIpAddress()
-
-            val url = URL("http://$ipAddress:3000/api/users/ids")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val responseCode = connection.responseCode
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                val inputStream = connection.inputStream
-                val response = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
-
-                val jsonArray = JSONArray(response)
-                for (i in 0 until jsonArray.length()) {
-                    val jsonObject = jsonArray.getJSONObject(i)
-                    val userId = jsonObject.getInt("_id")
-                    userIds.add(userId)
-                }
-            } else {
-                println("HTTP Error: $responseCode")
-            }
-
-            connection.disconnect()
-            userIds
         }
     }
 

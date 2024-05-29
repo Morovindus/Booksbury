@@ -1,28 +1,29 @@
 package com.example.booksbury.adapters
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.example.booksbury.MainActivity
 import com.example.booksbury.R
+import com.example.booksbury.entity.Book
 import com.example.booksbury.fragments.CartFragment
-import com.example.booksbury.items.Book
+import com.example.booksbury.model.BookViewModel
+import com.example.booksbury.model.UserViewModel
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.net.HttpURLConnection
-import java.net.URL
 
 // Адаптер для списка товаров в корзине
-class CustomAdapterCart(private val items: ArrayList<Book>, private val context: Context, private val cartFragment: CartFragment) : RecyclerView.Adapter<CustomAdapterCart.ViewHolder>() {
+class CustomAdapterCart(private val items: ArrayList<Book>, private val cartFragment: CartFragment) : RecyclerView.Adapter<CustomAdapterCart.ViewHolder>() {
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModelBook: BookViewModel
+
+    // ViewModel для хранения состояния
+    private lateinit var viewModelUser: UserViewModel
 
     // Создание нового ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,6 +35,10 @@ class CustomAdapterCart(private val items: ArrayList<Book>, private val context:
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = items[position]
+
+        // Инициализация ViewModel
+        viewModelBook = ViewModelProvider(cartFragment)[BookViewModel::class.java]
+        viewModelUser = ViewModelProvider(cartFragment)[UserViewModel::class.java]
 
         // Загрузка обложки книги с помощью Picasso
         Picasso.get().load(currentItem.imageResource).into(holder.imageCoverBook)
@@ -59,7 +64,6 @@ class CustomAdapterCart(private val items: ArrayList<Book>, private val context:
 
             // Пересчет общей суммы корзины
             val newSum = cartFragment.getTotalSum() - removedItem.price
-            Log.d("myLogs", newSum.toString())
             cartFragment.recalculationSum(newSum)
 
             notifyItemRemoved(position) // Уведомление адаптера об удалении элемента из списка
@@ -91,23 +95,13 @@ class CustomAdapterCart(private val items: ArrayList<Book>, private val context:
 
     // Запрос на удаления книги из корзины
     private fun removeFromCart(bookId: Int) {
-        GlobalScope.launch(Dispatchers.IO) {
-            try {
-                val ipAddress = (context as MainActivity).getIpAddress()
-                val userId = (context as MainActivity).getIdUser()
 
-                val url = URL("http:$ipAddress:3000/api/users/$userId/cart/$bookId")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "DELETE"
-
-                val responseCode = connection.responseCode
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    println("Книга успешно удалена из корзины пользователя")
-                } else {
-                    println("Ошибка при удалении книги из корзины пользователя: $responseCode")
-                }
-            } catch (e: Exception) {
-                println("Ошибка при удалении книги из корзины пользователя: ${e.message}")
+        // Посылаем запрос на удаление книги из избранного
+        viewModelUser.deleteCartBook(viewModelBook.idUser, bookId) { success, error ->
+            if (success) {
+                println("Книга успешно удалена из корзины пользователя")
+            } else {
+                println("Ошибка: $error")
             }
         }
     }
